@@ -1,0 +1,495 @@
+# This file was generated. Do not edit manually.
+
+schema {
+    query: Query
+    mutation: Mutation
+    subscription: Subscription
+}
+
+type ActressDBEntity {
+    createdAt: DateTime
+    id: UUID
+    name: String!
+    photoLink: String
+    updatedAt: DateTime
+    url: String
+    videos(
+        "Returns the elements in the list that come after the specified cursor."
+        after: String,
+        "Returns the elements in the list that come before the specified cursor."
+        before: String,
+        "Returns the first _n_ elements from the list."
+        first: Int,
+        "Returns the last _n_ elements from the list."
+        last: Int
+    ): VideosConnection
+}
+
+"A connection to a list of items."
+type ActressesConnection {
+    "A list of edges."
+    edges: [ActressesEdge!]
+    "A flattened list of the nodes."
+    nodes: [ActressDBEntity]
+    "Information to aid in pagination."
+    pageInfo: PageInfo!
+}
+
+"An edge in a connection."
+type ActressesEdge {
+    "A cursor for use in pagination."
+    cursor: String!
+    "The item at the end of the edge."
+    node: ActressDBEntity
+}
+
+type AddedVideo {
+    id: UUID
+    photo: String!
+    quantity: Int!
+    title: String!
+}
+
+type AuthResult {
+    authToken: String
+    expiration: DateTime
+    refreshToken: String
+    user: UserEntity
+}
+
+type Mutation {
+    actress(actress: MutateActressInput!): ActressDBEntity
+    add_video(video: AddVideoInput!): AddedVideo
+    login(info: UserLoginInput): AuthResult
+    player(player: MutatePlayerInput!): VideoPlayerDBEntity
+    register(info: UserRegistrationInput): UserEntity
+    scrapeVideos(pages: Int, syncAll: Boolean): String
+    scrapeVideosImages(pages: Int, syncAll: Boolean): String
+    video(video: MutateVideoInput!): VideoDBEntity
+}
+
+"Information about pagination in a connection."
+type PageInfo {
+    "When paginating forwards, the cursor to continue."
+    endCursor: String
+    "Indicates whether more edges exist following the set defined by the clients arguments."
+    hasNextPage: Boolean!
+    "Indicates whether more edges exist prior the set defined by the clients arguments."
+    hasPreviousPage: Boolean!
+    "When paginating backwards, the cursor to continue."
+    startCursor: String
+}
+
+type Query {
+    actresses(
+        "Returns the elements in the list that come after the specified cursor."
+        after: String,
+        "Returns the elements in the list that come before the specified cursor."
+        before: String,
+        "Returns the first _n_ elements from the list."
+        first: Int,
+        "Returns the last _n_ elements from the list."
+        last: Int,
+        where: ActressDBEntityFilterInput
+    ): ActressesConnection
+    tags(
+        "Returns the elements in the list that come after the specified cursor."
+        after: String,
+        "Returns the elements in the list that come before the specified cursor."
+        before: String,
+        "Returns the first _n_ elements from the list."
+        first: Int,
+        "Returns the last _n_ elements from the list."
+        last: Int,
+        where: TagDBEntityFilterInput
+    ): TagsConnection
+    videos(
+        "Returns the elements in the list that come after the specified cursor."
+        after: String,
+        "Returns the elements in the list that come before the specified cursor."
+        before: String,
+        "Returns the first _n_ elements from the list."
+        first: Int,
+        "Returns the last _n_ elements from the list."
+        last: Int,
+        order: [VideoDBEntitySortInput!],
+        where: VideoDBEntityFilterInput
+    ): VideosConnection
+}
+
+type Subscription {
+    initialSubscrition: String!
+    videoAdded: AddedVideo
+}
+
+type TagDBEntity {
+    createdAt: DateTime
+    id: UUID
+    link: String
+    name: String!
+    updatedAt: DateTime
+    videos(
+        "Returns the elements in the list that come after the specified cursor."
+        after: String,
+        "Returns the elements in the list that come before the specified cursor."
+        before: String,
+        "Returns the first _n_ elements from the list."
+        first: Int,
+        "Returns the last _n_ elements from the list."
+        last: Int
+    ): VideosConnection
+    videosTags: [VideoTagBindingDBEntity!]
+}
+
+"A connection to a list of items."
+type TagsConnection {
+    "A list of edges."
+    edges: [TagsEdge!]
+    "A flattened list of the nodes."
+    nodes: [TagDBEntity]
+    "Information to aid in pagination."
+    pageInfo: PageInfo!
+}
+
+"An edge in a connection."
+type TagsEdge {
+    "A cursor for use in pagination."
+    cursor: String!
+    "The item at the end of the edge."
+    node: TagDBEntity
+}
+
+type UserEntity {
+    accessFailedCount: Int!
+    concurrencyStamp: String
+    email: String
+    emailConfirmed: Boolean!
+    fullName: String
+    id: UUID!
+    lockoutEnabled: Boolean!
+    lockoutEnd: DateTime
+    normalizedEmail: String
+    normalizedUserName: String
+    passwordHash: String
+    phoneNumber: String
+    phoneNumberConfirmed: Boolean!
+    refreshToken: String
+    refreshTokenExpiryTime: DateTime!
+    securityStamp: String
+    twoFactorEnabled: Boolean!
+    userName: String
+}
+
+type VideoDBEntity {
+    actresses(where: ActressDBEntityFilterInput): [ActressDBEntity]
+    createdAt: DateTime
+    id: UUID
+    isDeleted: Boolean!
+    originalCreationDate: DateTime
+    photoLink: String
+    players: [VideoPlayerDBEntity]
+    tags(where: TagDBEntityFilterInput): [TagDBEntity]
+    title: String!
+    updatedAt: DateTime
+}
+
+type VideoPlayerDBEntity {
+    createdAt: DateTime
+    id: UUID
+    isWorking: Boolean!
+    playerLink: String!
+    updatedAt: DateTime
+    video: VideoDBEntity
+    videoId: UUID!
+    videoLink: String!
+}
+
+type VideoTagBindingDBEntity {
+    tag: TagDBEntity!
+    tagId: UUID
+    video: VideoDBEntity!
+    videoId: UUID
+}
+
+"A connection to a list of items."
+type VideosConnection {
+    "A list of edges."
+    edges: [VideosEdge!]
+    "A flattened list of the nodes."
+    nodes: [VideoDBEntity]
+    "Information to aid in pagination."
+    pageInfo: PageInfo!
+}
+
+"An edge in a connection."
+type VideosEdge {
+    "A cursor for use in pagination."
+    cursor: String!
+    "The item at the end of the edge."
+    node: VideoDBEntity
+}
+
+enum ApplyPolicy {
+    AFTER_RESOLVER
+    BEFORE_RESOLVER
+    VALIDATION
+}
+
+enum SortEnumType {
+    ASC
+    DESC
+}
+
+"The `DateTime` scalar represents an ISO-8601 compliant date time type."
+scalar DateTime
+
+scalar UUID
+
+input ActressDBEntityFilterInput {
+    and: [ActressDBEntityFilterInput!]
+    createdAt: DateTimeOperationFilterInput
+    id: UuidOperationFilterInput
+    name: StringOperationFilterInput
+    or: [ActressDBEntityFilterInput!]
+    photoLink: StringOperationFilterInput
+    updatedAt: DateTimeOperationFilterInput
+    url: StringOperationFilterInput
+    videos: ListFilterInputTypeOfVideoDBEntityFilterInput
+    videosActresses: ListFilterInputTypeOfVideoActressBindingDBEntityFilterInput
+}
+
+input AddVideoInput {
+    link: String!
+    photoLink: String!
+    title: String!
+}
+
+input BooleanOperationFilterInput {
+    eq: Boolean
+    neq: Boolean
+}
+
+input ChannelDBEntityFilterInput {
+    and: [ChannelDBEntityFilterInput!]
+    createdAt: DateTimeOperationFilterInput
+    id: UuidOperationFilterInput
+    link: StringOperationFilterInput
+    name: StringOperationFilterInput
+    or: [ChannelDBEntityFilterInput!]
+    updatedAt: DateTimeOperationFilterInput
+    videos: ListFilterInputTypeOfVideoDBEntityFilterInput
+}
+
+input DateTimeOperationFilterInput {
+    eq: DateTime
+    gt: DateTime
+    gte: DateTime
+    in: [DateTime]
+    lt: DateTime
+    lte: DateTime
+    neq: DateTime
+    ngt: DateTime
+    ngte: DateTime
+    nin: [DateTime]
+    nlt: DateTime
+    nlte: DateTime
+}
+
+input ListFilterInputTypeOfActressDBEntityFilterInput {
+    all: ActressDBEntityFilterInput
+    any: Boolean
+    none: ActressDBEntityFilterInput
+    some: ActressDBEntityFilterInput
+}
+
+input ListFilterInputTypeOfChannelDBEntityFilterInput {
+    all: ChannelDBEntityFilterInput
+    any: Boolean
+    none: ChannelDBEntityFilterInput
+    some: ChannelDBEntityFilterInput
+}
+
+input ListFilterInputTypeOfSiteDBEntityFilterInput {
+    all: SiteDBEntityFilterInput
+    any: Boolean
+    none: SiteDBEntityFilterInput
+    some: SiteDBEntityFilterInput
+}
+
+input ListFilterInputTypeOfTagDBEntityFilterInput {
+    all: TagDBEntityFilterInput
+    any: Boolean
+    none: TagDBEntityFilterInput
+    some: TagDBEntityFilterInput
+}
+
+input ListFilterInputTypeOfVideoActressBindingDBEntityFilterInput {
+    all: VideoActressBindingDBEntityFilterInput
+    any: Boolean
+    none: VideoActressBindingDBEntityFilterInput
+    some: VideoActressBindingDBEntityFilterInput
+}
+
+input ListFilterInputTypeOfVideoDBEntityFilterInput {
+    all: VideoDBEntityFilterInput
+    any: Boolean
+    none: VideoDBEntityFilterInput
+    some: VideoDBEntityFilterInput
+}
+
+input ListFilterInputTypeOfVideoPlayerDBEntityFilterInput {
+    all: VideoPlayerDBEntityFilterInput
+    any: Boolean
+    none: VideoPlayerDBEntityFilterInput
+    some: VideoPlayerDBEntityFilterInput
+}
+
+input ListFilterInputTypeOfVideoTagBindingDBEntityFilterInput {
+    all: VideoTagBindingDBEntityFilterInput
+    any: Boolean
+    none: VideoTagBindingDBEntityFilterInput
+    some: VideoTagBindingDBEntityFilterInput
+}
+
+input MutateActressInput {
+    link: String!
+    name: String!
+    photoLink: String!
+}
+
+input MutatePlayerInput {
+    isWorking: Boolean!
+    videoPlayerId: UUID!
+}
+
+input MutateVideoInput {
+    isWorking: Boolean!
+    link: String!
+    photoLink: String!
+    title: String!
+    videoLink: String!
+}
+
+input SiteDBEntityFilterInput {
+    and: [SiteDBEntityFilterInput!]
+    createdAt: DateTimeOperationFilterInput
+    id: UuidOperationFilterInput
+    link: StringOperationFilterInput
+    or: [SiteDBEntityFilterInput!]
+    updatedAt: DateTimeOperationFilterInput
+    video: VideoDBEntityFilterInput
+    videoId: UuidOperationFilterInput
+}
+
+input StringOperationFilterInput {
+    and: [StringOperationFilterInput!]
+    contains: String
+    endsWith: String
+    eq: String
+    in: [String]
+    ncontains: String
+    nendsWith: String
+    neq: String
+    nin: [String]
+    nstartsWith: String
+    or: [StringOperationFilterInput!]
+    startsWith: String
+}
+
+input TagDBEntityFilterInput {
+    and: [TagDBEntityFilterInput!]
+    createdAt: DateTimeOperationFilterInput
+    id: UuidOperationFilterInput
+    link: StringOperationFilterInput
+    name: StringOperationFilterInput
+    or: [TagDBEntityFilterInput!]
+    updatedAt: DateTimeOperationFilterInput
+    videos: ListFilterInputTypeOfVideoDBEntityFilterInput
+    videosTags: ListFilterInputTypeOfVideoTagBindingDBEntityFilterInput
+}
+
+input UserLoginInput {
+    password: String!
+    userInput: String!
+}
+
+input UserRegistrationInput {
+    email: String!
+    password: String!
+    userInput: String!
+}
+
+input UuidOperationFilterInput {
+    eq: UUID
+    gt: UUID
+    gte: UUID
+    in: [UUID]
+    lt: UUID
+    lte: UUID
+    neq: UUID
+    ngt: UUID
+    ngte: UUID
+    nin: [UUID]
+    nlt: UUID
+    nlte: UUID
+}
+
+input VideoActressBindingDBEntityFilterInput {
+    actress: ActressDBEntityFilterInput
+    actressId: UuidOperationFilterInput
+    and: [VideoActressBindingDBEntityFilterInput!]
+    or: [VideoActressBindingDBEntityFilterInput!]
+    video: VideoDBEntityFilterInput
+    videoId: UuidOperationFilterInput
+}
+
+input VideoDBEntityFilterInput {
+    actresses: ListFilterInputTypeOfActressDBEntityFilterInput
+    and: [VideoDBEntityFilterInput!]
+    channels: ListFilterInputTypeOfChannelDBEntityFilterInput
+    createdAt: DateTimeOperationFilterInput
+    id: UuidOperationFilterInput
+    isDeleted: BooleanOperationFilterInput
+    or: [VideoDBEntityFilterInput!]
+    originalCreationDate: DateTimeOperationFilterInput
+    photoLink: StringOperationFilterInput
+    players: ListFilterInputTypeOfVideoPlayerDBEntityFilterInput
+    sites: ListFilterInputTypeOfSiteDBEntityFilterInput
+    tags: ListFilterInputTypeOfTagDBEntityFilterInput
+    title: StringOperationFilterInput
+    updatedAt: DateTimeOperationFilterInput
+    videosActresses: ListFilterInputTypeOfVideoActressBindingDBEntityFilterInput
+    videosTags: ListFilterInputTypeOfVideoTagBindingDBEntityFilterInput
+}
+
+input VideoDBEntitySortInput {
+    createdAt: SortEnumType
+    id: SortEnumType
+    isDeleted: SortEnumType
+    originalCreationDate: SortEnumType
+    photoLink: SortEnumType
+    title: SortEnumType
+    updatedAt: SortEnumType
+}
+
+input VideoPlayerDBEntityFilterInput {
+    and: [VideoPlayerDBEntityFilterInput!]
+    createdAt: DateTimeOperationFilterInput
+    id: UuidOperationFilterInput
+    isWorking: BooleanOperationFilterInput
+    or: [VideoPlayerDBEntityFilterInput!]
+    playerLink: StringOperationFilterInput
+    updatedAt: DateTimeOperationFilterInput
+    video: VideoDBEntityFilterInput
+    videoId: UuidOperationFilterInput
+    videoLink: StringOperationFilterInput
+}
+
+input VideoTagBindingDBEntityFilterInput {
+    and: [VideoTagBindingDBEntityFilterInput!]
+    or: [VideoTagBindingDBEntityFilterInput!]
+    tag: TagDBEntityFilterInput
+    tagId: UuidOperationFilterInput
+    video: VideoDBEntityFilterInput
+    videoId: UuidOperationFilterInput
+}

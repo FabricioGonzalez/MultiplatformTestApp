@@ -1,0 +1,13 @@
+query actressById($id:UUID!){
+    actresses(where: {id: {eq: $id}}) {
+        edges {
+            cursor
+            node {
+                id
+                name
+                photoLink
+                url
+            }
+        }
+    }
+}

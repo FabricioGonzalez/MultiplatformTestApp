@@ -1,0 +1,9 @@
+mutation updateVideo($video:MutateVideoInput!){
+    video(video: $video){
+        id
+        title
+        photoLink
+        createdAt
+        updatedAt
+    }
+}

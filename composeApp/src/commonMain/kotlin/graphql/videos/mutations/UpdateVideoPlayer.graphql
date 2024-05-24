@@ -1,0 +1,6 @@
+mutation UpdateVideoPlayer($videoPlayer: MutatePlayerInput!) {
+    player(player: $videoPlayer) {
+        playerLink
+        isWorking
+    }
+}

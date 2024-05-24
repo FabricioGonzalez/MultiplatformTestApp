@@ -1,0 +1,28 @@
+query videoDetails($videoId:UUID!){
+    videos(where: {id: {eq: $videoId}} ){
+        edges {
+            cursor
+            node {
+                id
+                title
+                photoLink
+                createdAt
+                updatedAt
+                players{
+                    id
+                    playerLink
+                    videoLink
+                    isWorking
+                }
+                actresses{
+                    id
+                    name
+                    photoLink
+                }
+                tags{
+                    id
+                    name
+                }
+            }
+        }
+    }}

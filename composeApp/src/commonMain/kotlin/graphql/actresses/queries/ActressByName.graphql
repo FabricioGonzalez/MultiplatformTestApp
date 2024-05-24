@@ -1,0 +1,13 @@
+query actressByName($name:String!){
+    actresses(where: {name: {eq: $name}}) {
+        edges {
+            cursor
+            node {
+                id
+                name
+                photoLink
+                url
+            }
+        }
+    }
+}

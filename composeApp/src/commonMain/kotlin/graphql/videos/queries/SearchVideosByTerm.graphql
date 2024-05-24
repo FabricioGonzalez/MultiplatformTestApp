@@ -1,0 +1,27 @@
+query SearchVideosByTerm(
+    $cursorEnd: String
+    $cursorStart: String
+    $afterSize: Int
+    $beforeSize: Int
+    $videoQuery: String!,
+    $includeDeleted:Boolean=false
+) {
+    videos(first:$afterSize,after: $cursorEnd
+        ,before: $cursorStart,last: $beforeSize,where: {title: {contains:$videoQuery}isDeleted: {eq: $includeDeleted}},
+        order: {createdAt: DESC,originalCreationDate: DESC} ){
+        pageInfo {
+            hasNextPage
+            startCursor
+            hasPreviousPage
+            endCursor
+        }
+        edges {
+            cursor
+            node {
+                id
+                title
+                photoLink
+            }
+        }
+    }
+}

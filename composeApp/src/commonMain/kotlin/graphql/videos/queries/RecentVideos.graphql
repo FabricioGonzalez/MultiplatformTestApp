@@ -1,0 +1,23 @@
+query videos($cursorEnd:String,$cursorStart:String
+    ,$afterSize:Int,$beforeSize:Int,   $includeDeleted:Boolean=false){
+    videos(first:$afterSize,after: $cursorEnd
+        ,before: $cursorStart,last:$beforeSize,
+        order: {originalCreationDate: DESC,createdAt:DESC},
+        where: {isDeleted: {eq: $includeDeleted}}
+    ){
+        pageInfo {
+            hasNextPage
+            startCursor
+            hasPreviousPage
+            endCursor
+        }
+        edges {
+            cursor
+            node {
+                id
+                title
+                photoLink
+            }
+        }
+    }
+}

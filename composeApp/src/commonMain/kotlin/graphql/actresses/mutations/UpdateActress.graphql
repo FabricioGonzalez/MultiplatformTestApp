@@ -1,0 +1,7 @@
+mutation updateActress($actress:MutateActressInput!) {
+    actress(actress:$actress){
+        name
+        photoLink
+        url
+    }
+}

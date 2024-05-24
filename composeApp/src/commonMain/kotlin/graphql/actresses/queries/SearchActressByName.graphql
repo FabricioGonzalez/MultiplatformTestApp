@@ -1,0 +1,21 @@
+query SearchActressesByName($cursorEnd:String,$cursorStart:String
+    ,$afterSize:Int,$beforeSize:Int,$actressName:String!){
+    actresses(first:$afterSize,after: $cursorEnd
+        ,before: $cursorStart,last: $beforeSize,where: {name: {contains: $actressName}}) {
+        pageInfo {
+            hasNextPage
+            startCursor
+            hasPreviousPage
+            endCursor
+        }
+        edges {
+            cursor
+            node {
+                id
+                name
+                photoLink
+                url
+            }
+        }
+    }
+}

@@ -1,0 +1,21 @@
+query actresses($cursorEnd:String,$cursorStart:String
+    ,$afterSize:Int,$beforeSize:Int){
+    actresses(first:$afterSize,after: $cursorEnd
+        ,before: $cursorStart,last: $beforeSize) {
+        pageInfo {
+            hasNextPage
+            startCursor
+            hasPreviousPage
+            endCursor
+        }
+        edges {
+            cursor
+            node {
+                id
+                name
+                photoLink
+                url
+            }
+        }
+    }
+}
