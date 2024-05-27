@@ -1,17 +1,18 @@
 package features.videos.video_details
 
 import cafe.adriel.voyager.core.model.screenModelScope
-import daniel.avila.rnm.kmm.presentation.model.ResourceUiState
+import presentation.model.ResourceUiState
 import daniel.avila.rnm.kmm.presentation.mvi.BaseViewModel
+import domain.interactors.videos.GetVideoDetailsUsecase
 import kotlinx.coroutines.launch
 
 class VideoDetailsViewModel(
-    private val videoId: Int,
+    videoId: String,
+    private val videoDetailsUsecase: GetVideoDetailsUsecase
 ) : BaseViewModel<VideoDetailsContracts.Event, VideoDetailsContracts.State, VideoDetailsContracts.Effect>() {
 
     init {
-        getCharacter(videoId)
-        checkIfIsFavorite(videoId)
+        getDetails(videoId)
     }
 
     override fun createInitialState(): VideoDetailsContracts.State =
@@ -22,18 +23,19 @@ class VideoDetailsViewModel(
 
     override fun handleEvent(event: VideoDetailsContracts.Event) {
         when (event) {
-            VideoDetailsContracts.Event.OnFavoriteClick -> switchCharacterFavorite(videoId)
-            VideoDetailsContracts.Event.OnTryCheckAgainClick -> getCharacter(videoId)
             VideoDetailsContracts.Event.OnBackPressed -> setEffect { VideoDetailsContracts.Effect.BackNavigation }
         }
     }
 
-    private fun getCharacter(characterId: Int) {
+    private fun getDetails(id: String) {
         setState { copy(video = ResourceUiState.Loading) }
         screenModelScope.launch {
-            /* getCharacterUseCase(characterId)
-                 .onSuccess { setState { copy(video = ResourceUiState.Success(it)) } }
-                 .onFailure { setState { copy(video = ResourceUiState.Error()) } }*/
+            videoDetailsUsecase(id)
+                .onSuccess { succ ->
+                    succ?.let { setState { copy(video = ResourceUiState.Success(succ)) } }
+                        ?: setState { copy(video = ResourceUiState.Error()) }
+                }
+                .onFailure { setState { copy(video = ResourceUiState.Error()) } }
         }
     }
 

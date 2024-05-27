@@ -1,5 +1,6 @@
 package themes
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 
@@ -64,7 +65,7 @@ private val LightColorPalette = lightColorScheme(
 
 @Composable
 fun MediaAppTheme(
-    darkTheme: Boolean,
+    darkTheme: Boolean = false,
     content: @Composable () -> Unit
 ) {
 

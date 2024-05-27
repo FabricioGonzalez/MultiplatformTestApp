@@ -13,6 +13,7 @@ query videoDetails($videoId:UUID!){
                     playerLink
                     videoLink
                     isWorking
+                    createdAt
                 }
                 actresses{
                     id

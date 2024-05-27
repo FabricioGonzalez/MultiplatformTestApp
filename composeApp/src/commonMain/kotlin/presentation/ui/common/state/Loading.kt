@@ -1,7 +1,7 @@
-package daniel.avila.rnm.kmm.presentation.ui.common.state
+package presentation.ui.common.state
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -14,6 +14,6 @@ fun Loading(
         contentAlignment = Alignment.Center,
         modifier = modifier
     ) {
-        CircularProgressIndicator()
+        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
     }
 }

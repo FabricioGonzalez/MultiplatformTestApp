@@ -1,9 +1,11 @@
-package daniel.avila.rnm.kmm.presentation.ui.common.state
+package presentation.ui.common.state
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import daniel.avila.rnm.kmm.presentation.model.ResourceUiState
+import presentation.model.ResourceUiState
+import daniel.avila.rnm.kmm.presentation.ui.common.state.Empty
+import daniel.avila.rnm.kmm.presentation.ui.common.state.Error
 
 @Composable
 fun <T> ManagementResourceUiState(

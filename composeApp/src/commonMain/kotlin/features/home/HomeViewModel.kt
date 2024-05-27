@@ -1,7 +1,8 @@
 package features.home
 
+import androidx.paging.cachedIn
 import cafe.adriel.voyager.core.model.screenModelScope
-import daniel.avila.rnm.kmm.presentation.model.ResourceUiState
+import presentation.model.ResourceUiState
 import daniel.avila.rnm.kmm.presentation.mvi.BaseViewModel
 import domain.interactors.videos.GetAllRecentVideosUsecase
 import kotlinx.coroutines.flow.flow
@@ -14,7 +15,6 @@ class HomeViewModel(
 
     init {
         loadAllVideos()
-        checkIfIsFavorite(0)
     }
 
     override fun createInitialState(): HomeContract.State =
@@ -28,6 +28,9 @@ class HomeViewModel(
             HomeContract.Event.OnFavoriteClick -> switchCharacterFavorite(0)
             HomeContract.Event.OnTryCheckAgainClick -> loadAllVideos()
             HomeContract.Event.OnBackPressed -> setEffect { HomeContract.Effect.BackNavigation }
+            is HomeContract.Event.OnVideoItemClicked -> {
+                setEffect { HomeContract.Effect.NavigateToDetails(event.itemId) }
+            }
         }
     }
 
@@ -38,10 +41,12 @@ class HomeViewModel(
                 .collect { result ->
                     result.onSuccess {
                         setState {
-                            copy(videos = ResourceUiState.Success(flow { emit(it) }))
+                            copy(videos = ResourceUiState.Success(flow { emit(it) }.cachedIn(screenModelScope)))
                         }
                     }
-                        .onFailure { setState { copy(videos = ResourceUiState.Error()) } }
+                        .onFailure {
+                            setState { copy(videos = ResourceUiState.Error()) }
+                        }
                 }
         }
     }

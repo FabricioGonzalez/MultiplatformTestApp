@@ -1,4 +1,4 @@
-package daniel.avila.rnm.kmm.presentation.model
+package presentation.model
 
 sealed interface ResourceUiState<out T> {
     data class Success<T>(val data: T) : ResourceUiState<T>
