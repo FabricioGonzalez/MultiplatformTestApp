@@ -1,14 +1,19 @@
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.List
+import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import cafe.adriel.voyager.core.screen.uniqueScreenKey
 import cafe.adriel.voyager.navigator.CurrentScreen
 import cafe.adriel.voyager.navigator.Navigator
+import features.actresses.actress_details.ActressDetailsScreen
+import features.actresses.actresses_list.ActressesListScreen
 import features.home.HomeScreen
 import features.videos.video_details.VideoDetailScreen
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -18,12 +23,13 @@ import themes.MediaAppTheme
 
 @Composable
 @Preview
-fun App(isDarkTheme: Boolean = false) {
-    MediaAppTheme(darkTheme = isDarkTheme) {
+fun App(isDarkTheme: Boolean = false, appColor: Color?) {
+    MediaAppTheme(darkTheme = isDarkTheme, appColor = appColor) {
 
         val screens = listOf(
             NavPoint(
                 isDefault = true,
+                icon = Icons.Rounded.Home,
                 uiScreen = HomeScreen(),
                 title = "Home"
             ),
@@ -33,6 +39,19 @@ fun App(isDarkTheme: Boolean = false) {
                 disableNavBar = true,
                 uiScreen = VideoDetailScreen(""),
                 title = "Video Details"
+            ),
+            NavPoint(
+                isDefault = false,
+                icon = Icons.AutoMirrored.Rounded.List,
+                uiScreen = ActressesListScreen(),
+                title = "Actress List"
+            ),
+            NavPoint(
+                isDefault = false,
+                isNavigatable = false,
+                disableNavBar = true,
+                uiScreen = ActressDetailsScreen(""),
+                title = "Actress Details"
             ),
         )
 

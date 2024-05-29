@@ -74,6 +74,7 @@ kotlin {
             implementation(libs.apollo.client.adapters)
             implementation(libs.paging.core)
             implementation(libs.paging.compose)
+            implementation(libs.materialKolor)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.common)

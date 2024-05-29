@@ -1,20 +1,22 @@
-package features.videos.video_details
+package features.actresses.actresses_list
 
+import androidx.paging.PagingData
+import presentation.model.ResourceUiState
 import daniel.avila.rnm.kmm.presentation.mvi.UiEffect
 import daniel.avila.rnm.kmm.presentation.mvi.UiEvent
 import daniel.avila.rnm.kmm.presentation.mvi.UiState
+import domain.model.ActressEntity
 import domain.model.VideoDetailsEntity
-import presentation.model.ResourceUiState
+import kotlinx.coroutines.flow.Flow
 
-interface VideoDetailsContracts {
+interface ActressesListContracts {
     sealed interface Event : UiEvent {
 
         data object OnBackPressed : Event
     }
 
     data class State(
-        val video: ResourceUiState<VideoDetailsEntity>,
-        val isFavorite: ResourceUiState<Boolean>,
+        val actresses: ResourceUiState<Flow<PagingData<ActressEntity>>>,
     ) : UiState
 
     sealed interface Effect : UiEffect {

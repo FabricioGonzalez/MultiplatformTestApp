@@ -1,61 +1,90 @@
-package features.videos.video_details
+package features.actresses.actresses_list
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import app.cash.paging.compose.LazyPagingItems
+import app.cash.paging.compose.collectAsLazyPagingItems
 import cafe.adriel.voyager.core.screen.ScreenKey
 import cafe.adriel.voyager.koin.getScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import com.seiko.imageloader.rememberImagePainter
 import daniel.avila.rnm.kmm.presentation.ui.common.ArrowBackIcon
+import domain.model.ActressEntity
 import presentation.ui.common.state.ManagementResourceUiState
 import domain.model.VideoDetailsEntity
 import kotlinx.coroutines.flow.collectLatest
-import org.koin.core.parameter.parametersOf
 import presentation.ui.common.AppScreen
 
-data class VideoDetailScreen(
-    private val videoId: String, override val route: String = "VideoDetails",
+data class ActressesListScreen(
+    override val route: String = "ActressesList",
 ) : AppScreen {
-    override val key: ScreenKey = "VideoDetails"
+    override val key: ScreenKey = "ActressesList"
 
     @Composable
     override fun Content() {
         val snackbarHostState = remember { SnackbarHostState() }
-        val videoDetailViewModel =
-            getScreenModel<VideoDetailsViewModel> { parametersOf(videoId) }
-
-        val state by videoDetailViewModel.uiState.collectAsState()
+        val screenModel =
+            getScreenModel<ActressesListViewModel>()
+        val state by screenModel.uiState.collectAsState()
 
         val navigator = LocalNavigator.currentOrThrow
 
         LaunchedEffect(key1 = Unit) {
-            videoDetailViewModel.effect.collectLatest { effect ->
+            screenModel.effect.collectLatest { effect ->
                 when (effect) {
-                    VideoDetailsContracts.Effect.CharacterAdded ->
+                    ActressesListContracts.Effect.CharacterAdded ->
                         snackbarHostState.showSnackbar("Character added to favorites")
 
-                    VideoDetailsContracts.Effect.CharacterRemoved ->
+                    ActressesListContracts.Effect.CharacterRemoved ->
                         snackbarHostState.showSnackbar("Character removed from favorites")
 
-                    VideoDetailsContracts.Effect.BackNavigation -> navigator.pop()
+                    ActressesListContracts.Effect.BackNavigation -> navigator.pop()
                 }
             }
         }
         ManagementResourceUiState(
             modifier = Modifier
                 .fillMaxSize(),
-            resourceUiState = state.video,
-            successView = { video ->
-                features.actresses.actress_details.CharacterDetail(video)
+            resourceUiState = state.actresses,
+            successView = { actresses ->
+                ActressesList(actresses.collectAsLazyPagingItems(), setEvent = screenModel::setEvent)
             },
             onTryAgain = { },
             onCheckAgain = { },
         )
 
+    }
+
+    @Composable
+    fun ActressesList(actresses: LazyPagingItems<ActressEntity>, setEvent: Any) {
+        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            items(actresses.itemCount) { entity ->
+                actresses[entity]?.let { actress ->
+                    Card(Modifier.height(120.dp).width(120.dp)) {
+                        Box {
+                            Image(
+                                painter = rememberImagePainter(actress.photo),
+                                contentDescription = null,
+                                contentScale = ContentScale.FillBounds
+                            )
+                            Text(
+                                modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter)
+                                    .background(MaterialTheme.colorScheme.background.copy(0.4f)), text = actress.name
+                            )
+                        }
+                    }
+                }
+            }
+        }
     }
 
     @OptIn(ExperimentalMaterial3Api::class)

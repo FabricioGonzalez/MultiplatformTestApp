@@ -1,5 +1,6 @@
 package domain
 
+import domain.interactors.actresses.GetActressesListUsecase
 import domain.interactors.videos.GetAllRecentVideosUsecase
 import domain.interactors.videos.GetVideoDetailsUsecase
 import domain.interactors.videos.VideoSearchUsecase
@@ -13,4 +14,5 @@ val usecaseDependecies = module {
         GetAllRecentVideosUsecase(get(), get())
     }
     factory { GetVideoDetailsUsecase(get(), get()) }
+    factory { GetActressesListUsecase(get(), get()) }
 }

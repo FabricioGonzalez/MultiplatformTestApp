@@ -1,8 +1,9 @@
 package themes
 
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
+import com.materialkolor.rememberDynamicColorScheme
 
 
 private val DarkColorPalette = darkColorScheme(
@@ -66,13 +67,13 @@ private val LightColorPalette = lightColorScheme(
 @Composable
 fun MediaAppTheme(
     darkTheme: Boolean = false,
-    content: @Composable () -> Unit
+    appColor: Color?,
+    content: @Composable () -> Unit,
 ) {
 
 // Dynamic color is available on Android 12+
     val colors: ColorScheme = when {
-        /*darkTheme -> dynamicDarkColorScheme(LocalContext.current)
-       !darkTheme -> dynamicLightColorScheme(LocalContext.current)*/
+        appColor != null-> rememberDynamicColorScheme(appColor, darkTheme)
         darkTheme -> DarkColorPalette
         else -> LightColorPalette
     }

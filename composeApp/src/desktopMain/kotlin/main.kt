@@ -23,11 +23,6 @@ fun main() {
     application {
         val os = System.getProperty("os.name")
 
-        if (os.contains("Windows")) {
-            val color = paletteGeneration.getAccentColor()
-
-            println(Color(color))
-        }
 
         IntUiTheme(
             JewelTheme.darkThemeDefinition(),
@@ -46,13 +41,17 @@ fun main() {
                 var theme by remember { mutableStateOf(IntUiThemes.Dark) }
                 val isDark by remember { derivedStateOf { theme == IntUiThemes.Dark } }
 
-                TitleBarView(theme) {
+                TitleBarView(
+                    theme
+                ) {
                     theme = when (theme) {
                         IntUiThemes.Light -> IntUiThemes.Dark
                         IntUiThemes.Dark, IntUiThemes.System -> IntUiThemes.Light
                     }
                 }
-                App(isDarkTheme = isDark)
+                App(isDarkTheme = isDark, appColor = if (os.contains("Windows")) {
+                    Color(paletteGeneration.getAccentColor())
+                    } else null)
             }
         }
     }

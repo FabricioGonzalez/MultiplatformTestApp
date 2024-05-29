@@ -4,6 +4,7 @@ import com.apollographql.apollo3.ApolloClient
 import data.remote.ActressRemoteApi
 import data.remote.TagRemoteApi
 import data.remote.VideoRemoteApi
+import data.repositories.ActressRepository
 import data.repositories.VideoRepository
 import org.koin.dsl.module
 
@@ -13,6 +14,7 @@ val dataDependencies = module {
     single { TagRemoteApi(get()) }
 
     single { VideoRepository(get()) }
+    single { ActressRepository(get()) }
 }
 
 val apolloDependencies = module {

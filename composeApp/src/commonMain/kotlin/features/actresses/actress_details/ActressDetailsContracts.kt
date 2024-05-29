@@ -1,12 +1,12 @@
-package features.videos.video_details
+package features.actresses.actress_details
 
+import presentation.model.ResourceUiState
 import daniel.avila.rnm.kmm.presentation.mvi.UiEffect
 import daniel.avila.rnm.kmm.presentation.mvi.UiEvent
 import daniel.avila.rnm.kmm.presentation.mvi.UiState
 import domain.model.VideoDetailsEntity
-import presentation.model.ResourceUiState
 
-interface VideoDetailsContracts {
+interface ActressDetailsContracts {
     sealed interface Event : UiEvent {
 
         data object OnBackPressed : Event

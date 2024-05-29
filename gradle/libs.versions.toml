@@ -24,6 +24,7 @@ apolloClientVersion = "4.0.0-beta.2"
 koinCompose = "1.0.4"
 composeImageLoader = "1.7.8"
 pagingVersion = "3.3.0-alpha02-0.5.1"
+materialKolor = "1.6.1"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -62,7 +63,7 @@ jewel = { module = "org.jetbrains.jewel:jewel-int-ui-standalone", version.ref = 
 jewel-decorated = { module = "org.jetbrains.jewel:jewel-int-ui-decorated-window", version.ref = "jewel_version" }
 
 jna = { group = "net.java.dev.jna", name = "jna-platform", version.ref = "jnaVersion" }
-
+materialKolor = { module = "com.materialkolor:material-kolor", version.ref = "materialKolor" }
 #apollo client
 apollo-client-runtime = { group = "com.apollographql.apollo3", name = "apollo-runtime", version.ref = "apolloClientVersion" }
 apollo-client-adapters = { group = "com.apollographql.apollo3", name = "apollo-adapters", version.ref = "apolloClientVersion" }

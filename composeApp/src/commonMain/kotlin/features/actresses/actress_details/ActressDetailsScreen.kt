@@ -1,4 +1,4 @@
-package features.videos.video_details
+package features.actresses.actress_details
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -13,27 +13,29 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import daniel.avila.rnm.kmm.presentation.ui.common.ArrowBackIcon
 import presentation.ui.common.state.ManagementResourceUiState
 import domain.model.VideoDetailsEntity
+import features.videos.video_details.VideoDetailsContracts
+import features.videos.video_details.VideoDetailsViewModel
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.core.parameter.parametersOf
 import presentation.ui.common.AppScreen
 
-data class VideoDetailScreen(
-    private val videoId: String, override val route: String = "VideoDetails",
+data class ActressDetailsScreen(
+    private val actressId: String, override val route: String = "ActressDetails",
 ) : AppScreen {
     override val key: ScreenKey = "VideoDetails"
 
     @Composable
     override fun Content() {
         val snackbarHostState = remember { SnackbarHostState() }
-        val videoDetailViewModel =
-            getScreenModel<VideoDetailsViewModel> { parametersOf(videoId) }
+        val screenModel =
+            getScreenModel<ActressDetailsViewModel> { parametersOf(actressId) }
 
-        val state by videoDetailViewModel.uiState.collectAsState()
+        val state by screenModel.uiState.collectAsState()
 
         val navigator = LocalNavigator.currentOrThrow
 
         LaunchedEffect(key1 = Unit) {
-            videoDetailViewModel.effect.collectLatest { effect ->
+            screenModel.effect.collectLatest { effect ->
                 when (effect) {
                     VideoDetailsContracts.Effect.CharacterAdded ->
                         snackbarHostState.showSnackbar("Character added to favorites")
@@ -50,7 +52,7 @@ data class VideoDetailScreen(
                 .fillMaxSize(),
             resourceUiState = state.video,
             successView = { video ->
-                features.actresses.actress_details.CharacterDetail(video)
+                
             },
             onTryAgain = { },
             onCheckAgain = { },

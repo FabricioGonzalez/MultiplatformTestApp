@@ -1,14 +1,14 @@
 package features.home
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.material3.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.paging.PagingData
 import app.cash.paging.compose.LazyPagingItems
@@ -17,16 +17,16 @@ import cafe.adriel.voyager.core.screen.ScreenKey
 import cafe.adriel.voyager.koin.getScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import com.seiko.imageloader.ui.AutoSizeImage
-import presentation.model.ResourceUiState
 import daniel.avila.rnm.kmm.presentation.ui.common.ArrowBackIcon
-import presentation.ui.common.state.ManagementResourceUiState
 import domain.model.VideoEntity
+import features.home.components.VideoDetails
 import features.videos.video_details.VideoDetailScreen
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flow
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import presentation.model.ResourceUiState
 import presentation.ui.common.AppScreen
+import presentation.ui.common.state.ManagementResourceUiState
 import themes.MediaAppTheme
 
 class HomeScreen(override val route: String = "home") : AppScreen {
@@ -68,12 +68,6 @@ class HomeScreen(override val route: String = "home") : AppScreen {
 
     @Composable
     override fun TopBarContent() {
-        /* ActionBar(
-             *//*character = state.video,*//*
-            favorite = state.isFavorite,
-            onActionFavorite = { setEvent(HomeContract.Event.OnFavoriteClick) },
-            onBackPressed = { setEvent(HomeContract.Event.OnBackPressed) }
-            )*/
     }
 }
 
@@ -102,7 +96,7 @@ fun VideosList(videos: LazyPagingItems<VideoEntity>, setEvent: (HomeContract.Eve
 
             items(videos.itemCount) { entity ->
                 videos[entity]?.let { video ->
-                    VideoDetails(modifier = Modifier.height(180.dp).width(120.dp).clickable {
+                    VideoDetails(modifier = Modifier.height(180.dp).width(180.dp).clickable {
                         setEvent(HomeContract.Event.OnVideoItemClicked(video.id))
                     }, video = video)
                 }
@@ -112,27 +106,7 @@ fun VideosList(videos: LazyPagingItems<VideoEntity>, setEvent: (HomeContract.Eve
 
 }
 
-@Composable
-fun VideoDetails(modifier: Modifier = Modifier, video: VideoEntity) {
-    Column(
-        modifier = modifier
-            .clip(MaterialTheme.shapes.medium)
-            .background(MaterialTheme.colorScheme.surfaceColorAtElevation(36.dp)),
-        verticalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-        AutoSizeImage(
-            url = video.photo,
-            modifier = Modifier.fillMaxWidth().weight(weight = 0.8f, fill = true),
-            contentScale = ContentScale.Fit,
-            contentDescription = null
-        )
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = video.title,
-            style = MaterialTheme.typography.titleSmall
-        )
-    }
-}
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -159,8 +133,8 @@ fun ActionBar(
 @Preview
 @Composable
 fun HomePreview() {
-    MediaAppTheme {
-        HomeLayout(setEvent = {}, state =  HomeContract.State(ResourceUiState.Success(flow {
+    MediaAppTheme(content = {
+        HomeLayout(setEvent = {}, state = HomeContract.State(ResourceUiState.Success(flow {
             emit(
                 PagingData.from(
                     listOf(
@@ -169,5 +143,5 @@ fun HomePreview() {
                 )
             )
         }), isFavorite = ResourceUiState.Success(true)))
-    }
+    }, appColor = null)
 }
