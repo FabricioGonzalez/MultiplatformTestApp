@@ -1,4 +1,4 @@
-package daniel.avila.rnm.kmm.presentation.ui.theme
+package presentation.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

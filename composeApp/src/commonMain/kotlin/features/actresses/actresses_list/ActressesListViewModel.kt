@@ -2,11 +2,11 @@ package features.actresses.actresses_list
 
 import androidx.paging.cachedIn
 import cafe.adriel.voyager.core.model.screenModelScope
-import daniel.avila.rnm.kmm.presentation.mvi.BaseViewModel
 import domain.interactors.actresses.GetActressesListUsecase
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import presentation.model.ResourceUiState
+import presentation.mvi.BaseViewModel
 
 class ActressesListViewModel(
     private val actressesListUsecase: GetActressesListUsecase
@@ -15,6 +15,7 @@ class ActressesListViewModel(
     init {
         getDetails()
     }
+
     override fun createInitialState(): ActressesListContracts.State =
         ActressesListContracts.State(
             actresses = ResourceUiState.Idle,
@@ -23,6 +24,11 @@ class ActressesListViewModel(
     override fun handleEvent(event: ActressesListContracts.Event) {
         when (event) {
             ActressesListContracts.Event.OnBackPressed -> setEffect { ActressesListContracts.Effect.BackNavigation }
+            is ActressesListContracts.Event.OnNavigateToActressDetailRequested -> setEffect {
+                ActressesListContracts.Effect.ActressDetailNavigation(
+                    event.actressId
+                )
+            }
         }
     }
 
@@ -32,11 +38,19 @@ class ActressesListViewModel(
             actressesListUsecase(Unit)
                 .collect { result ->
                     result.onSuccess { succ ->
-                        setState { copy(actresses = ResourceUiState.Success(flow { emit(succ) }.cachedIn(screenModelScope))) }
+                        setState {
+                            copy(
+                                actresses = ResourceUiState.Success(
+                                    flow { emit(succ) }.cachedIn(
+                                        screenModelScope
+                                    )
+                                )
+                            )
+                        }
                     }
                         .onFailure { setState { copy(actresses = ResourceUiState.Error()) } }
                 }
         }
     }
-   
+
 }

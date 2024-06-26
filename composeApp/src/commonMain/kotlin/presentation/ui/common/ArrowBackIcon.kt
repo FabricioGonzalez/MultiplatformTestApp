@@ -1,4 +1,4 @@
-package daniel.avila.rnm.kmm.presentation.ui.common
+package presentation.ui.common
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack

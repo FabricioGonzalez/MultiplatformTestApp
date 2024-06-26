@@ -7,6 +7,7 @@ import android.content.pm.ApplicationInfo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import initKoin
@@ -19,7 +20,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            App()
+            App(isDarkTheme = isSystemInDarkTheme(), appColor = null)
         }
     }
 }
@@ -39,5 +40,5 @@ fun Context.isDebug() = 0 != applicationInfo.flags and ApplicationInfo.FLAG_DEBU
 @Preview
 @Composable
 fun AppAndroidPreview() {
-    App()
+    App(isDarkTheme = isSystemInDarkTheme(), appColor = null)
 }

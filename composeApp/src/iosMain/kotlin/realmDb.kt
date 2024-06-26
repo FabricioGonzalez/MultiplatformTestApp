@@ -1,7 +1,7 @@
 package data.data_access
 
 import data.entities.DbActress
-import data.entities.DbPrefferedContent
+import data.entities.DbPreferredContent
 import data.entities.DbTag
 import data.entities.DbVideo
 import io.realm.kotlin.Realm
@@ -13,8 +13,7 @@ actual val realmDb = Realm.open(
             DbVideo::class,
             DbActress::class,
             DbTag::class,
-            DbPrefferedContent::class,
-
-            )
+            DbPreferredContent::class
+        )
     )
 )

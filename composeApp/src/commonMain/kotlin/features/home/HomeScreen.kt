@@ -1,42 +1,43 @@
 package features.home
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.runtime.*
+import androidx.compose.material3.Surface
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.paging.PagingData
-import app.cash.paging.compose.LazyPagingItems
-import app.cash.paging.compose.collectAsLazyPagingItems
 import cafe.adriel.voyager.core.screen.ScreenKey
 import cafe.adriel.voyager.koin.getScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import daniel.avila.rnm.kmm.presentation.ui.common.ArrowBackIcon
-import domain.model.VideoEntity
-import features.home.components.VideoDetails
+import features.home.components.VideosListFeed
 import features.videos.video_details.VideoDetailScreen
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.flow
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import presentation.model.ResourceUiState
+import presentation.ui.common.AppBarState
 import presentation.ui.common.AppScreen
 import presentation.ui.common.state.ManagementResourceUiState
-import themes.MediaAppTheme
 
-class HomeScreen(override val route: String = "home") : AppScreen {
+class HomeScreen(
+    override val route: String = "home",
+    override val onCompose: (AppBarState) -> Unit
+) : AppScreen {
     override val key: ScreenKey = "Home"
 
+    @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     @Composable
     override fun Content() {
-        val homeViewModel =
-            getScreenModel<HomeViewModel>()
-
+        val homeViewModel = getScreenModel<HomeViewModel>()
+        val sizes = calculateWindowSizeClass()
         val state by homeViewModel.uiState.collectAsState()
 
         val snackbarHostState = remember { SnackbarHostState() }
@@ -44,104 +45,91 @@ class HomeScreen(override val route: String = "home") : AppScreen {
         val navigator = LocalNavigator.currentOrThrow
 
         LaunchedEffect(key1 = Unit) {
+            onCompose(
+                AppBarState(
+                    title = null,
+                    actions = null,
+                    navigationIcon = null,
+                    searchBar = null,
+                    snackbarHost = null,
+                )
+            )
+            homeViewModel.setEvent(HomeContract.Event.OnLoadDataRequested)
+
             homeViewModel.effect.collectLatest { effect ->
                 when (effect) {
-                    HomeContract.Effect.CharacterAdded ->
-                        snackbarHostState.showSnackbar("Character added to favorites")
+                    HomeContract.Effect.CharacterAdded -> snackbarHostState.showSnackbar("Character added to favorites")
 
-                    HomeContract.Effect.CharacterRemoved ->
-                        snackbarHostState.showSnackbar("Character removed from favorites")
+                    HomeContract.Effect.CharacterRemoved -> snackbarHostState.showSnackbar("Character removed from favorites")
 
                     HomeContract.Effect.BackNavigation -> {
                         navigator.pop()
                     }
 
                     is HomeContract.Effect.NavigateToDetails -> {
-                        navigator.push(VideoDetailScreen(effect.id))
+                        navigator.push(VideoDetailScreen(effect.id, onCompose = onCompose))
                     }
 
                 }
             }
         }
-        HomeLayout(modifier = Modifier.fillMaxSize(), setEvent = homeViewModel::setEvent, state = state)
+        HomeLayout(
+            modifier = Modifier.fillMaxSize(),
+            setEvent = homeViewModel::setEvent,
+            state = state,
+            windowSizeClass = sizes
+        )
     }
 
-    @Composable
-    override fun TopBarContent() {
-    }
 }
 
 @Composable
 fun HomeLayout(
     modifier: Modifier = Modifier,
     setEvent: (HomeContract.Event) -> Unit,
-    state: HomeContract.State
+    state: HomeContract.State,
+    windowSizeClass: WindowSizeClass
 ) {
     ManagementResourceUiState(
         modifier = modifier,
-        resourceUiState = state.videos,
+        resourceUiState = state.videoFeeds,
         successView = { videos ->
-            VideosList(videos.collectAsLazyPagingItems(), setEvent = setEvent)
+            VideosListFeed(windowSizeClass = windowSizeClass,
+                videos = videos,
+                onSweetsSelected = { setEvent(HomeContract.Event.OnVideoItemClicked(it.id)) })
         },
         onTryAgain = { setEvent(HomeContract.Event.OnTryCheckAgainClick) },
         onCheckAgain = { setEvent(HomeContract.Event.OnTryCheckAgainClick) },
     )
 }
 
-@Composable
-fun VideosList(videos: LazyPagingItems<VideoEntity>, setEvent: (HomeContract.Event) -> Unit) {
-    Column(modifier = Modifier.fillMaxWidth().padding(8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        Text("Recents")
-        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-
-            items(videos.itemCount) { entity ->
-                videos[entity]?.let { video ->
-                    VideoDetails(modifier = Modifier.height(180.dp).width(180.dp).clickable {
-                        setEvent(HomeContract.Event.OnVideoItemClicked(video.id))
-                    }, video = video)
-                }
-            }
-        }
-    }
-
-}
-
-
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun ActionBar(
-    /*character: ResourceUiState<List<VideoEntity>>,*/
-    favorite: ResourceUiState<Boolean>,
-    onActionFavorite: () -> Unit,
-    onBackPressed: () -> Unit,
-) {
-    TopAppBar(
-        title = {
-            /* ManagementResourceUiState(
-                 resourceUiState = character,
-                 successView = {*//* Text(text = it.title)*//* },
-                loadingView = { Text(text = "....") },
-                onCheckAgain = {},
-                onTryAgain = {}
-            )*/
-        },
-        navigationIcon = { ArrowBackIcon(onBackPressed) }
-    )
-}
-
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Preview
 @Composable
 fun HomePreview() {
-    MediaAppTheme(content = {
-        HomeLayout(setEvent = {}, state = HomeContract.State(ResourceUiState.Success(flow {
-            emit(
-                PagingData.from(
-                    listOf(
-                        VideoEntity(cursor = "", id = "", title = "Teste", photo = "")
+    MaterialTheme {
+        Surface(modifier = Modifier.height(900.dp)) {
+            /*HomeLayout(
+                modifier = Modifier.fillMaxSize(),
+                setEvent = {},
+                windowSizeClass = calculateWindowSizeClass(),
+                state = HomeContract.State(ResourceUiState.Success(flow {
+                    emit(
+                        PagingData.from(
+                            listOf(
+                                VideoEntity(cursor = "", id = "1", title = "Teste", photo = ""),
+                                VideoEntity(cursor = "", id = "2", title = "Teste", photo = ""),
+                                VideoEntity(cursor = "", id = "3", title = "Teste", photo = ""),
+                                VideoEntity(cursor = "", id = "4", title = "Teste", photo = ""),
+                                VideoEntity(cursor = "", id = "5", title = "Teste", photo = ""),
+                                VideoEntity(cursor = "", id = "6", title = "Teste", photo = ""),
+                                VideoEntity(cursor = "", id = "7", title = "Teste", photo = ""),
+                                VideoEntity(cursor = "", id = "8", title = "Teste", photo = ""),
+                            )
+                        )
                     )
-                )
-            )
-        }), isFavorite = ResourceUiState.Success(true)))
-    }, appColor = null)
+                }), isFavorite = ResourceUiState.Success(true))
+            )*/
+        }
+    }
 }

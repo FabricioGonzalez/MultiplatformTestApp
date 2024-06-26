@@ -1,11 +1,28 @@
 package data.remote
 
 import androidx.paging.PagingSource
-import app.cash.paging.*
+import app.cash.paging.Pager
+import app.cash.paging.PagingConfig
+import app.cash.paging.PagingData
+import app.cash.paging.PagingSourceLoadParams
+import app.cash.paging.PagingSourceLoadParamsAppend
+import app.cash.paging.PagingSourceLoadParamsPrepend
+import app.cash.paging.PagingSourceLoadParamsRefresh
+import app.cash.paging.PagingSourceLoadResult
+import app.cash.paging.PagingSourceLoadResultError
+import app.cash.paging.PagingSourceLoadResultPage
+import app.cash.paging.PagingState
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.Optional
+import data.data_access.realmDb
+import data.entities.DbPreferredContent
+import data.entities.DbPreferredContentType
 import domain.model.ActressEntity
+import graphql.ActressByIdQuery
 import graphql.ActressesQuery
+import graphql.UpdateActressMutation
+import graphql.type.MutateActressInput
+import io.realm.kotlin.ext.query
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
@@ -13,49 +30,25 @@ import kotlinx.coroutines.withContext
 
 class ActressRemoteApi(private val apolloClient: ApolloClient) {
 
-    /*suspend fun loadDetails(id: String): Result<VideoDetailsEntity> {
+    suspend fun loadDetails(id: String): Result<ActressEntity> {
         return withContext(Dispatchers.IO) {
 
-            val result = apolloClient.query(VideoDetailsQuery(id)).execute()
+            val result = apolloClient.query(ActressByIdQuery(id)).execute()
 
             when {
                 !result.hasErrors() -> {
-                    result.dataOrThrow().videos?.edges?.firstOrNull()?.node?.let { video ->
+                    result.dataOrThrow().actresses?.edges?.firstOrNull()?.node?.let { actress ->
                         Result.success(
-                            VideoDetailsEntity(
-                                id = video.id.toString(),
-                                title = video.title,
-                                photo = video.photoLink ?: "",
-                                createdAt = video.createdAt.toString(),
-                                actresses = video.actresses?.mapNotNull { actress ->
-                                    actress?.let { act ->
-                                        ActressEntity(
-                                            id = act.id.toString(),
-                                            name = act.name,
-                                            photo = act.photoLink ?: "",
-                                            isFavorite = false
-                                        )
-                                    }
-                                } ?: emptyList(),
-                                tags = video.tags?.mapNotNull { tag ->
-                                    tag?.let { t ->
-                                        TagEntity(
-                                            id = t.id.toString(),
-                                            name = t.name,
-                                            isFavorite = false
-                                        )
-                                    }
-                                } ?: emptyList(),
-                                players = video.players?.mapNotNull { player ->
-                                    player?.let { p ->
-                                        PlayerEntity(
-                                            id = p.id.toString(),
-                                            playerLink = p.playerLink,
-                                            postedAt = p.createdAt.toString(),
-                                            isWorking = p.isWorking,
-                                        )
-                                    }
-                                } ?: emptyList(),
+                            ActressEntity(
+                                id = actress.id.toString(),
+                                name = actress.name,
+                                photo = actress.photoLink ?: "",
+                                link = actress.url ?: "",
+                                isFavorite = realmDb.query<DbPreferredContent>(
+                                    "label == $0 and typeDescrition == $1",
+                                    actress.name,
+                                    DbPreferredContentType.ActressContent.name
+                                ).first().find() != null
                             )
                         )
                     } ?: Result.failure(Exception("Received a ${result.errors}."))
@@ -70,7 +63,7 @@ class ActressRemoteApi(private val apolloClient: ApolloClient) {
                 }
             }
         }
-    }*/
+    }
 
     suspend fun loadAllActresses(): Flow<PagingData<ActressEntity>> {
         return withContext(Dispatchers.IO) {
@@ -82,6 +75,25 @@ class ActressRemoteApi(private val apolloClient: ApolloClient) {
         }
     }
 
+    suspend fun mutateActress(actress: ActressEntity): ActressEntity? {
+        try {
+            withContext(Dispatchers.IO) {
+                apolloClient.mutation(
+                    UpdateActressMutation(
+                        MutateActressInput(
+                            link = actress.link,
+                            name = actress.name,
+                            photoLink = actress.photo
+                        )
+                    )
+                ).execute()
+            }
+            return actress
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return null
+        }
+    }
 
     private class ActressesPagingSource(
         private val apolloClient: ApolloClient,
@@ -97,7 +109,10 @@ class ActressRemoteApi(private val apolloClient: ApolloClient) {
                         }
 
                         is PagingSourceLoadParamsAppend<String> -> {
-                            ActressesQuery(afterSize = Optional.present(40), cursorEnd = Optional.present(params.key))
+                            ActressesQuery(
+                                afterSize = Optional.present(40),
+                                cursorEnd = Optional.present(params.key)
+                            )
                         }
 
                         is PagingSourceLoadParamsPrepend<String> -> {
@@ -122,7 +137,8 @@ class ActressRemoteApi(private val apolloClient: ApolloClient) {
                                         id = node.id.toString(),
                                         photo = entity.node.photoLink ?: "",
                                         name = entity.node.name,
-                                        isFavorite = false
+                                        isFavorite = false,
+                                        link = entity.node.url ?: ""
                                     )
                                 }
                             } ?: emptyList(),

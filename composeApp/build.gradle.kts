@@ -2,6 +2,7 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
+    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.realm)
@@ -13,9 +14,11 @@ kotlin {
         compilations.all {
             kotlinOptions {
                 jvmTarget = "17"
+
             }
         }
     }
+
     apollo {
         service("service") {
             packageName.set("graphql")
@@ -58,13 +61,19 @@ kotlin {
             implementation(compose.foundation)
             implementation(compose.material3)
             implementation(compose.ui)
+            implementation(compose.materialIconsExtended)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
+            implementation(compose.uiUtil)
+            implementation(compose.uiTooling)
+            implementation(libs.androidx.browser)
+            implementation(libs.material3.windowsclasssize)
             implementation(libs.voyager.navigator)
             implementation(libs.voyager.screenModel)
             implementation(libs.voyager.transitions)
             implementation(libs.composeImageLoader)
             implementation(libs.voyager.koin)
+            api(libs.webview)
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
             implementation(libs.realm.base)
@@ -119,22 +128,33 @@ android {
             isMinifyEnabled = false
         }
     }
-
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    kotlin {
+        jvmToolchain(17)
     }
     buildToolsVersion = "34.0.0"
     dependencies {
         debugImplementation(libs.compose.ui.tooling)
     }
 }
-dependencies {
-    implementation(libs.androidx.material3.android)
-}
 
 compose.desktop {
     application {
+        jvmArgs("--add-opens", "java.desktop/sun.awt=ALL-UNNAMED")
+        jvmArgs(
+            "--add-opens",
+            "java.desktop/java.awt.peer=ALL-UNNAMED"
+        ) // recommended but not necessary
+
+        if (System.getProperty("os.name").contains("Mac")) {
+            jvmArgs("--add-opens", "java.desktop/sun.lwawt=ALL-UNNAMED")
+            jvmArgs("--add-opens", "java.desktop/sun.lwawt.macosx=ALL-UNNAMED")
+        }
+
         mainClass = "MainKt"
 
         nativeDistributions {
@@ -143,4 +163,7 @@ compose.desktop {
             packageVersion = "1.0.0"
         }
     }
+}
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile>().configureEach {
+    jvmTargetValidationMode.set(org.jetbrains.kotlin.gradle.dsl.jvm.JvmTargetValidationMode.WARNING)
 }

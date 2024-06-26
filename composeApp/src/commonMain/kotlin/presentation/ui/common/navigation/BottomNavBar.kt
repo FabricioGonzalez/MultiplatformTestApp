@@ -1,5 +1,6 @@
 package presentation.ui.common.navigation
 
+import NavPoint
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -10,39 +11,41 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import cafe.adriel.voyager.navigator.Navigator
-import presentation.model.navigation.NavigationItem
+import presentation.ui.common.AppScreen
 
 @Composable
 fun BottomNavBar(
     modifier: Modifier = Modifier,
     navigator: Navigator,
-    bottomNavItems: List<NavigationItem>
+    navigationItems: List<NavPoint>
 ) {
     NavigationBar(
         modifier = modifier.fillMaxWidth(),
         containerColor = MaterialTheme.colorScheme.surface.copy(alpha = .85f)
     ) {
-        bottomNavItems.iterator().forEach { item ->
-
-            val currentDestination = ""
-            val isSelected = item.route == currentDestination
+        navigationItems.filter { it.isNavigatable }.forEach { item ->
+            
+            val currentDestination = navigator.lastItemOrNull as AppScreen
+            val isSelected = item.uiScreen.route == currentDestination.route
 
             NavigationBarItem(
                 icon = {
-                    Icon(
-                        imageVector = item.icon!!,
-                        contentDescription = item.title
-                    )
+                    item.icon?.let {
+                        Icon(
+                            imageVector = it,
+                            contentDescription = item.title
+                        )
+                    }
                 },
                 label = { Text(text = item.title) },
-                alwaysShowLabel = true,
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = MaterialTheme.colorScheme.primary,
-                    unselectedIconColor = MaterialTheme.colorScheme.background
+                    unselectedIconColor = MaterialTheme.colorScheme.onSurface
                 ),
+                alwaysShowLabel = true,
                 selected = isSelected,
                 onClick = {
-                    /*if (item.route != currentDestination) navigator.navigate(route = item.route)*/
+                    if (item.uiScreen != currentDestination) navigator.push(item.uiScreen)
                 }
             )
         }

@@ -1,3 +1,3 @@
-package daniel.avila.rnm.kmm.presentation.mvi
+package presentation.mvi
 
 interface UiEffect

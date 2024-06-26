@@ -1,18 +1,18 @@
 package features.actresses.actresses_list
 
 import androidx.paging.PagingData
-import presentation.model.ResourceUiState
-import daniel.avila.rnm.kmm.presentation.mvi.UiEffect
-import daniel.avila.rnm.kmm.presentation.mvi.UiEvent
-import daniel.avila.rnm.kmm.presentation.mvi.UiState
 import domain.model.ActressEntity
-import domain.model.VideoDetailsEntity
 import kotlinx.coroutines.flow.Flow
+import presentation.model.ResourceUiState
+import presentation.mvi.UiEffect
+import presentation.mvi.UiEvent
+import presentation.mvi.UiState
 
 interface ActressesListContracts {
     sealed interface Event : UiEvent {
 
         data object OnBackPressed : Event
+        data class OnNavigateToActressDetailRequested(val actressId: String) : Event
     }
 
     data class State(
@@ -22,6 +22,7 @@ interface ActressesListContracts {
     sealed interface Effect : UiEffect {
         data object CharacterAdded : Effect
         data object CharacterRemoved : Effect
+        data class ActressDetailNavigation(val actressId: String) : Effect
         data object BackNavigation : Effect
     }
 }

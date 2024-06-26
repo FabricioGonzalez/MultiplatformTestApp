@@ -1,6 +1,6 @@
 package data.entities
 
-enum class DbPrefferedContentType {
+enum class DbPreferredContentType {
     ActressContent,
     TagContent,
     RecentContent,

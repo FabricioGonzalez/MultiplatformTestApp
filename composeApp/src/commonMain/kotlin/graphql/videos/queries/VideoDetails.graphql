@@ -19,6 +19,7 @@ query videoDetails($videoId:UUID!){
                     id
                     name
                     photoLink
+                    url
                 }
                 tags{
                     id

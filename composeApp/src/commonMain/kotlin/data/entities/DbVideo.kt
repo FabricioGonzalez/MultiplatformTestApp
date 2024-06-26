@@ -1,5 +1,7 @@
 package data.entities
 
+import io.realm.kotlin.ext.realmListOf
+import io.realm.kotlin.types.RealmList
 import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
 import org.mongodb.kbson.ObjectId
@@ -11,6 +13,6 @@ class DbVideo : RealmObject {
     var photo: String? = null
     var link: String = ""
 
-    /*val actresses: RealmResults<DbActress> by backlinks(DbActress::videos)*/
-    /*val tags: RealmResults<DbTag> by backlinks(DbTag::videos)*/
+    var actresses: RealmList<DbActress> = realmListOf()
+    var tags: RealmList<DbTag> = realmListOf()
 }

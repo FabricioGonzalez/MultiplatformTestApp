@@ -1,50 +1,70 @@
 package features.videos.video_details
 
 import cafe.adriel.voyager.core.model.screenModelScope
-import presentation.model.ResourceUiState
-import daniel.avila.rnm.kmm.presentation.mvi.BaseViewModel
+import domain.interactors.tags.FavoriteTagUsecase
 import domain.interactors.videos.GetVideoDetailsUsecase
+import domain.model.VideoDetailsEntity
+import domain.model.inputs.TagFavoriteInput
 import kotlinx.coroutines.launch
+import presentation.model.ResourceUiState
+import presentation.mvi.BaseViewModel
 
 class VideoDetailsViewModel(
-    videoId: String,
-    private val videoDetailsUsecase: GetVideoDetailsUsecase
-) : BaseViewModel<VideoDetailsContracts.Event, VideoDetailsContracts.State, VideoDetailsContracts.Effect>() {
+    private val videoDetailsUsecase: GetVideoDetailsUsecase,
+    private val favoriteTagUsecase: FavoriteTagUsecase,
 
-    init {
-        getDetails(videoId)
-    }
+    ) :
+    BaseViewModel<VideoDetailsContracts.Event, VideoDetailsContracts.State, VideoDetailsContracts.Effect>() {
 
-    override fun createInitialState(): VideoDetailsContracts.State =
-        VideoDetailsContracts.State(
-            video = ResourceUiState.Idle,
-            isFavorite = ResourceUiState.Idle,
-        )
+    override fun createInitialState(): VideoDetailsContracts.State = VideoDetailsContracts.State(
+        video = ResourceUiState.Idle,
+        isFavorite = ResourceUiState.Idle,
+    )
 
     override fun handleEvent(event: VideoDetailsContracts.Event) {
         when (event) {
+            is VideoDetailsContracts.Event.OnLoadDataRequested -> getDetails(event.videoId)
             VideoDetailsContracts.Event.OnBackPressed -> setEffect { VideoDetailsContracts.Effect.BackNavigation }
+            is VideoDetailsContracts.Event.OnNavigateToActressPressed -> setEffect {
+                VideoDetailsContracts.Effect.NavigateToActressesRequested(
+                    event.id
+                )
+            }
+
+            is VideoDetailsContracts.Event.OnPlayVideoPressed -> setEffect {
+                VideoDetailsContracts.Effect.PlayVideoRequested(
+                    event.url
+                )
+            }
+
+            is VideoDetailsContracts.Event.OnTagFavoritedChanged -> {
+                if (uiState.value.video is ResourceUiState.Success<VideoDetailsEntity>) setState {
+                    copy(video = (uiState.value.video as ResourceUiState.Success<VideoDetailsEntity>).copy(
+                        data = (uiState.value.video as ResourceUiState.Success<VideoDetailsEntity>).data.copy(
+                            tags = (uiState.value.video as ResourceUiState.Success<VideoDetailsEntity>).data.tags.map {
+                                if (it.name == event.tag) {
+                                    checkIfIsFavorite(it.name, !it.isFavorite)
+                                    it.copy(isFavorite = !it.isFavorite)
+                                } else it
+                            })))
+                }
+            }
         }
     }
 
     private fun getDetails(id: String) {
         setState { copy(video = ResourceUiState.Loading) }
         screenModelScope.launch {
-            videoDetailsUsecase(id)
-                .onSuccess { succ ->
+            videoDetailsUsecase(id).onSuccess { succ ->
                     succ?.let { setState { copy(video = ResourceUiState.Success(succ)) } }
                         ?: setState { copy(video = ResourceUiState.Error()) }
-                }
-                .onFailure { setState { copy(video = ResourceUiState.Error()) } }
+                }.onFailure { setState { copy(video = ResourceUiState.Error()) } }
         }
     }
 
-    private fun checkIfIsFavorite(idCharacter: Int) {
-        setState { copy(isFavorite = ResourceUiState.Loading) }
+    private fun checkIfIsFavorite(tagName: String, isFavorite: Boolean) {
         screenModelScope.launch {
-            /*isCharacterFavoriteUseCase(idCharacter)
-                .onSuccess { setState { copy(isFavorite = ResourceUiState.Success(it)) } }
-                .onFailure { setState { copy(isFavorite = ResourceUiState.Error()) } }*/
+            favoriteTagUsecase(TagFavoriteInput(name = tagName, isFavorite = isFavorite))
         }
     }
 

@@ -1,36 +1,45 @@
 package features.actresses.actresses_list
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.unit.dp
-import app.cash.paging.compose.LazyPagingItems
+import androidx.paging.PagingData
 import app.cash.paging.compose.collectAsLazyPagingItems
 import cafe.adriel.voyager.core.screen.ScreenKey
 import cafe.adriel.voyager.koin.getScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import com.seiko.imageloader.rememberImagePainter
-import daniel.avila.rnm.kmm.presentation.ui.common.ArrowBackIcon
 import domain.model.ActressEntity
-import presentation.ui.common.state.ManagementResourceUiState
-import domain.model.VideoDetailsEntity
+import features.actresses.actress_details.ActressDetailsScreen
+import features.actresses.actresses_list.components.ActressesList
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flow
+import org.jetbrains.compose.ui.tooling.preview.Preview
+import presentation.ui.common.AppBarState
 import presentation.ui.common.AppScreen
+import presentation.ui.common.ArrowBackIcon
+import presentation.ui.common.state.ManagementResourceUiState
 
 data class ActressesListScreen(
     override val route: String = "ActressesList",
+    override val onCompose: (AppBarState) -> Unit,
 ) : AppScreen {
     override val key: ScreenKey = "ActressesList"
 
+    @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     @Composable
     override fun Content() {
+        val sizes = calculateWindowSizeClass()
+
         val snackbarHostState = remember { SnackbarHostState() }
         val screenModel =
             getScreenModel<ActressesListViewModel>()
@@ -39,6 +48,20 @@ data class ActressesListScreen(
         val navigator = LocalNavigator.currentOrThrow
 
         LaunchedEffect(key1 = Unit) {
+            onCompose(
+                AppBarState(
+                    title = null,
+                    actions = null,
+                    navigationIcon = {
+                        ArrowBackIcon {
+                            navigator.pop()
+                        }
+                    },
+                    searchBar = null,
+                    snackbarHost = null,
+                )
+            )
+
             screenModel.effect.collectLatest { effect ->
                 when (effect) {
                     ActressesListContracts.Effect.CharacterAdded ->
@@ -48,6 +71,11 @@ data class ActressesListScreen(
                         snackbarHostState.showSnackbar("Character removed from favorites")
 
                     ActressesListContracts.Effect.BackNavigation -> navigator.pop()
+                    is ActressesListContracts.Effect.ActressDetailNavigation -> navigator.push(
+                        ActressDetailsScreen(
+                            actressId = effect.actressId, onCompose = onCompose
+                        )
+                    )
                 }
             }
         }
@@ -56,71 +84,82 @@ data class ActressesListScreen(
                 .fillMaxSize(),
             resourceUiState = state.actresses,
             successView = { actresses ->
-                ActressesList(actresses.collectAsLazyPagingItems(), setEvent = screenModel::setEvent)
+                ActressesList(
+                    actresses.collectAsLazyPagingItems(),
+                    setEvent = screenModel::setEvent,
+                    windowSizeClass = sizes
+                )
             },
             onTryAgain = { },
             onCheckAgain = { },
         )
 
     }
-
-    @Composable
-    fun ActressesList(actresses: LazyPagingItems<ActressEntity>, setEvent: Any) {
-        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            items(actresses.itemCount) { entity ->
-                actresses[entity]?.let { actress ->
-                    Card(Modifier.height(120.dp).width(120.dp)) {
-                        Box {
-                            Image(
-                                painter = rememberImagePainter(actress.photo),
-                                contentDescription = null,
-                                contentScale = ContentScale.FillBounds
-                            )
-                            Text(
-                                modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter)
-                                    .background(MaterialTheme.colorScheme.background.copy(0.4f)), text = actress.name
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    @OptIn(ExperimentalMaterial3Api::class)
-    @Composable
-    override fun TopBarContent() {
-        val navigation = LocalNavigator.current
-
-        TopAppBar(
-            title = {},
-            navigationIcon = {
-                ArrowBackIcon {
-                    navigation?.pop()
-                }
-            },
-        )
-    }
-
 }
 
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
+@Preview
 @Composable
-fun CharacterDetail(video: VideoDetailsEntity) {
-    Column(
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Text(
-            text = video.title,
-            style = MaterialTheme.typography.titleSmall
-        )
-        Spacer(modifier = Modifier.size(10.dp))
-        /*Image(
-            modifier = Modifier.size(200.dp),
-            painter = rememberImagePainter(video.photo),
-            contentDescription = null,
-        )*/
-        Spacer(modifier = Modifier.size(10.dp))
+fun PreviewActressList() {
+    MaterialTheme {
+        Surface {
+            ActressesList(
+                actresses = flow {
+                    emit(
+                        PagingData.from(
+                            listOf(
+                                ActressEntity(
+                                    id = "",
+                                    name = "Ayala Test",
+                                    photo = "",
+                                    link = "",
+                                    isFavorite = false
+                                ),
+                                ActressEntity(
+                                    id = "",
+                                    name = "Ayala Test",
+                                    photo = "",
+                                    link = "",
+                                    isFavorite = false
+                                ), ActressEntity(
+                                    id = "",
+                                    name = "Ayala Test",
+                                    photo = "",
+                                    link = "",
+                                    isFavorite = false
+                                ), ActressEntity(
+                                    id = "",
+                                    name = "Ayala Test",
+                                    photo = "",
+                                    link = "",
+                                    isFavorite = false
+                                ), ActressEntity(
+                                    id = "",
+                                    name = "Ayala Test",
+                                    photo = "",
+                                    link = "",
+                                    isFavorite = false
+                                ), ActressEntity(
+                                    id = "",
+                                    name = "Ayala Test",
+                                    photo = "",
+                                    link = "",
+                                    isFavorite = false
+                                ), ActressEntity(
+                                    id = "",
+                                    name = "Ayala Test",
+                                    photo = "",
+                                    link = "",
+                                    isFavorite = false
+                                )
+                            )
+                        )
+                    )
+                }.collectAsLazyPagingItems(),
+                setEvent = {},
+                calculateWindowSizeClass(),
+
+                )
+        }
     }
 }

@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -57,6 +57,6 @@ fun PreferencesGroup(
 
         Column(content = content, verticalArrangement = Arrangement.spacedBy(2.dp))
 
-        if (!isLast) Divider(color = Color.Gray.copy(alpha = 0.7f), thickness = 1.dp)
+        if (!isLast) HorizontalDivider(color = Color.Gray.copy(alpha = 0.7f), thickness = 1.dp)
     }
 }

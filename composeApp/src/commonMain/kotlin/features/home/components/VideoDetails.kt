@@ -1,35 +1,39 @@
 package features.home.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.surfaceColorAtElevation
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.FilterQuality
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import com.seiko.imageloader.rememberImagePainter
+import components.ImageBox
 import domain.model.VideoEntity
+import features.actresses.actress_details.ActressDetailsContracts
 
 @Composable
-fun VideoDetails(modifier: Modifier = Modifier, video: VideoEntity) {
+fun VideoDetails(
+    modifier: Modifier = Modifier,
+    video: VideoEntity,
+    windowSizeClass: WindowSizeClass,
+    setEvent: (ActressDetailsContracts.Event) -> Unit
+) {
     Box(
         modifier = modifier
+            .clickable {
+                setEvent(ActressDetailsContracts.Event.OnVideoItemClicked(video.id))
+            }
             .clip(MaterialTheme.shapes.medium)
             .background(MaterialTheme.colorScheme.surfaceColorAtElevation(36.dp))
     ) {
 
-        Image(
-            painter = rememberImagePainter(video.photo, filterQuality = FilterQuality.High),
-            contentScale = ContentScale.FillBounds,
-            contentDescription = "image",
-        )
+        ImageBox(modifier = Modifier, photo = video.photo)
 
         Text(
             modifier = Modifier.fillMaxWidth()

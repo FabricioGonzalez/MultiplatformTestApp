@@ -2,6 +2,10 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ModeNight
+import androidx.compose.material.icons.rounded.LightMode
+import androidx.compose.material.icons.rounded.Mode
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,21 +35,21 @@ fun DecoratedWindowScope.TitleBarView(theme: IntUiThemes, changeTheme: () -> Uni
                 IconButton(onClick = { changeTheme() }, Modifier.size(40.dp).padding(5.dp)) {
                     when (theme) {
                         IntUiThemes.Light -> Icon(
-                            "drawable/lightTheme20x20.svg",
-                            "Themes",
-                            StandaloneSampleIcons::class.java,
+                            imageVector = Icons.Rounded.LightMode,
+                            tint = Color.White,
+                            contentDescription = "Themes",
                         )
 
                         IntUiThemes.Dark -> Icon(
-                            "drawable/darkTheme20x20.svg",
-                            "Themes",
-                            StandaloneSampleIcons::class.java,
+                            imageVector = Icons.Outlined.ModeNight,
+                            tint = Color.White,
+                            contentDescription = "Themes",
                         )
 
                         IntUiThemes.System -> Icon(
-                            "drawable/systemTheme20x20.svg",
-                            "Themes",
-                            StandaloneSampleIcons::class.java,
+                            imageVector = Icons.Rounded.Mode,
+                            tint = Color.White,
+                            contentDescription = "Themes",
                         )
                     }
                 }

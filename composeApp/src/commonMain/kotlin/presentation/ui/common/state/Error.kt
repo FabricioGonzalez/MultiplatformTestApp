@@ -1,9 +1,12 @@
-package daniel.avila.rnm.kmm.presentation.ui.common.state
+package presentation.ui.common.state
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedButton
-import androidx.compose.material.Text
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,7 +27,7 @@ fun Error(
         ) {
             Text(
                 text = msg,
-                style = MaterialTheme.typography.h5
+                style = MaterialTheme.typography.headlineSmall
             )
             Spacer(modifier = Modifier.size(10.dp))
             OutlinedButton(
@@ -32,7 +35,7 @@ fun Error(
             ) {
                 Text(
                     text = "Try Again",
-                    style = MaterialTheme.typography.h6
+                    style = MaterialTheme.typography.displaySmall
                 )
             }
         }
