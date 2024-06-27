@@ -5,6 +5,7 @@ xcuserdata
 !src/**/build/
 local.properties
 .kotlin/
+output/
 kcef-bundle/
 cache/
 .idea
