@@ -2,6 +2,7 @@ package features.actresses.actresses_list
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
@@ -26,7 +27,6 @@ import kotlinx.coroutines.flow.flow
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import presentation.ui.common.AppBarState
 import presentation.ui.common.AppScreen
-import presentation.ui.common.ArrowBackIcon
 import presentation.ui.common.state.ManagementResourceUiState
 
 data class ActressesListScreen(
@@ -41,8 +41,7 @@ data class ActressesListScreen(
         val sizes = calculateWindowSizeClass()
 
         val snackbarHostState = remember { SnackbarHostState() }
-        val screenModel =
-            getScreenModel<ActressesListViewModel>()
+        val screenModel = getScreenModel<ActressesListViewModel>()
         val state by screenModel.uiState.collectAsState()
 
         val navigator = LocalNavigator.currentOrThrow
@@ -52,23 +51,21 @@ data class ActressesListScreen(
                 AppBarState(
                     title = null,
                     actions = null,
-                    navigationIcon = {
-                        ArrowBackIcon {
-                            navigator.pop()
-                        }
-                    },
+                    navigationIcon = null,
                     searchBar = null,
-                    snackbarHost = null,
+                    snackbarHost = {
+                        SnackbarHost(snackbarHostState)
+                    },
                 )
             )
 
             screenModel.effect.collectLatest { effect ->
                 when (effect) {
-                    ActressesListContracts.Effect.CharacterAdded ->
-                        snackbarHostState.showSnackbar("Character added to favorites")
+                    ActressesListContracts.Effect.CharacterAdded -> snackbarHostState.showSnackbar("Character added to favorites")
 
-                    ActressesListContracts.Effect.CharacterRemoved ->
-                        snackbarHostState.showSnackbar("Character removed from favorites")
+                    ActressesListContracts.Effect.CharacterRemoved -> snackbarHostState.showSnackbar(
+                        "Character removed from favorites"
+                    )
 
                     ActressesListContracts.Effect.BackNavigation -> navigator.pop()
                     is ActressesListContracts.Effect.ActressDetailNavigation -> navigator.push(
@@ -80,8 +77,7 @@ data class ActressesListScreen(
             }
         }
         ManagementResourceUiState(
-            modifier = Modifier
-                .fillMaxSize(),
+            modifier = Modifier.fillMaxSize(),
             resourceUiState = state.actresses,
             successView = { actresses ->
                 ActressesList(
@@ -114,8 +110,7 @@ fun PreviewActressList() {
                                     photo = "",
                                     link = "",
                                     isFavorite = false
-                                ),
-                                ActressEntity(
+                                ), ActressEntity(
                                     id = "",
                                     name = "Ayala Test",
                                     photo = "",

@@ -7,6 +7,7 @@ import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.PeopleAlt
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
@@ -18,7 +19,6 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import cafe.adriel.voyager.navigator.CurrentScreen
 import cafe.adriel.voyager.navigator.Navigator
@@ -39,8 +39,8 @@ import themes.MediaAppTheme
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class, ExperimentalMaterial3Api::class)
 @Composable
 @Preview
-fun App(isDarkTheme: Boolean = false, appColor: Color?) {
-    MediaAppTheme(darkTheme = isDarkTheme, appColor = appColor) {
+fun App(isDarkTheme: Boolean = false, appColor: ColorScheme?) {
+    MediaAppTheme(darkTheme = isDarkTheme, colorScheme = appColor) {
         val (appBarState, setAppBarState) = remember {
             mutableStateOf(AppBarState())
         }

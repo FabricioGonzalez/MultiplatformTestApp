@@ -7,7 +7,13 @@ plugins {
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.realm)
     alias(libs.plugins.apollo3)
+    alias(libs.plugins.conveyor)
 }
+
+group = "com.dev.fabricio.gonzalez"
+
+version = "1.0"
+
 
 kotlin {
     androidTarget {
@@ -15,10 +21,14 @@ kotlin {
             kotlinOptions {
                 jvmTarget = "17"
 
+
             }
         }
     }
-
+    jvmToolchain {
+        languageVersion.set(JavaLanguageVersion.of("17"))
+        vendor.set(JvmVendorSpec.JETBRAINS)
+    }
     apollo {
         service("service") {
             packageName.set("graphql")
@@ -29,15 +39,15 @@ kotlin {
     jvm("desktop")
 
     listOf(
-        iosX64(),
-        iosArm64(),
-        iosSimulatorArm64()
+        iosX64(), iosArm64(), iosSimulatorArm64()
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
-            baseName = "ComposeApp"
+            baseName = "MediaApp"
             isStatic = true
         }
     }
+
+
 
     sourceSets {
         val desktopMain by getting
@@ -85,6 +95,7 @@ kotlin {
             implementation(libs.paging.compose)
             implementation(libs.materialKolor)
         }
+
         desktopMain.dependencies {
             implementation(compose.desktop.common)
             implementation(compose.desktop.currentOs)
@@ -99,10 +110,18 @@ kotlin {
             implementation(libs.jewel)
             implementation(libs.jewel.decorated)
             implementation(libs.jna)
+
         }
     }
 }
 
+dependencies {
+
+    linuxAmd64(compose.desktop.linux_x64)
+    macAmd64(compose.desktop.macos_x64)
+    macAarch64(compose.desktop.macos_arm64)
+    windowsAmd64(compose.desktop.windows_x64)
+}
 android {
     namespace = "com.dev.fabricio.gonzalez.mediaapp"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
@@ -137,33 +156,27 @@ android {
         jvmToolchain(17)
     }
     buildToolsVersion = "34.0.0"
-    dependencies {
-        debugImplementation(libs.compose.ui.tooling)
-    }
 }
 
 compose.desktop {
     application {
-        jvmArgs("--add-opens", "java.desktop/sun.awt=ALL-UNNAMED")
-        jvmArgs(
-            "--add-opens",
-            "java.desktop/java.awt.peer=ALL-UNNAMED"
-        ) // recommended but not necessary
-
-        if (System.getProperty("os.name").contains("Mac")) {
-            jvmArgs("--add-opens", "java.desktop/sun.lwawt=ALL-UNNAMED")
-            jvmArgs("--add-opens", "java.desktop/sun.lwawt.macosx=ALL-UNNAMED")
-        }
-
         mainClass = "MainKt"
-
+        version = "1.0.0"
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "com.dev.fabricio.gonzalez.mediaapp"
+            packageName = "com-dev-fabricio-gonzalez-mediaapp"
             packageVersion = "1.0.0"
         }
     }
 }
+// region Work around temporary Compose bugs.
+configurations.all {
+    attributes {
+        // https://github.com/JetBrains/compose-jb/issues/1404#issuecomment-1146894731
+        attribute(Attribute.of("ui", String::class.java), "awt")
+    }
+}
+
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile>().configureEach {
     jvmTargetValidationMode.set(org.jetbrains.kotlin.gradle.dsl.jvm.JvmTargetValidationMode.WARNING)
 }

@@ -1,5 +1,7 @@
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -21,9 +23,16 @@ import org.jetbrains.jewel.window.newFullscreenControls
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun DecoratedWindowScope.TitleBarView(theme: IntUiThemes, changeTheme: () -> Unit) {
+fun DecoratedWindowScope.TitleBarView(
+    theme: IntUiThemes,
+    appBar: @Composable RowScope.() -> Unit,
+    changeTheme: () -> Unit
+) {
     TitleBar(Modifier.newFullscreenControls()) {
-        Text(title)
+        Row(Modifier.fillMaxWidth()) {
+            Text(title)
+            appBar()
+        }
 
         Row(Modifier.align(Alignment.End)) {
             Tooltip({

@@ -130,8 +130,8 @@ private fun VideoDetailsPage(
                 )
             }
         },
-        onTryAgain = { /*setEvent(VideoDetailsContracts.Event.OnLoadDataRequested(videoId = state.)) */ },
-        onCheckAgain = { /*setEvent(VideoDetailsContracts.Event.OnLoadDataRequested)*/ },
+        onTryAgain = { },
+        onCheckAgain = { },
     )
 }
 

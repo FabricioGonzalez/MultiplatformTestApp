@@ -11,7 +11,7 @@ import com.seiko.imageloader.rememberImagePainter
 fun ImageBox(modifier: Modifier = Modifier, photo: String) {
     Image(
         modifier = modifier/*.alpha(0f).background(Color.Cyan)*/,
-        painter = rememberImagePainter(photo),
+        painter = rememberImagePainter("photo"),
         contentDescription = null,
         contentScale = ContentScale.FillBounds
     )

@@ -1,18 +1,12 @@
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.window.application
+import com.dev.fabricio.gonzalez.composeapp.generated.resources.Res
+import com.dev.fabricio.gonzalez.composeapp.generated.resources.ic_launcher_icon
+import com.materialkolor.rememberDynamicColorScheme
 import dev.datlag.kcef.KCEF
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import mediaapp.composeapp.generated.resources.Res
-import mediaapp.composeapp.generated.resources.ic_launcher_icon
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.jewel.foundation.theme.JewelTheme
 import org.jetbrains.jewel.intui.standalone.theme.IntUiTheme
@@ -26,7 +20,6 @@ import org.jetbrains.jewel.window.styling.TitleBarStyle
 import java.awt.Dimension
 import java.io.File
 
-@OptIn(ExperimentalResourceApi::class)
 fun main() {
     val paletteGeneration = PaletteGeneration()
 
@@ -82,17 +75,21 @@ fun main() {
                 val isDark by remember { derivedStateOf { theme == IntUiThemes.Dark } }
 
                 TitleBarView(
-                    theme
-                ) {
-                    theme = when (theme) {
-                        IntUiThemes.Light -> IntUiThemes.Dark
-                        IntUiThemes.Dark, IntUiThemes.System -> IntUiThemes.Light
+                    theme = theme,
+                    appBar = {},
+                    changeTheme = {
+                        theme = when (theme) {
+                            IntUiThemes.Light -> IntUiThemes.Dark
+                            IntUiThemes.Dark, IntUiThemes.System -> IntUiThemes.Light
+                        }
                     }
-                }
+                )
+                val colorScheme = if (os.contains("Windows")) {
+                    rememberDynamicColorScheme(Color(paletteGeneration.getAccentColor()), isDark)
+                } else null
+
                 App(
-                    isDarkTheme = isDark, appColor = if (os.contains("Windows")) {
-                        Color(paletteGeneration.getAccentColor())
-                    } else null
+                    isDarkTheme = isDark, appColor = colorScheme
                 )
             }
         }

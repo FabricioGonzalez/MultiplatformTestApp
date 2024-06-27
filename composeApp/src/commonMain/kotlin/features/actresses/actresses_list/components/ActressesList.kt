@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
@@ -23,6 +22,7 @@ import app.cash.paging.compose.LazyPagingItems
 import components.ImageBox
 import domain.model.ActressEntity
 import features.actresses.actresses_list.ActressesListContracts
+import features.home.components.rememberColumns
 
 
 @Composable
@@ -35,15 +35,12 @@ fun ActressesList(
     LazyVerticalGrid(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
-        columns = GridCells.Fixed(3),
+        columns = rememberColumns(windowSizeClass),
         modifier = Modifier.padding(8.dp)
     ) {
         items(actresses.itemCount) { entity ->
             actresses[entity]?.let { actress ->
-                ActressCard(
-                    modifier = Modifier
-                        .height(220.dp)
-                        .width(120.dp),
+                ActressCard(modifier = Modifier.height(220.dp).width(120.dp),
                     actress = actress,
                     setEvent = { id ->
                         setEvent(ActressesListContracts.Event.OnNavigateToActressDetailRequested(id))
@@ -66,11 +63,8 @@ fun ActressCard(
         Box {
             ImageBox(modifier = Modifier.fillMaxSize(), photo = actress.photo)
             Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.BottomCenter)
-                    .background(MaterialTheme.colorScheme.background.copy(0.4f))
-                    .padding(4.dp),
+                modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter)
+                    .background(MaterialTheme.colorScheme.background.copy(0.4f)).padding(4.dp),
                 textAlign = TextAlign.Center,
                 text = actress.name
             )

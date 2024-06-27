@@ -133,23 +133,25 @@ internal fun VideosListFeed(
 }
 
 @Composable
-private fun rememberColumns(windowSizeClass: WindowSizeClass) = remember(windowSizeClass) {
-    when (windowSizeClass.widthSizeClass) {
-        WindowWidthSizeClass.Compact -> GridCells.Fixed(1)
-        WindowWidthSizeClass.Medium -> GridCells.Fixed(2)
-        else -> GridCells.Adaptive(240.dp)
+fun rememberColumns(windowSizeClass: WindowSizeClass, preferredSize: Int = 1) =
+    remember(windowSizeClass) {
+        when (windowSizeClass.widthSizeClass) {
+            WindowWidthSizeClass.Compact -> GridCells.Fixed(preferredSize)
+            WindowWidthSizeClass.Medium -> GridCells.Fixed(preferredSize + 1)
+            else -> GridCells.Adaptive(240.dp)
+        }
     }
-}
 
 @Composable
-private fun rememberRows(windowSizeClass: WindowSizeClass) = remember(windowSizeClass) {
-    when (windowSizeClass.heightSizeClass) {
-        WindowHeightSizeClass.Compact -> GridCells.Fixed(1)
-        WindowHeightSizeClass.Medium -> GridCells.Fixed(2)
-        WindowHeightSizeClass.Expanded -> GridCells.Fixed(2)
-        else -> GridCells.Adaptive(160.dp)
+fun rememberRows(windowSizeClass: WindowSizeClass, preferredSize: Int = 1) =
+    remember(windowSizeClass) {
+        when (windowSizeClass.heightSizeClass) {
+            WindowHeightSizeClass.Compact -> GridCells.Fixed(preferredSize)
+            WindowHeightSizeClass.Medium -> GridCells.Fixed(preferredSize + 1)
+            WindowHeightSizeClass.Expanded -> GridCells.Fixed(preferredSize + 3)
+            else -> GridCells.Adaptive(160.dp)
+        }
     }
-}
 
 @Composable
 private fun FeedTitle(text: String) {
