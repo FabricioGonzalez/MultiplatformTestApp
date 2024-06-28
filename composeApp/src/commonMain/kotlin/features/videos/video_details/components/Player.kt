@@ -14,7 +14,12 @@ import domain.model.PlayerEntity
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun Players(modifier: Modifier, players: List<PlayerEntity>) {
+fun Players(
+    modifier: Modifier,
+    players: List<PlayerEntity>,
+    videoId: String,
+    setEvent: (String) -> Unit
+) {
     FlowRow(
         modifier = modifier, horizontalArrangement = Arrangement.spacedBy(
             space = 8.dp, alignment = Alignment.CenterHorizontally
@@ -22,7 +27,10 @@ fun Players(modifier: Modifier, players: List<PlayerEntity>) {
     ) {
         players.forEach { player ->
             PlayerItem(
-                modifier = Modifier.width(164.dp).height(64.dp), player = player
+                modifier = Modifier.width(164.dp).height(64.dp),
+                player = player,
+                setEvent = setEvent,
+                videoId = videoId
             )
         }
     }

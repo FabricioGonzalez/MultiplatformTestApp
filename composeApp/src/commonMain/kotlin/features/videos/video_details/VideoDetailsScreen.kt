@@ -4,11 +4,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
@@ -67,7 +70,9 @@ data class VideoDetailScreen(
                         }
                     },
                     searchBar = null,
-                    snackbarHost = null,
+                    snackbarHost = {
+                        SnackbarHost(snackbarHostState)
+                    },
                 )
             )
 
@@ -115,8 +120,18 @@ private fun VideoDetailsPage(
             ) {
                 VideoDetailsHeader(modifier = Modifier.fillMaxWidth(), video = video)
 
+                Column(Modifier.fillMaxWidth().padding(16.dp)) {
+                    Text(video.createdAt)
+                    Text(video.addedToAt)
+                }
+
+
                 Players(
-                    modifier = Modifier.fillMaxWidth(), players = video.players
+                    modifier = Modifier.fillMaxWidth(), players = video.players,
+                    videoId = video.id,
+                    setEvent = { id ->
+                        setEvent(VideoDetailsContracts.Event.OnPlayVideoPressed(id))
+                    }
                 )
 
                 VideoActresses(
@@ -149,6 +164,7 @@ private fun VideoDetailsPagePreview() {
                             title = "",
                             photo = "",
                             createdAt = "",
+                            addedToAt = "",
                             actresses = listOf(),
                             tags = listOf(),
                             players = listOf(),

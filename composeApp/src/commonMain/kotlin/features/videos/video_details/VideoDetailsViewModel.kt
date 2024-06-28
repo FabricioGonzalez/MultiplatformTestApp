@@ -3,6 +3,7 @@ package features.videos.video_details
 import cafe.adriel.voyager.core.model.screenModelScope
 import domain.interactors.tags.FavoriteTagUsecase
 import domain.interactors.videos.GetVideoDetailsUsecase
+import domain.interactors.videos.WriteToVideoHistoryUsecase
 import domain.model.VideoDetailsEntity
 import domain.model.inputs.TagFavoriteInput
 import kotlinx.coroutines.launch
@@ -12,8 +13,9 @@ import presentation.mvi.BaseViewModel
 class VideoDetailsViewModel(
     private val videoDetailsUsecase: GetVideoDetailsUsecase,
     private val favoriteTagUsecase: FavoriteTagUsecase,
+    private val writeToVideoHistoryUsecase: WriteToVideoHistoryUsecase
 
-    ) :
+) :
     BaseViewModel<VideoDetailsContracts.Event, VideoDetailsContracts.State, VideoDetailsContracts.Effect>() {
 
     override fun createInitialState(): VideoDetailsContracts.State = VideoDetailsContracts.State(
@@ -31,24 +33,31 @@ class VideoDetailsViewModel(
                 )
             }
 
-            is VideoDetailsContracts.Event.OnPlayVideoPressed -> setEffect {
-                VideoDetailsContracts.Effect.PlayVideoRequested(
-                    event.url
-                )
+            is VideoDetailsContracts.Event.OnPlayVideoPressed -> {
+                writeToHistory(event.videoId)
             }
 
             is VideoDetailsContracts.Event.OnTagFavoritedChanged -> {
                 if (uiState.value.video is ResourceUiState.Success<VideoDetailsEntity>) setState {
-                    copy(video = (uiState.value.video as ResourceUiState.Success<VideoDetailsEntity>).copy(
-                        data = (uiState.value.video as ResourceUiState.Success<VideoDetailsEntity>).data.copy(
-                            tags = (uiState.value.video as ResourceUiState.Success<VideoDetailsEntity>).data.tags.map {
-                                if (it.name == event.tag) {
-                                    checkIfIsFavorite(it.name, !it.isFavorite)
-                                    it.copy(isFavorite = !it.isFavorite)
-                                } else it
-                            })))
+                    copy(
+                        video = (uiState.value.video as ResourceUiState.Success<VideoDetailsEntity>).copy(
+                            data = (uiState.value.video as ResourceUiState.Success<VideoDetailsEntity>).data.copy(
+                                tags = (uiState.value.video as ResourceUiState.Success<VideoDetailsEntity>).data.tags.map {
+                                    if (it.name == event.tag) {
+                                        checkIfIsFavorite(it.name, !it.isFavorite)
+                                        it.copy(isFavorite = !it.isFavorite)
+                                    } else it
+                                })
+                        )
+                    )
                 }
             }
+        }
+    }
+
+    private fun writeToHistory(videoId: String) {
+        screenModelScope.launch {
+            writeToVideoHistoryUsecase(videoId)
         }
     }
 
@@ -56,9 +65,9 @@ class VideoDetailsViewModel(
         setState { copy(video = ResourceUiState.Loading) }
         screenModelScope.launch {
             videoDetailsUsecase(id).onSuccess { succ ->
-                    succ?.let { setState { copy(video = ResourceUiState.Success(succ)) } }
-                        ?: setState { copy(video = ResourceUiState.Error()) }
-                }.onFailure { setState { copy(video = ResourceUiState.Error()) } }
+                succ?.let { setState { copy(video = ResourceUiState.Success(succ)) } }
+                    ?: setState { copy(video = ResourceUiState.Error()) }
+            }.onFailure { setState { copy(video = ResourceUiState.Error()) } }
         }
     }
 

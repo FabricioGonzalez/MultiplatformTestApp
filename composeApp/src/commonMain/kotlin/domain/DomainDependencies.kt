@@ -10,6 +10,7 @@ import domain.interactors.videos.GetAllRecentVideosUsecase
 import domain.interactors.videos.GetVideoDetailsUsecase
 import domain.interactors.videos.GetVideosByActressUsecase
 import domain.interactors.videos.GetVideosByTagUsecase
+import domain.interactors.videos.WriteToVideoHistoryUsecase
 import org.koin.dsl.module
 
 val usecaseDependecies = module {
@@ -29,4 +30,5 @@ val usecaseDependecies = module {
     factory { GetVideosByActressUsecase(get(), get()) }
     factory { UpdateActressUsecase(get(), get()) }
     factory { FavoriteTagUsecase(get(), get()) }
+    factory { WriteToVideoHistoryUsecase(get(), get()) }
 }

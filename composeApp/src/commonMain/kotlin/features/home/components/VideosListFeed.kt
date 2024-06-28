@@ -18,15 +18,7 @@ package features.home.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
@@ -35,12 +27,7 @@ import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.KeyboardArrowUp
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
@@ -55,11 +42,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.paging.LoadState
 import app.cash.paging.compose.collectAsLazyPagingItems
 import com.example.feedcompose.ui.components.feed.Feed
 import com.example.feedcompose.ui.components.feed.footer
 import com.example.feedcompose.ui.components.feed.title
 import components.ImageBox
+import components.shimmerEffect
 import domain.model.VideoEntity
 import features.home.VideoFeed
 import kotlinx.coroutines.launch
@@ -111,8 +100,13 @@ internal fun VideosListFeed(
                             items(
                                 items.itemCount,
                                 contentType = { "sweets" },
+                                span = { GridItemSpan(if ((items.itemCount % maxLineSpan) > 0) maxLineSpan else 1) },
                                 key = { items[it]!!.id }) {
-                                SquareSweetsCard(sweets = items[it]!!, onClick = onSweetsSelected)
+                                SquareSweetsCard(
+                                    sweets = items[it]!!,
+                                    isLoading = items.loadState.refresh is LoadState.Loading,
+                                    onClick = onSweetsSelected
+                                )
                             }
                         }
                     },
@@ -221,10 +215,10 @@ private fun BackToTopButton(modifier: Modifier = Modifier, onClick: () -> Unit =
 
 @Composable
 private fun SquareSweetsCard(
-    sweets: VideoEntity, modifier: Modifier = Modifier, onClick: (VideoEntity) -> Unit = {}
+    sweets: VideoEntity, modifier: Modifier = Modifier, onClick: (VideoEntity) -> Unit = {}, isLoading: Boolean
 ) {
     SweetsCard(
-        sweets = sweets, modifier = modifier.aspectRatio(1.0f), onClick = onClick
+        sweets = sweets, modifier = modifier.aspectRatio(1.0f), isLoading = isLoading, onClick = onClick
     )
 }
 
@@ -233,13 +227,13 @@ private fun PortraitSweetsCard(
     sweets: VideoEntity, modifier: Modifier = Modifier, onClick: (VideoEntity) -> Unit = {}
 ) {
     SweetsCard(
-        sweets = sweets, modifier = modifier.aspectRatio(0.707f), onClick = onClick
+        sweets = sweets, modifier = modifier.aspectRatio(0.707f), onClick = onClick, isLoading = false
     )
 }
 
 @Composable
 fun SweetsCard(
-    sweets: VideoEntity, modifier: Modifier = Modifier, onClick: (VideoEntity) -> Unit = {}
+    sweets: VideoEntity, modifier: Modifier = Modifier, onClick: (VideoEntity) -> Unit = {}, isLoading: Boolean
 ) {
     var isFocused by remember {
         mutableStateOf(false)
@@ -255,13 +249,14 @@ fun SweetsCard(
     }.border(width = 2.dp, color = outlineColor), onClick = { onClick(sweets) }) {
         Box {
             ImageBox(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxSize().then(if (isLoading) Modifier.shimmerEffect() else Modifier),
                 photo = sweets.photo,
             )
             Text(
                 text = sweets.title,
                 modifier = Modifier
                     .fillMaxWidth()
+                    .then(if (isLoading) Modifier.shimmerEffect() else Modifier)
                     .align(Alignment.BottomCenter)
                     .background(MaterialTheme.colorScheme.primary.copy(0.5f))
                     .padding(8.dp, 4.dp),

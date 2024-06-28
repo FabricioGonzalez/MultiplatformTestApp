@@ -48,6 +48,7 @@ class VideoRemoteApi(private val apolloClient: ApolloClient) {
                                 title = video.title,
                                 photo = video.photoLink ?: "",
                                 createdAt = video.createdAt.toString(),
+                                addedToAt = video.originalCreationDate.toString(),
                                 actresses = video.actresses?.mapNotNull { actress ->
                                     actress?.let { act ->
                                         ActressEntity(

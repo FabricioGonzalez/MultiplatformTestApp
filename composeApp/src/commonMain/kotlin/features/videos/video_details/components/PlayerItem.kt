@@ -25,7 +25,12 @@ import domain.model.PlayerEntity
 
 
 @Composable
-fun PlayerItem(modifier: Modifier = Modifier, player: PlayerEntity) {
+fun PlayerItem(
+    modifier: Modifier = Modifier,
+    player: PlayerEntity,
+    videoId: String,
+    setEvent: (String) -> Unit
+) {
     var isWorking by remember {
         mutableStateOf(player.isWorking)
     }
@@ -35,6 +40,7 @@ fun PlayerItem(modifier: Modifier = Modifier, player: PlayerEntity) {
     if (showPage) BrowserPage(player.playerLink, onBrowserClosed = { showPage = false })
 
     Card(modifier = modifier, onClick = {
+        setEvent(videoId)
         showPage = true
     }) {
         Icon(

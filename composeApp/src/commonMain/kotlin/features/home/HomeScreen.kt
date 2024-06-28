@@ -3,6 +3,7 @@ package features.home
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
@@ -51,7 +52,9 @@ class HomeScreen(
                     actions = null,
                     navigationIcon = null,
                     searchBar = null,
-                    snackbarHost = null,
+                    snackbarHost = {
+                        SnackbarHost(snackbarHostState)
+                    },
                 )
             )
             homeViewModel.setEvent(HomeContract.Event.OnLoadDataRequested)
@@ -103,7 +106,6 @@ fun HomeLayout(
     )
 }
 
-@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Preview
 @Composable
 fun HomePreview() {

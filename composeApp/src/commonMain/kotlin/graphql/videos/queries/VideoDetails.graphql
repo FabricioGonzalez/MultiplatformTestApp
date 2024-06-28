@@ -7,6 +7,7 @@ query videoDetails($videoId:UUID!){
                 title
                 photoLink
                 createdAt
+                originalCreationDate
                 updatedAt
                 players{
                     id

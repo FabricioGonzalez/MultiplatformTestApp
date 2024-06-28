@@ -12,7 +12,7 @@ interface VideoDetailsContracts {
         data class OnLoadDataRequested(val videoId: String) : Event
         data object OnBackPressed : Event
         data class OnNavigateToActressPressed(val id: String) : Event
-        data class OnPlayVideoPressed(val url: String) : Event
+        data class OnPlayVideoPressed(val videoId: String) : Event
         data class OnTagFavoritedChanged(val tag: String) : Event
     }
 
