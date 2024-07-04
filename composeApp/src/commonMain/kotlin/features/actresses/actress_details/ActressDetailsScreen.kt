@@ -25,12 +25,14 @@ import cafe.adriel.voyager.core.screen.ScreenKey
 import cafe.adriel.voyager.koin.getScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import domain.model.ActressEntity
 import features.actresses.actress_details.components.ActressDetailsHeader
 import features.home.components.VideosList
 import features.videos.video_details.VideoDetailScreen
 import features.webview.WebviewScreen
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.core.parameter.parametersOf
+import presentation.model.ResourceUiState
 import presentation.ui.common.AppBarState
 import presentation.ui.common.AppScreen
 import presentation.ui.common.ArrowBackIcon
@@ -69,70 +71,70 @@ data class ActressDetailsScreen(
                     )
 
                     is ActressDetailsContracts.Effect.OnVideoItemClicked -> {
-                        navigator.replace(VideoDetailScreen(effect.videoId, onCompose = onCompose))
+                        navigator.push(VideoDetailScreen(effect.videoId, onCompose = onCompose))
                     }
 
                     ActressDetailsContracts.Effect.BackNavigation -> navigator.pop()
                 }
             }
         }
+
         Column(Modifier.fillMaxSize()) {
+            LaunchedEffect(key1 = state.actress) {
+                onCompose(
+                    AppBarState(
+                        title = null,
+                        actions = {
+                            IconButton(onClick = {
+                                screenModel.setEvent(
+                                    ActressDetailsContracts.Event.OnActressFavorited(
+                                        !state.isFavorite
+                                    )
+                                )
+                            }) {
+                                Icon(
+                                    if (state.isFavorite) Icons.Rounded.Favorite else Icons.Rounded.FavoriteBorder,
+                                    null
+                                )
+                            }
+                            IconButton(onClick = {
+                                if (state.actress is ResourceUiState.Success)
+                                    screenModel.setEvent(
+                                        ActressDetailsContracts.Event.OnActressPhotoRequested(
+                                            (state.actress as ResourceUiState.Success<ActressEntity>).data.name
+                                        )
+                                    )
+                            }) {
+                                Icon(Icons.Rounded.PhotoLibrary, null)
+                            }
+                            IconButton(onClick = {
+                                screenModel.setEvent(
+                                    ActressDetailsContracts.Event.OnEditRequested(
+                                        !state.isEditing
+                                    )
+                                )
+                            }) {
+                                Icon(
+                                    if (state.isEditing) Icons.Rounded.SaveAlt else Icons.Rounded.Edit,
+                                    null
+                                )
+                            }
+                        },
+                        navigationIcon = {
+                            ArrowBackIcon {
+                                navigator.pop()
+                            }
+                        },
+                        searchBar = null,
+                        snackbarHost = null,
+                    )
+                )
+            }
             ManagementResourceUiState(
                 modifier = Modifier.fillMaxWidth(),
                 resourceUiState = state.actress,
                 successView = { actress ->
-                    LaunchedEffect(key1 = Unit) {
-                        onCompose(
-                            AppBarState(
-                                title = null,
-                                actions = {
-                                    IconButton(onClick = {
-                                        screenModel.setEvent(
-                                            ActressDetailsContracts.Event.OnActressFavorited(
-                                                !state.isFavorite
-                                            )
-                                        )
-                                    }) {
-                                        Icon(
-                                            if (state.isFavorite) Icons.Rounded.Favorite else Icons.Rounded.FavoriteBorder,
-                                            null
-                                        )
-                                    }
-                                    IconButton(onClick = {
-
-                                        screenModel.setEvent(
-                                            ActressDetailsContracts.Event.OnActressPhotoRequested(
-                                                actress.name
-                                            )
-                                        )
-                                    }) {
-                                        Icon(Icons.Rounded.PhotoLibrary, null)
-                                    }
-                                    IconButton(onClick = {
-                                        screenModel.setEvent(
-                                            ActressDetailsContracts.Event.OnEditRequested(
-                                                !state.isEditing
-                                            )
-                                        )
-                                    }) {
-                                        Icon(
-                                            if (state.isEditing) Icons.Rounded.SaveAlt else Icons.Rounded.Edit,
-                                            null
-                                        )
-                                    }
-                                },
-                                navigationIcon = {
-                                    ArrowBackIcon {
-                                        navigator.pop()
-                                    }
-                                },
-                                searchBar = null,
-                                snackbarHost = null,
-                            )
-                        )
-                    }
                     Column {
-
                         ActressDetailsHeader(
                             actress = actress,
                             windowSizeClass = sizes,

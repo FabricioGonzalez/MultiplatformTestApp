@@ -47,6 +47,9 @@ class VideoRepository(private val api: VideoRemoteApi) {
         }
     }
 
+    suspend fun listHistory() {
+
+    }
 
     suspend fun getContentPreference(): List<PreferredContentEntity> {
         return realmDb.query<DbPreferredContent>()

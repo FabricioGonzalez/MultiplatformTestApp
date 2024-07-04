@@ -6,11 +6,7 @@ import androidx.compose.material.icons.automirrored.rounded.Login
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.PeopleAlt
 import androidx.compose.material.icons.rounded.Settings
-import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.ColorScheme
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.*
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
@@ -44,7 +40,6 @@ fun App(isDarkTheme: Boolean = false, appColor: ColorScheme?) {
         val (appBarState, setAppBarState) = remember {
             mutableStateOf(AppBarState())
         }
-
 
         val screens = listOf(
             NavPoint(
@@ -86,7 +81,7 @@ fun App(isDarkTheme: Boolean = false, appColor: ColorScheme?) {
                 isNavigatable = false,
                 disableNavBar = true,
                 uiScreen = WebviewScreen("", onCompose = setAppBarState),
-                title = "WebviewScreen"
+                title = "Webview Screen"
             ),
             NavPoint(
                 icon = Icons.Rounded.Settings,

@@ -352,7 +352,7 @@ input ListFilterInputTypeOfVideoTagBindingDBEntityFilterInput {
 }
 
 input MutateActressInput {
-    link: String!
+    id: UUID!
     name: String!
     photoLink: String!
 }
@@ -363,11 +363,9 @@ input MutatePlayerInput {
 }
 
 input MutateVideoInput {
-    isWorking: Boolean!
-    link: String!
+    id: UUID!
     photoLink: String!
     title: String!
-    videoLink: String!
 }
 
 input SiteDBEntityFilterInput {

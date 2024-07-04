@@ -23,7 +23,9 @@ val apolloDependencies = module {
     single {
         ApolloClient.Builder()
             /*.serverUrl("https://mediaapi.bsite.net/graphql")*/
-            .serverUrl("https://testmediaapi.bsite.net/graphql/")
+            /*.serverUrl("https://testmediaapi.bsite.net/graphql/")*/
+            .serverUrl("https://mapappapi.bsite.net/graphql/")
+            /*.serverUrl("http://localhost:3001/graphql/")*/
             .build()
     }
 }

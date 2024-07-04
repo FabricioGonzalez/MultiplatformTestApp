@@ -9,7 +9,7 @@ import org.koin.dsl.module
 
 val viewModelDependencies = module {
     factory { HomeViewModel(get(), get()) }
-    factory { VideoDetailsViewModel(get(), get()) }
+    factory { VideoDetailsViewModel(get(), get(), get()) }
     factory { ActressesListViewModel(get()) }
     factory { params -> ActressDetailsViewModel(params.get(), get(), get(), get(), get()) }
     factory { WebviewViewModel(get()) }

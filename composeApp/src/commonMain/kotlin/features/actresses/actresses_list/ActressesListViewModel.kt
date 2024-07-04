@@ -3,6 +3,8 @@ package features.actresses.actresses_list
 import androidx.paging.cachedIn
 import cafe.adriel.voyager.core.model.screenModelScope
 import domain.interactors.actresses.GetActressesListUsecase
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import presentation.model.ResourceUiState
@@ -34,7 +36,7 @@ class ActressesListViewModel(
 
     private fun getDetails() {
         setState { copy(actresses = ResourceUiState.Loading) }
-        screenModelScope.launch {
+        screenModelScope.launch(Dispatchers.IO) {
             actressesListUsecase(Unit)
                 .collect { result ->
                     result.onSuccess { succ ->
@@ -48,7 +50,15 @@ class ActressesListViewModel(
                             )
                         }
                     }
-                        .onFailure { setState { copy(actresses = ResourceUiState.Error()) } }
+                        .onFailure {
+                            setState {
+                                copy(
+                                    actresses = ResourceUiState.Error(
+                                        it.message ?: ""
+                                    )
+                                )
+                            }
+                        }
                 }
         }
     }

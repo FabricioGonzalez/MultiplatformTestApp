@@ -2,11 +2,11 @@ schema: schema.graphqls
 extensions:
   endpoints:
     Release:
-      url: https://mediaapi.bsite.net/graphql/
+      url: https://mapappapi.bsite.net/graphql/
     Debug:
       url: https://localhost:3000/graphql
     WebSocketDebug:
       url: wss://localhost:3000/graphql
     WebSocketRelease:
-      url: wss://mediaapi.bsite.net/graphql
+      url: wss://mapappapi.bsite.net/graphql
 documents: '**/*.graphql'

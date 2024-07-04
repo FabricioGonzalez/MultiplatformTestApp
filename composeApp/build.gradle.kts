@@ -12,7 +12,7 @@ plugins {
 
 group = "com.dev.fabricio.gonzalez"
 
-version = "1.0"
+version = libs.versions.systemVersion.get()
 
 
 kotlin {
@@ -34,6 +34,7 @@ kotlin {
             packageName.set("graphql")
             srcDir("src/commonMain/kotlin/graphql")
             this.generateKotlinModels.set(true)
+
         }
     }
     jvm("desktop")
@@ -85,6 +86,8 @@ kotlin {
             implementation(libs.voyager.koin)
             api(libs.webview)
             implementation(libs.koin.core)
+            implementation(libs.kotlinx.datetime)
+            implementation(libs.kermit)
             implementation(libs.koin.compose)
             implementation(libs.realm.base)
             implementation(libs.realm.sync)
@@ -134,8 +137,8 @@ android {
         applicationId = "com.dev.fabricio.gonzalez.mediaapp"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = libs.versions.versionCode.get().toInt()
+        versionName = libs.versions.systemVersion.get()
     }
     packaging {
         resources {
@@ -160,12 +163,22 @@ android {
 
 compose.desktop {
     application {
+        jvmArgs("--add-opens", "java.desktop/sun.awt=ALL-UNNAMED")
+        jvmArgs(
+            "--add-opens",
+            "java.desktop/java.awt.peer=ALL-UNNAMED"
+        ) // recommended but not necessary
+
+        if (System.getProperty("os.name").contains("Mac")) {
+            jvmArgs("--add-opens", "java.desktop/sun.lwawt=ALL-UNNAMED")
+            jvmArgs("--add-opens", "java.desktop/sun.lwawt.macosx=ALL-UNNAMED")
+        }
         mainClass = "MainKt"
-        version = "1.0.0"
+        version = libs.versions.systemVersion.get()
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "com-dev-fabricio-gonzalez-mediaapp"
-            packageVersion = "1.0.0"
+            packageVersion = libs.versions.systemVersion.get()
         }
     }
 }

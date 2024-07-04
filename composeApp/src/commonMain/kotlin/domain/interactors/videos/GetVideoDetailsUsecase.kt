@@ -14,6 +14,7 @@ class GetVideoDetailsUsecase(
             .fold(onSuccess = {
                 it
             }, onFailure = {
+                println(it)
                 null
             })
     }

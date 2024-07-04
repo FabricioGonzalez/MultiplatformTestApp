@@ -55,6 +55,9 @@ class HomeViewModel(
                         )
                     }
                 }
+                .onFailure {
+                    ResourceUiState.Error(it.message ?: "Erro")
+                }
         }
     }
 }

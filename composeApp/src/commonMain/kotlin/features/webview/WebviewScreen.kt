@@ -29,11 +29,11 @@ import presentation.ui.common.AppScreen
 import presentation.ui.common.ArrowBackIcon
 
 data class WebviewScreen(
-    private val actressName: String, override val route: String = "WebviewScreen",
+    private val actressName: String, override val route: String = "Webview Screen",
     override val onCompose: (AppBarState) -> Unit,
 ) : AppScreen {
 
-    override val key: ScreenKey = "WebviewScreen"
+    override val key: ScreenKey = "Webview Screen"
 
     private val webviewState: WebViewState =
         WebViewState(WebContent.Url("https://www.pornpics.com/?q=$actressName"))

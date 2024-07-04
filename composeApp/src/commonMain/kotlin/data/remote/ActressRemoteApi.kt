@@ -81,7 +81,7 @@ class ActressRemoteApi(private val apolloClient: ApolloClient) {
                 apolloClient.mutation(
                     UpdateActressMutation(
                         MutateActressInput(
-                            link = actress.link,
+                            id = actress.id,
                             name = actress.name,
                             photoLink = actress.photo
                         )
