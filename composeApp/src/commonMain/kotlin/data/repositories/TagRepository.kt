@@ -1,6 +1,6 @@
 package data.repositories
 
-import data.data_access.realmDb
+import multiplatform.realmDb
 import data.entities.DbPreferredContent
 import data.entities.DbPreferredContentType
 import domain.model.inputs.TagFavoriteInput
@@ -28,10 +28,8 @@ class TagRepository {
                 } else {
                     realmDb.writeBlocking {
                         // Get the live frog object with findLatest(), then delete it
-                        if (tag != null) {
-                            findLatest(tag)
-                                ?.also { delete(it) }
-                        }
+                        findLatest(tag)
+                            ?.also { delete(it) }
                     }
                 }
             }

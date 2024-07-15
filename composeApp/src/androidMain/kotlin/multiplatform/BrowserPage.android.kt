@@ -1,7 +1,6 @@
-import android.app.Activity
+package multiplatform
+
 import android.content.ComponentName
-import android.content.Context
-import android.content.ContextWrapper
 import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -113,8 +112,3 @@ actual fun LockScreenOrientation(orientation: Int) {
     }
 }
 
-fun Context.findActivity(): Activity? = when (this) {
-    is Activity -> this
-    is ContextWrapper -> baseContext.findActivity()
-    else -> null
-}

@@ -57,7 +57,8 @@ class VideoDetailsViewModel(
 
     private fun writeToHistory(videoId: String) {
         screenModelScope.launch {
-            writeToVideoHistoryUsecase(videoId)
+            if (uiState.value.video is ResourceUiState.Success)
+                writeToVideoHistoryUsecase((uiState.value.video as ResourceUiState.Success).data)
         }
     }
 

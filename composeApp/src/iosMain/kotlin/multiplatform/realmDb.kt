@@ -1,4 +1,4 @@
-package data.data_access
+package multiplatform
 
 import data.entities.DbActress
 import data.entities.DbPreferredContent

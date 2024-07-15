@@ -9,6 +9,7 @@ import org.mongodb.kbson.ObjectId
 class DbVideo : RealmObject {
     @PrimaryKey
     var _id: ObjectId = ObjectId()
+    var videoId: String = ""
     var title: String = ""
     var photo: String? = null
     var link: String = ""

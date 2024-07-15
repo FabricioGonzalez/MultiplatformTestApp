@@ -14,16 +14,12 @@ import presentation.model.ResourceUiState
 import presentation.mvi.BaseViewModel
 
 class ActressDetailsViewModel(
-    actressId: String,
     private val actressDetailsUsecase: GetActressDetailsUsecase,
     private val updateActressUsecase: UpdateActressUsecase,
     private val videosByActressUsecase: GetVideosByActressUsecase,
     private val favoriteActressUsecase: FavoriteActressUsecase,
 ) : BaseViewModel<ActressDetailsContracts.Event, ActressDetailsContracts.State, ActressDetailsContracts.Effect>() {
 
-    init {
-        getDetails(actressId)
-    }
 
     override fun createInitialState(): ActressDetailsContracts.State =
         ActressDetailsContracts.State(
@@ -33,6 +29,7 @@ class ActressDetailsViewModel(
 
     override fun handleEvent(event: ActressDetailsContracts.Event) {
         when (event) {
+            is ActressDetailsContracts.Event.OnLoadDataRequested -> getDetails(event.id)
             ActressDetailsContracts.Event.OnBackPressed -> setEffect { ActressDetailsContracts.Effect.BackNavigation }
             is ActressDetailsContracts.Event.OnActressPhotoRequested -> setEffect {
                 ActressDetailsContracts.Effect.OnActressPhotoRequested(

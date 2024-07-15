@@ -11,6 +11,7 @@ import com.dev.fabricio.gonzalez.composeapp.generated.resources.Res
 import com.dev.fabricio.gonzalez.composeapp.generated.resources.ic_launcher_icon
 import com.materialkolor.rememberDynamicColorScheme
 import dev.datlag.kcef.KCEF
+import di.initKoin
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.painterResource

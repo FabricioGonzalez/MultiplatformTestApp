@@ -1,3 +1,5 @@
+package multiplatform
+
 import androidx.compose.runtime.Composable
 import kotlin.io.path.Path
 

@@ -15,7 +15,7 @@ import app.cash.paging.PagingSourceLoadResultPage
 import app.cash.paging.PagingState
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.Optional
-import data.data_access.realmDb
+import multiplatform.realmDb
 import data.entities.DbPreferredContent
 import data.entities.DbPreferredContentType
 import domain.model.ActressEntity
@@ -23,6 +23,7 @@ import domain.model.PlayerEntity
 import domain.model.TagEntity
 import domain.model.VideoDetailsEntity
 import domain.model.VideoEntity
+import graphql.SearchVideosByTermQuery
 import graphql.VideoDetailsQuery
 import graphql.VideosByActressNameQuery
 import graphql.VideosByTagQuery
@@ -32,6 +33,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
 class VideoRemoteApi(private val apolloClient: ApolloClient) {
 
@@ -48,8 +52,14 @@ class VideoRemoteApi(private val apolloClient: ApolloClient) {
                                 id = video.id.toString(),
                                 title = video.title,
                                 photo = video.photoLink ?: "",
-                                createdAt = video.createdAt.toString(),
-                                addedToAt = video.originalCreationDate.toString(),
+                                createdAt = Instant.parse(video.createdAt.toString())
+                                    .toLocalDateTime(
+                                        TimeZone.currentSystemDefault()
+                                    ),
+                                addedToAt = Instant.parse(video.originalCreationDate.toString())
+                                    .toLocalDateTime(
+                                        TimeZone.currentSystemDefault()
+                                    ),
                                 actresses = video.actresses?.mapNotNull { actress ->
                                     actress?.let { act ->
                                         ActressEntity(
@@ -193,6 +203,20 @@ class VideoRemoteApi(private val apolloClient: ApolloClient) {
         }
     }
 
+    suspend fun loadSearchVideos(searchText: String): Flow<PagingData<VideoEntity>> {
+        return withContext(Dispatchers.IO) {
+            val pagingConfig = PagingConfig(pageSize = 40, initialLoadSize = 40)
+
+            Pager(
+                config = pagingConfig,
+                /*remoteMediator = VideosRemoteMediator(apolloClient),*/
+                pagingSourceFactory = {
+                    RemoteSearchVideosPagingSource(apolloClient, searchText)
+                })
+                /*RecentVideosPagingSource(apolloClient)*/.flow
+        }
+    }
+
     private class LocalRecentVideosPagingSource : PagingSource<String, VideoEntity>() {
         override suspend fun load(params: PagingSourceLoadParams<String>): PagingSourceLoadResult<String, VideoEntity> {
             val page = params.key ?: FIRST_PAGE_INDEX
@@ -269,6 +293,82 @@ class VideoRemoteApi(private val apolloClient: ApolloClient) {
              */
             const val FIRST_PAGE_INDEX = 1
         }
+    }
+
+    private class RemoteSearchVideosPagingSource(
+        private val apolloClient: ApolloClient,
+        private val search: String
+    ) : PagingSource<String, VideoEntity>() {
+
+        override suspend fun load(params: PagingSourceLoadParams<String>): PagingSourceLoadResult<String, VideoEntity> {
+            val result = withContext(Dispatchers.IO) {
+                apolloClient.query(
+                    when (params) {
+                        is PagingSourceLoadParamsRefresh<String> -> {
+                            SearchVideosByTermQuery(
+                                afterSize = Optional.present(40),
+                                videoQuery = search,
+                                includeDeleted = Optional.present(false)
+                            )
+                        }
+
+                        is PagingSourceLoadParamsAppend<String> -> {
+                            SearchVideosByTermQuery(
+                                afterSize = Optional.present(40),
+                                cursorEnd = Optional.present(params.key),
+                                videoQuery = search,
+                                includeDeleted = Optional.present(false)
+                            )
+                        }
+
+                        is PagingSourceLoadParamsPrepend<String> -> {
+                            SearchVideosByTermQuery(
+                                beforeSize = Optional.present(40),
+                                cursorStart = Optional.present(params.key),
+                                videoQuery = search,
+                                includeDeleted = Optional.present(false)
+                            )
+                        }
+
+                    }
+                ).execute()
+            }
+
+            return when {
+                !result.hasErrors() -> {
+                    result.dataOrThrow().videos?.let { videos ->
+                        PagingSourceLoadResultPage(
+                            prevKey = null, nextKey = videos.pageInfo.endCursor,
+                            data = videos.edges?.map { entity ->
+                                VideoEntity(
+                                    cursor = entity.cursor,
+                                    photo = entity.node?.photoLink ?: "",
+                                    title = entity.node?.title ?: "",
+                                    id = entity.node?.id.toString()
+                                )
+                            } ?: emptyList(),
+                        )
+
+                    } ?: PagingSourceLoadResultError(
+                        Exception("Received a ${result.errors}."),
+                    )
+                }
+
+                result.hasErrors() -> {
+                    PagingSourceLoadResultError(
+                        Exception("Received a ${result.errors}."),
+                    )
+                }
+
+                else -> {
+                    PagingSourceLoadResultError(
+                        Exception("Received a ${result.errors}."),
+                    )
+                }
+            }
+        }
+
+        override fun getRefreshKey(state: PagingState<String, VideoEntity>): String? = null
     }
 
     private class RemoteRecentVideosPagingSource(

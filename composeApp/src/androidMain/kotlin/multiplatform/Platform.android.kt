@@ -1,3 +1,5 @@
+package multiplatform
+
 import android.os.Build
 
 class AndroidPlatform : Platform {

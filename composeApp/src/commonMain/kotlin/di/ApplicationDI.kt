@@ -1,3 +1,5 @@
+package di
+
 import data.apolloDependencies
 import data.dataDependencies
 import domain.usecaseDependecies
@@ -16,9 +18,6 @@ fun initKoin(appDeclaration: KoinAppDeclaration = {}) =
             dataDependencies,
             apolloDependencies,
             dispatcherModule
-            /*sqlDelightModule,
-            mapperModule,
-            platformModule()*/
         )
     }
 

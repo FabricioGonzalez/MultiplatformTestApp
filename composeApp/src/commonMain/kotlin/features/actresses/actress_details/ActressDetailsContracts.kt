@@ -13,6 +13,7 @@ interface ActressDetailsContracts {
     sealed interface Event : UiEvent {
 
         data class OnActressPhotoRequested(val actressName: String) : Event
+        data class OnLoadDataRequested(val id: String) : Event
         data class OnActressFavorited(val isFavorite: Boolean) : Event
         data class OnEditRequested(val isEditing: Boolean) : Event
         data class OnVideoItemClicked(val id: String) : Event

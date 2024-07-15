@@ -1,6 +1,6 @@
 package features.videos.video_details.components
 
-import BrowserPage
+import multiplatform.BrowserPage
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding

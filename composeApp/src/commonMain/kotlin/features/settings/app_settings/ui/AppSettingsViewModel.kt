@@ -1,4 +1,4 @@
-package features.home
+package features.settings.app_settings.ui
 
 import cafe.adriel.voyager.core.model.screenModelScope
 import domain.interactors.videos.GetAllPreferredContentUsecase
@@ -9,29 +9,29 @@ import kotlinx.coroutines.launch
 import presentation.model.ResourceUiState
 import presentation.mvi.BaseViewModel
 
-class HomeViewModel(
+class AppSettingsViewModel(
     private val loadRecentVideosUsecase: GetAllRecentVideosUsecase,
     private val loadSearchVideosUsecase: GetSearchVideosUsecase,
     private val loadPreferredContentUsecase: GetAllPreferredContentUsecase
-) : BaseViewModel<HomeContract.Event, HomeContract.State, HomeContract.Effect>() {
+) : BaseViewModel<AppSettingsContract.Event, AppSettingsContract.State, AppSettingsContract.Effect>() {
 
-    override fun createInitialState(): HomeContract.State = HomeContract.State(
-        videoFeeds = ResourceUiState.Idle, searchFeed = ResourceUiState.Idle, searchText = ""
+    override fun createInitialState(): AppSettingsContract.State = AppSettingsContract.State(
+        searchFeed = ResourceUiState.Idle, searchText = ""
     )
 
-    override fun handleEvent(event: HomeContract.Event) {
+    override fun handleEvent(event: AppSettingsContract.Event) {
         when (event) {
-            HomeContract.Event.OnTryCheckAgainClick -> loadAllVideos()
-            is HomeContract.Event.OnSearchTextChanged -> {
+            AppSettingsContract.Event.OnTryCheckAgainClick -> loadAllVideos()
+            is AppSettingsContract.Event.OnSearchTextChanged -> {
                 loadSearchVideos(event.searchText)
             }
 
-            HomeContract.Event.OnBackPressed -> setEffect { HomeContract.Effect.BackNavigation }
-            is HomeContract.Event.OnVideoItemClicked -> {
-                setEffect { HomeContract.Effect.NavigateToDetails(event.itemId) }
+            AppSettingsContract.Event.OnBackPressed -> setEffect { AppSettingsContract.Effect.BackNavigation }
+            is AppSettingsContract.Event.OnVideoItemClicked -> {
+                setEffect { AppSettingsContract.Effect.NavigateToDetails(event.itemId) }
             }
 
-            HomeContract.Event.OnLoadDataRequested -> loadAllVideos()
+            AppSettingsContract.Event.OnLoadDataRequested -> loadAllVideos()
         }
     }
 
@@ -53,7 +53,7 @@ class HomeViewModel(
     }
 
     private fun loadAllVideos() {
-        setState { copy(videoFeeds = ResourceUiState.Loading) }
+        //setState { copy(videoFeeds = ResourceUiState.Loading) }
         screenModelScope.launch {
             loadPreferredContentUsecase(Unit).onSuccess { success ->
                 val videoFeeds = success.takeIf { it.isNotEmpty() }?.map { result ->
@@ -69,11 +69,11 @@ class HomeViewModel(
                     if (it != null) ResourceUiState.Success(it)
                     else ResourceUiState.Error("Erro")
                 }
-                setState {
+                /*setState {
                     copy(
                         videoFeeds = videoFeeds
                     )
-                }
+                }*/
             }.onFailure {
                 ResourceUiState.Error(it.message ?: "Erro")
             }

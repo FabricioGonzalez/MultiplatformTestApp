@@ -82,6 +82,7 @@ kotlin {
             implementation(libs.voyager.navigator)
             implementation(libs.voyager.screenModel)
             implementation(libs.voyager.transitions)
+            implementation(libs.voyager.tabNavigation)
             implementation(libs.composeImageLoader)
             implementation(libs.voyager.koin)
             api(libs.webview)

@@ -1,3 +1,5 @@
+package multiplatform
+
 interface Platform {
     val name: String
 }

@@ -17,8 +17,6 @@ import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -26,6 +24,7 @@ import cafe.adriel.voyager.core.screen.ScreenKey
 import cafe.adriel.voyager.koin.getScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import data.helpers.format
 import domain.model.VideoDetailsEntity
 import features.actresses.actress_details.ActressDetailsScreen
 import features.videos.video_details.components.Players
@@ -33,9 +32,12 @@ import features.videos.video_details.components.Tags
 import features.videos.video_details.components.VideoActresses
 import features.videos.video_details.components.VideoDetailsHeader
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import org.koin.core.parameter.parametersOf
 import presentation.model.ResourceUiState
+import presentation.mvi.use
 import presentation.ui.common.AppBarState
 import presentation.ui.common.AppScreen
 import presentation.ui.common.ArrowBackIcon
@@ -51,11 +53,9 @@ data class VideoDetailScreen(
     @Composable
     override fun Content() {
         val snackbarHostState = remember { SnackbarHostState() }
-        val videoDetailViewModel = getScreenModel<VideoDetailsViewModel> { parametersOf(videoId) }
+        val (state, setEvent, effects) = use(getScreenModel<VideoDetailsViewModel>())
 
         val sizes = calculateWindowSizeClass()
-
-        val state by videoDetailViewModel.uiState.collectAsState()
 
         val navigator = LocalNavigator.currentOrThrow
 
@@ -76,9 +76,9 @@ data class VideoDetailScreen(
                 )
             )
 
-            videoDetailViewModel.handleEvent(VideoDetailsContracts.Event.OnLoadDataRequested(videoId = videoId))
+            setEvent(VideoDetailsContracts.Event.OnLoadDataRequested(videoId = videoId))
 
-            videoDetailViewModel.effect.collectLatest { effect ->
+            effects.collectLatest { effect ->
                 when (effect) {
                     VideoDetailsContracts.Effect.CharacterAdded -> snackbarHostState.showSnackbar("Character added to favorites")
 
@@ -99,7 +99,7 @@ data class VideoDetailScreen(
         VideoDetailsPage(
             state = state,
             windowClassSizes = sizes,
-            setEvent = videoDetailViewModel::setEvent
+            setEvent = setEvent
         )
     }
 }
@@ -121,8 +121,8 @@ private fun VideoDetailsPage(
                 VideoDetailsHeader(modifier = Modifier.fillMaxWidth(), video = video)
 
                 Column(Modifier.fillMaxWidth().padding(16.dp)) {
-                    Text(video.createdAt)
-                    Text(video.addedToAt)
+                    Text(video.createdAt.format())
+                    Text(video.addedToAt?.format() ?: "Sem data")
                 }
 
 
@@ -163,8 +163,10 @@ private fun VideoDetailsPagePreview() {
                             id = "",
                             title = "",
                             photo = "",
-                            createdAt = "",
-                            addedToAt = "",
+                            createdAt = Clock.System.now()
+                                .toLocalDateTime(TimeZone.currentSystemDefault()),
+                            addedToAt = Clock.System.now()
+                                .toLocalDateTime(TimeZone.currentSystemDefault()),
                             actresses = listOf(),
                             tags = listOf(),
                             players = listOf(),

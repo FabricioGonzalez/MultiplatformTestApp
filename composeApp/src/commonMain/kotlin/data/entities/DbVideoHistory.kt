@@ -9,6 +9,7 @@ class DbVideoHistory : RealmObject {
     @PrimaryKey
     var _id: ObjectId = BsonObjectId()
     var videoId: String = ""
+    var watchedOn: String = ""
     var video: DbVideo? = null
 
 }

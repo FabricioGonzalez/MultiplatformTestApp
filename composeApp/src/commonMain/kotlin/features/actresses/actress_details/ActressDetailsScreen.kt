@@ -16,8 +16,6 @@ import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSiz
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import app.cash.paging.compose.collectAsLazyPagingItems
@@ -25,14 +23,13 @@ import cafe.adriel.voyager.core.screen.ScreenKey
 import cafe.adriel.voyager.koin.getScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import domain.model.ActressEntity
 import features.actresses.actress_details.components.ActressDetailsHeader
 import features.home.components.VideosList
 import features.videos.video_details.VideoDetailScreen
 import features.webview.WebviewScreen
 import kotlinx.coroutines.flow.collectLatest
-import org.koin.core.parameter.parametersOf
 import presentation.model.ResourceUiState
+import presentation.mvi.use
 import presentation.ui.common.AppBarState
 import presentation.ui.common.AppScreen
 import presentation.ui.common.ArrowBackIcon
@@ -49,14 +46,14 @@ data class ActressDetailsScreen(
     override fun Content() {
         val sizes = calculateWindowSizeClass()
         val snackbarHostState = remember { SnackbarHostState() }
-        val screenModel = getScreenModel<ActressDetailsViewModel> { parametersOf(actressId) }
-
-        val state by screenModel.uiState.collectAsState()
+        val (state, setEvent, effect) = use(getScreenModel<ActressDetailsViewModel>())
 
         val navigator = LocalNavigator.currentOrThrow
 
         LaunchedEffect(key1 = Unit) {
-            screenModel.effect.collectLatest { effect ->
+            setEvent(ActressDetailsContracts.Event.OnLoadDataRequested(actressId))
+
+            effect.collectLatest { effect ->
                 when (effect) {
                     ActressDetailsContracts.Effect.CharacterAdded -> snackbarHostState.showSnackbar(
                         "Character added to favorites"
@@ -86,7 +83,7 @@ data class ActressDetailsScreen(
                         title = null,
                         actions = {
                             IconButton(onClick = {
-                                screenModel.setEvent(
+                                setEvent(
                                     ActressDetailsContracts.Event.OnActressFavorited(
                                         !state.isFavorite
                                     )
@@ -99,16 +96,16 @@ data class ActressDetailsScreen(
                             }
                             IconButton(onClick = {
                                 if (state.actress is ResourceUiState.Success)
-                                    screenModel.setEvent(
+                                    setEvent(
                                         ActressDetailsContracts.Event.OnActressPhotoRequested(
-                                            (state.actress as ResourceUiState.Success<ActressEntity>).data.name
+                                            state.actress.data.name
                                         )
                                     )
                             }) {
                                 Icon(Icons.Rounded.PhotoLibrary, null)
                             }
                             IconButton(onClick = {
-                                screenModel.setEvent(
+                                setEvent(
                                     ActressDetailsContracts.Event.OnEditRequested(
                                         !state.isEditing
                                     )
@@ -139,7 +136,7 @@ data class ActressDetailsScreen(
                             actress = actress,
                             windowSizeClass = sizes,
                             isEditing = state.isEditing,
-                            setEvent = screenModel::setEvent
+                            setEvent = setEvent
                         )
                     }
                 },
@@ -153,7 +150,7 @@ data class ActressDetailsScreen(
                     VideosList(
                         videos.collectAsLazyPagingItems(),
                         windowSizeClass = sizes,
-                        setEvent = screenModel::setEvent
+                        setEvent = setEvent
                     )
                 },
                 onTryAgain = { },

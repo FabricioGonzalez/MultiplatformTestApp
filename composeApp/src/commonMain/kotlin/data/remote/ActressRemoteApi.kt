@@ -14,12 +14,13 @@ import app.cash.paging.PagingSourceLoadResultPage
 import app.cash.paging.PagingState
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.Optional
-import data.data_access.realmDb
+import multiplatform.realmDb
 import data.entities.DbPreferredContent
 import data.entities.DbPreferredContentType
 import domain.model.ActressEntity
 import graphql.ActressByIdQuery
 import graphql.ActressesQuery
+import graphql.SearchActressesByNameQuery
 import graphql.UpdateActressMutation
 import graphql.type.MutateActressInput
 import io.realm.kotlin.ext.query
@@ -92,6 +93,16 @@ class ActressRemoteApi(private val apolloClient: ApolloClient) {
         } catch (e: Exception) {
             e.printStackTrace()
             return null
+        }
+    }
+
+    suspend fun searchActresses(searchText: String): Flow<PagingData<ActressEntity>> {
+        return withContext(Dispatchers.IO) {
+            val pagingConfig = PagingConfig(pageSize = 40, initialLoadSize = 40)
+
+            Pager(pagingConfig) {
+                SearchActressesPagingSource(apolloClient, searchText)
+            }.flow
         }
     }
 
@@ -172,5 +183,90 @@ class ActressRemoteApi(private val apolloClient: ApolloClient) {
              */
             const val FIRST_PAGE_INDEX = 1
         }
+    }
+}
+
+private class SearchActressesPagingSource(
+    private val apolloClient: ApolloClient,
+    private val searchText: String
+) : PagingSource<String, ActressEntity>() {
+    override suspend fun load(params: PagingSourceLoadParams<String>): PagingSourceLoadResult<String, ActressEntity> {
+        val page = params.key ?: FIRST_PAGE_INDEX
+
+        val result = withContext(Dispatchers.IO) {
+            apolloClient.query(
+                when (params) {
+                    is PagingSourceLoadParamsRefresh<String> -> {
+                        SearchActressesByNameQuery(
+                            afterSize = Optional.present(40),
+                            actressName = searchText
+                        )
+                    }
+
+                    is PagingSourceLoadParamsAppend<String> -> {
+                        SearchActressesByNameQuery(
+                            afterSize = Optional.present(40),
+                            cursorEnd = Optional.present(params.key),
+                            actressName = searchText
+                        )
+                    }
+
+                    is PagingSourceLoadParamsPrepend<String> -> {
+                        SearchActressesByNameQuery(
+                            beforeSize = Optional.present(40),
+                            cursorStart = Optional.present(params.key),
+                            actressName = searchText
+                        )
+                    }
+
+                }
+            ).execute()
+        }
+
+        return when {
+            !result.hasErrors() -> {
+                result.dataOrThrow().actresses?.let { actress ->
+                    PagingSourceLoadResultPage(
+                        prevKey = null, nextKey = actress.pageInfo.endCursor,
+                        data = actress.edges?.mapNotNull { entity ->
+                            entity.node?.let { node ->
+                                ActressEntity(
+                                    id = node.id.toString(),
+                                    photo = entity.node.photoLink ?: "",
+                                    name = entity.node.name,
+                                    isFavorite = false,
+                                    link = entity.node.url ?: ""
+                                )
+                            }
+                        } ?: emptyList(),
+                    )
+
+                } ?: PagingSourceLoadResultError(
+                    Exception("Received a ${result.errors}."),
+                )
+            }
+
+            result.hasErrors() -> {
+                PagingSourceLoadResultError(
+                    Exception("Received a ${result.errors}."),
+                )
+            }
+
+            else -> {
+                PagingSourceLoadResultError(
+                    Exception("Received a ${result.errors}."),
+                )
+            }
+        }
+    }
+
+    override fun getRefreshKey(state: PagingState<String, ActressEntity>): String? = null
+
+    companion object {
+
+        /**
+         * The GitHub REST API uses [1-based page numbering](https://docs.github.com/en/rest/overview/resources-in-the-rest-api#pagination).
+         */
+        const val FIRST_PAGE_INDEX = 1
     }
 }

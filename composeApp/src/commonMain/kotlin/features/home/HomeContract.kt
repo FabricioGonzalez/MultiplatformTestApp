@@ -2,6 +2,7 @@ package features.home
 
 import androidx.paging.PagingData
 import domain.model.VideoEntity
+import features.home.data.VideoFeed
 import kotlinx.coroutines.flow.Flow
 import presentation.model.ResourceUiState
 import presentation.mvi.UiEffect
@@ -13,11 +14,14 @@ interface HomeContract {
         data object OnTryCheckAgainClick : Event
         data object OnLoadDataRequested : Event
         data class OnVideoItemClicked(val itemId: String) : Event
+        data class OnSearchTextChanged(val searchText: String) : Event
         data object OnBackPressed : Event
     }
 
     data class State(
         val videoFeeds: ResourceUiState<List<VideoFeed>>,
+        val searchFeed: ResourceUiState<Flow<PagingData<VideoEntity>>>,
+        val searchText: String,
     ) : UiState
 
     sealed interface Effect : UiEffect {
@@ -27,8 +31,3 @@ interface HomeContract {
         data class NavigateToDetails(val id: String) : Effect
     }
 }
-
-data class VideoFeed(
-    val title: String,
-    val videos: ResourceUiState<Flow<PagingData<VideoEntity>>>,
-)

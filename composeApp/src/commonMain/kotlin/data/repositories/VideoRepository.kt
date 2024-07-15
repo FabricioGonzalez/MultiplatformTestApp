@@ -1,21 +1,28 @@
 package data.repositories
 
 import androidx.paging.PagingData
-import data.data_access.realmDb
 import data.entities.DbPreferredContent
 import data.entities.DbPreferredContentType
+import data.entities.DbVideo
 import data.entities.DbVideoHistory
+import data.helpers.format
+import data.helpers.now
+import data.helpers.parse
 import data.remote.VideoRemoteApi
+import domain.model.HistoryEntry
 import domain.model.PreferredContentEntity
 import domain.model.VideoDetailsEntity
 import domain.model.VideoEntity
 import domain.model.enums.ContentPreferrence
 import io.realm.kotlin.ext.query
+import io.realm.kotlin.query.Sort
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.LocalDateTime
+import multiplatform.realmDb
 
 class VideoRepository(private val api: VideoRemoteApi) {
     fun searchByVideos(param: String): Flow<List<VideoEntity>> {
@@ -27,17 +34,23 @@ class VideoRepository(private val api: VideoRemoteApi) {
     }
 
 
-    suspend fun writeToHistory(videoId: String) {
+    suspend fun writeToHistory(video: VideoDetailsEntity) {
         try {
             withContext(Dispatchers.IO) {
-                val tag = realmDb.query<DbVideoHistory>(
+                val history = realmDb.query<DbVideoHistory>(
                     "videoId == $0",
-                    videoId
+                    video.id
                 ).find().firstOrNull()
-                if (tag == null) {
+                if (history == null) {
                     println(realmDb.write {
                         copyToRealm(DbVideoHistory().apply {
-                            this.videoId = videoId
+                            this.videoId = video.id
+                            this.watchedOn = LocalDateTime.now().format()
+                            this.video = DbVideo().apply {
+                                this.videoId = video.id
+                                this.title = video.title
+                                this.photo = video.photo
+                            }
                         })
                     })
                 }
@@ -47,8 +60,24 @@ class VideoRepository(private val api: VideoRemoteApi) {
         }
     }
 
-    suspend fun listHistory() {
+    suspend fun listHistory(): List<HistoryEntry> {
+        try {
+            return withContext(Dispatchers.IO) {
+                realmDb.query<DbVideoHistory>().sort("watchedOn", Sort.DESCENDING)
+                    .find().map { result ->
+                        HistoryEntry(
+                            id = result.videoId,
+                            videoTitle = result.video?.title ?: "",
+                            watchedOn = result.watchedOn.parse() ?: LocalDateTime.now(),
+                            image = result.video?.photo
+                        )
+                    }
 
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return emptyList()
+        }
     }
 
     suspend fun getContentPreference(): List<PreferredContentEntity> {
@@ -82,6 +111,10 @@ class VideoRepository(private val api: VideoRemoteApi) {
 
     suspend fun getRecentVideos(): Flow<PagingData<VideoEntity>> {
         return api.loadAllRecentVideos()
+    }
+
+    suspend fun getSearchedVideos(searchText: String): Flow<PagingData<VideoEntity>> {
+        return api.loadSearchVideos(searchText)
     }
 }
 

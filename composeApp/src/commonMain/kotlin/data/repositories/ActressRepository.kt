@@ -1,7 +1,7 @@
 package data.repositories
 
 import androidx.paging.PagingData
-import data.data_access.realmDb
+import multiplatform.realmDb
 import data.entities.DbPreferredContent
 import data.entities.DbPreferredContentType
 import data.remote.ActressRemoteApi
@@ -45,10 +45,8 @@ class ActressRepository(private val api: ActressRemoteApi) {
                 } else {
                     realmDb.writeBlocking {
                         // Get the live frog object with findLatest(), then delete it
-                        if (actress != null) {
-                            findLatest(actress)
-                                ?.also { delete(it) }
-                        }
+                        findLatest(actress)
+                            ?.also { delete(it) }
                     }
                 }
             }
@@ -56,5 +54,9 @@ class ActressRepository(private val api: ActressRemoteApi) {
             e.printStackTrace()
         }
 
+    }
+
+    suspend fun searchActresses(param: String): Flow<PagingData<ActressEntity>> {
+        return api.searchActresses(searchText = param)
     }
 }

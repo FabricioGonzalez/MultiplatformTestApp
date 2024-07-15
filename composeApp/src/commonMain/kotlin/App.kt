@@ -6,7 +6,11 @@ import androidx.compose.material.icons.automirrored.rounded.Login
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.PeopleAlt
 import androidx.compose.material.icons.rounded.Settings
-import androidx.compose.material3.*
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
@@ -22,7 +26,7 @@ import features.actresses.actress_details.ActressDetailsScreen
 import features.actresses.actresses_list.ActressesListScreen
 import features.home.HomeScreen
 import features.login.LoginScreen
-import features.settings.ui.SettingsScreen
+import features.settings.SettingsPage
 import features.videos.video_details.VideoDetailScreen
 import features.webview.WebviewScreen
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -88,7 +92,7 @@ fun App(isDarkTheme: Boolean = false, appColor: ColorScheme?) {
                 isDefault = false,
                 isNavigatable = true,
                 disableNavBar = false,
-                uiScreen = SettingsScreen("", onCompose = setAppBarState),
+                uiScreen = SettingsPage("", onCompose = setAppBarState),
                 title = "Settings"
             ),
         )

@@ -15,15 +15,13 @@ import cafe.adriel.voyager.core.screen.ScreenKey
 import cafe.adriel.voyager.koin.getScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import com.multiplatform.webview.web.WebContent
+import com.multiplatform.webview.setting.PlatformWebSettings
 import com.multiplatform.webview.web.WebView
-import com.multiplatform.webview.web.WebViewNavigator
-import com.multiplatform.webview.web.WebViewState
+import com.multiplatform.webview.web.rememberWebViewNavigator
+import com.multiplatform.webview.web.rememberWebViewState
 import features.actresses.actress_details.ActressDetailsScreen
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.collectLatest
+import presentation.mvi.use
 import presentation.ui.common.AppBarState
 import presentation.ui.common.AppScreen
 import presentation.ui.common.ArrowBackIcon
@@ -35,15 +33,26 @@ data class WebviewScreen(
 
     override val key: ScreenKey = "Webview Screen"
 
-    private val webviewState: WebViewState =
-        WebViewState(WebContent.Url("https://www.pornpics.com/?q=$actressName"))
-    private val webViewNavigator: WebViewNavigator =
-        WebViewNavigator(CoroutineScope(Dispatchers.IO))
-
     @Composable
     override fun Content() {
         val snackbarHostState = remember { SnackbarHostState() }
-        val screenModel = getScreenModel<WebviewViewModel>()
+        val (state, setEvent, effect) = use(getScreenModel<WebviewViewModel>())
+
+        val webviewContent =
+            rememberWebViewState("https://www.pornpics.com/?q=$actressName").apply {
+                webSettings.isJavaScriptEnabled = true
+                webSettings.androidWebSettings.apply {
+                    safeBrowsingEnabled = false
+                    allowFileAccess = true
+                    domStorageEnabled = true
+                    mediaPlaybackRequiresUserGesture = true
+                    isAlgorithmicDarkeningAllowed = true
+                    layerType = PlatformWebSettings.AndroidWebSettings.LayerType.SOFTWARE
+                }
+                webSettings.allowFileAccessFromFileURLs = true
+                webSettings.allowUniversalAccessFromFileURLs = true
+            }
+        val webViewNavigator = rememberWebViewNavigator()
 
         val navigator = LocalNavigator.currentOrThrow
 
@@ -64,7 +73,7 @@ data class WebviewScreen(
                 )
             )
 
-            screenModel.effect.collectLatest { effect ->
+            effect.collectLatest { effect ->
                 when (effect) {
                     WebviewContracts.Effect.CharacterAdded -> snackbarHostState.showSnackbar("Character added to favorites")
 
@@ -83,15 +92,16 @@ data class WebviewScreen(
         Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(4.dp)) {
             TextField(
                 readOnly = true,
-                value = webviewState.lastLoadedUrl ?: "",
+                value = webviewContent.lastLoadedUrl ?: "",
                 onValueChange = {},
                 modifier = Modifier.fillMaxWidth()
             )
 
             WebView(
-                state = webviewState,
+                state = webviewContent,
                 navigator = webViewNavigator,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxWidth()
+                    .weight(0.95f)
             )
         }
     }

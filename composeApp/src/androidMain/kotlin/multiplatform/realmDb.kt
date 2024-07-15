@@ -1,4 +1,4 @@
-package data.data_access
+package multiplatform
 
 import data.entities.DbActress
 import data.entities.DbPreferredContent
@@ -7,10 +7,9 @@ import data.entities.DbVideo
 import data.entities.DbVideoHistory
 import io.realm.kotlin.Realm
 import io.realm.kotlin.RealmConfiguration
-import java.io.File
 
 actual val realmDb = Realm.open(
-    configuration = RealmConfiguration.Builder(
+    configuration = RealmConfiguration.create(
         schema = setOf(
             DbVideo::class,
             DbActress::class,
@@ -19,7 +18,4 @@ actual val realmDb = Realm.open(
             DbVideoHistory::class,
         )
     )
-        .directory(File(System.getenv("APPDATA"), "MediaApp").absolutePath)
-        .name("media_app_db")
-        .build()
 )
