@@ -28,7 +28,9 @@ browser = "1.8.0"
 webview = "1.9.20"
 windowsClassSize = "0.5.0"
 kermit = "2.0.3"
+datastore = "1.1.1"
 kotlinx-datetime = "0.6.0"
+okio = "3.9.0"
 systemVersion = "1.0.2"
 versionCode = "1"
 
@@ -60,12 +62,16 @@ paging-compose = { module = "app.cash.paging:paging-compose-common", version.ref
 koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koinVersion" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koinVersion" }
 koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koinCompose" }
+okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 
 voyager-navigator = { module = "cafe.adriel.voyager:voyager-navigator", version.ref = "voyager" }
 voyager-screenModel = { module = "cafe.adriel.voyager:voyager-screenmodel", version.ref = "voyager" }
 voyager-tabNavigation = { module = "cafe.adriel.voyager:voyager-tab-navigator", version.ref = "voyager" }
 voyager-transitions = { module = "cafe.adriel.voyager:voyager-transitions", version.ref = "voyager" }
 voyager-koin = { module = "cafe.adriel.voyager:voyager-koin", version.ref = "voyager" }
+
+datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }
+datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 
 kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
 #kermit-crashlytics = { module = "co.touchlab:kermit-crashlytics", version.ref = "kermit" }

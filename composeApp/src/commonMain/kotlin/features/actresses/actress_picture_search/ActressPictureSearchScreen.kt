@@ -1,4 +1,4 @@
-package features.webview
+package features.actresses.actress_picture_search
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,24 +19,24 @@ import com.multiplatform.webview.setting.PlatformWebSettings
 import com.multiplatform.webview.web.WebView
 import com.multiplatform.webview.web.rememberWebViewNavigator
 import com.multiplatform.webview.web.rememberWebViewState
-import features.actresses.actress_details.ActressDetailsScreen
+import features.navigation.navigateToActressesDetails
 import kotlinx.coroutines.flow.collectLatest
 import presentation.mvi.use
 import presentation.ui.common.AppBarState
 import presentation.ui.common.AppScreen
 import presentation.ui.common.ArrowBackIcon
 
-data class WebviewScreen(
-    private val actressName: String, override val route: String = "Webview Screen",
+data class ActressPictureSearchScreen(
+    private val actressName: String, override val route: String = "Picture Search",
     override val onCompose: (AppBarState) -> Unit,
 ) : AppScreen {
 
-    override val key: ScreenKey = "Webview Screen"
+    override val key: ScreenKey = "ActressPictureSearch"
 
     @Composable
     override fun Content() {
         val snackbarHostState = remember { SnackbarHostState() }
-        val (state, setEvent, effect) = use(getScreenModel<WebviewViewModel>())
+        val (state, setEvent, effect) = use(getScreenModel<ActressPictureSearchViewModel>())
 
         val webviewContent =
             rememberWebViewState("https://www.pornpics.com/?q=$actressName").apply {
@@ -75,16 +75,23 @@ data class WebviewScreen(
 
             effect.collectLatest { effect ->
                 when (effect) {
-                    WebviewContracts.Effect.CharacterAdded -> snackbarHostState.showSnackbar("Character added to favorites")
+                    ActressPictureSearchContracts.Effect.CharacterAdded -> snackbarHostState.showSnackbar(
+                        "Character added to favorites"
+                    )
 
-                    WebviewContracts.Effect.CharacterRemoved -> snackbarHostState.showSnackbar("Character removed from favorites")
+                    ActressPictureSearchContracts.Effect.CharacterRemoved -> snackbarHostState.showSnackbar(
+                        "Character removed from favorites"
+                    )
 
-                    WebviewContracts.Effect.BackNavigation -> navigator.pop()
-                    is WebviewContracts.Effect.NavigateToActressesRequested -> {
-                        navigator.push(ActressDetailsScreen(effect.id, onCompose = onCompose))
+                    ActressPictureSearchContracts.Effect.BackNavigation -> navigator.pop()
+                    is ActressPictureSearchContracts.Effect.NavigateToActressesRequested -> {
+                        navigator.navigateToActressesDetails(
+                            actressId = effect.id,
+                            onCompose = onCompose
+                        )
                     }
 
-                    is WebviewContracts.Effect.PlayVideoRequested -> {}
+                    is ActressPictureSearchContracts.Effect.PlayVideoRequested -> {}
                 }
             }
         }

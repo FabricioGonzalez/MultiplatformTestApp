@@ -31,7 +31,7 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import components.ImageBox
 import data.helpers.format
-import features.videos.video_details.VideoDetailScreen
+import features.navigation.navigateToVideoDetails
 import kotlinx.coroutines.flow.collectLatest
 import presentation.mvi.use
 import presentation.ui.common.AppBarState
@@ -93,7 +93,10 @@ class AppHistoryScreen(
                     }
 
                     is AppHistoryContract.Effect.NavigateToDetails -> {
-                        navigator.parent?.push(VideoDetailScreen(effect.id, onCompose = onCompose))
+                        navigator.parent?.navigateToVideoDetails(
+                            videoId = effect.id,
+                            onCompose = onCompose
+                        )
                     }
 
                 }

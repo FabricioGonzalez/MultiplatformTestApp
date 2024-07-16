@@ -21,7 +21,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import features.home.HomeScreen
+import features.navigation.navigateToHome
 import presentation.ui.common.AppBarState
 import presentation.ui.common.AppScreen
 
@@ -39,7 +39,7 @@ class LoginScreen(
         val loginFunction =
             {
                 if (user == "admin" && password == "library2022")
-                    navigator.replace(HomeScreen(onCompose = onCompose))
+                    navigator.navigateToHome(onCompose = onCompose)
             }
 
 

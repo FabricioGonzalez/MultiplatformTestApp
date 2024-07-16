@@ -29,7 +29,7 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import features.home.components.PortraitSweetsCard
 import features.home.components.VideosListFeed
 import features.home.components.rememberColumns
-import features.videos.video_details.VideoDetailScreen
+import features.navigation.navigateToVideoDetails
 import kotlinx.coroutines.flow.collectLatest
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import presentation.mvi.use
@@ -47,7 +47,6 @@ class HomeScreen(
     override fun Content() {
         val (state, setEvent, effect) = use(getScreenModel<HomeViewModel>())
         val sizes = calculateWindowSizeClass()
-
         val snackbarHostState = remember { SnackbarHostState() }
 
         val navigator = LocalNavigator.currentOrThrow
@@ -77,7 +76,7 @@ class HomeScreen(
                     }
 
                     is HomeContract.Effect.NavigateToDetails -> {
-                        navigator.push(VideoDetailScreen(effect.id, onCompose = onCompose))
+                        navigator.navigateToVideoDetails(videoId = effect.id, onCompose = onCompose)
                     }
 
                 }

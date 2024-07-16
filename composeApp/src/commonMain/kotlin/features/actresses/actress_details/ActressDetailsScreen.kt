@@ -24,9 +24,9 @@ import cafe.adriel.voyager.koin.getScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import features.actresses.actress_details.components.ActressDetailsHeader
+import features.actresses.actress_picture_search.ActressPictureSearchScreen
 import features.home.components.VideosList
-import features.videos.video_details.VideoDetailScreen
-import features.webview.WebviewScreen
+import features.navigation.navigateToVideoDetails
 import kotlinx.coroutines.flow.collectLatest
 import presentation.model.ResourceUiState
 import presentation.mvi.use
@@ -60,7 +60,7 @@ data class ActressDetailsScreen(
                     )
 
                     is ActressDetailsContracts.Effect.OnActressPhotoRequested -> navigator.push(
-                        WebviewScreen(effect.actressName, onCompose = onCompose)
+                        ActressPictureSearchScreen(effect.actressName, onCompose = onCompose)
                     )
 
                     ActressDetailsContracts.Effect.CharacterRemoved -> snackbarHostState.showSnackbar(
@@ -68,7 +68,10 @@ data class ActressDetailsScreen(
                     )
 
                     is ActressDetailsContracts.Effect.OnVideoItemClicked -> {
-                        navigator.push(VideoDetailScreen(effect.videoId, onCompose = onCompose))
+                        navigator.navigateToVideoDetails(
+                            videoId = effect.videoId,
+                            onCompose = onCompose
+                        )
                     }
 
                     ActressDetailsContracts.Effect.BackNavigation -> navigator.pop()
@@ -77,7 +80,7 @@ data class ActressDetailsScreen(
         }
 
         Column(Modifier.fillMaxSize()) {
-            LaunchedEffect(key1 = state.actress) {
+            LaunchedEffect(key1 = state.actress, key2 = state.isFavorite) {
                 onCompose(
                     AppBarState(
                         title = null,

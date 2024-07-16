@@ -24,8 +24,8 @@ import cafe.adriel.voyager.koin.getScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import domain.model.ActressEntity
-import features.actresses.actress_details.ActressDetailsScreen
 import features.actresses.actresses_list.components.ActressesList
+import features.navigation.navigateToActressesDetails
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flow
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -72,10 +72,8 @@ data class ActressesListScreen(
                     )
 
                     ActressesListContracts.Effect.BackNavigation -> navigator.pop()
-                    is ActressesListContracts.Effect.ActressDetailNavigation -> navigator.push(
-                        ActressDetailsScreen(
-                            actressId = effect.actressId, onCompose = onCompose
-                        )
+                    is ActressesListContracts.Effect.ActressDetailNavigation -> navigator.navigateToActressesDetails(
+                        actressId = effect.actressId, onCompose = onCompose
                     )
                 }
             }

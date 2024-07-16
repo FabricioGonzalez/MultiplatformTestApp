@@ -30,7 +30,9 @@ import java.io.File
 fun main() {
     val paletteGeneration = PaletteGeneration()
 
-    initKoin {}
+    initKoin {
+
+    }
 
     application {
         val os = System.getProperty("os.name")

@@ -26,7 +26,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import data.helpers.format
 import domain.model.VideoDetailsEntity
-import features.actresses.actress_details.ActressDetailsScreen
+import features.navigation.navigateToActressesDetails
 import features.videos.video_details.components.Players
 import features.videos.video_details.components.Tags
 import features.videos.video_details.components.VideoActresses
@@ -88,7 +88,10 @@ data class VideoDetailScreen(
 
                     VideoDetailsContracts.Effect.BackNavigation -> navigator.pop()
                     is VideoDetailsContracts.Effect.NavigateToActressesRequested -> {
-                        navigator.push(ActressDetailsScreen(effect.id, onCompose = onCompose))
+                        navigator.navigateToActressesDetails(
+                            actressId = effect.id,
+                            onCompose = onCompose
+                        )
                     }
 
                     is VideoDetailsContracts.Effect.PlayVideoRequested -> {}

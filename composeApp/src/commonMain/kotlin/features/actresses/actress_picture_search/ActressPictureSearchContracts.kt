@@ -1,4 +1,4 @@
-package features.webview
+package features.actresses.actress_picture_search
 
 import domain.model.VideoDetailsEntity
 import presentation.model.ResourceUiState
@@ -6,7 +6,7 @@ import presentation.mvi.UiEffect
 import presentation.mvi.UiEvent
 import presentation.mvi.UiState
 
-interface WebviewContracts {
+interface ActressPictureSearchContracts {
     sealed interface Event : UiEvent {
 
         data object OnBackPressed : Event

@@ -20,15 +20,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import cafe.adriel.voyager.navigator.CurrentScreen
 import cafe.adriel.voyager.navigator.Navigator
+import cafe.adriel.voyager.transitions.SlideTransition
 import features.actresses.actress_details.ActressDetailsScreen
+import features.actresses.actress_picture_search.ActressPictureSearchScreen
 import features.actresses.actresses_list.ActressesListScreen
 import features.home.HomeScreen
 import features.login.LoginScreen
 import features.settings.SettingsPage
 import features.videos.video_details.VideoDetailScreen
-import features.webview.WebviewScreen
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import presentation.ui.common.AppBarState
 import presentation.ui.common.AppScreen
@@ -84,7 +84,7 @@ fun App(isDarkTheme: Boolean = false, appColor: ColorScheme?) {
                 isDefault = false,
                 isNavigatable = false,
                 disableNavBar = true,
-                uiScreen = WebviewScreen("", onCompose = setAppBarState),
+                uiScreen = ActressPictureSearchScreen("", onCompose = setAppBarState),
                 title = "Webview Screen"
             ),
             NavPoint(
@@ -100,8 +100,7 @@ fun App(isDarkTheme: Boolean = false, appColor: ColorScheme?) {
 
         Navigator(screens.first { it.isDefault }.uiScreen) { nav ->
             val sizes = calculateWindowSizeClass()
-            val showNavBar =
-                derivedStateOf { sizes.widthSizeClass != WindowWidthSizeClass.Compact }
+            val showNavBar = derivedStateOf { sizes.widthSizeClass != WindowWidthSizeClass.Compact }
             Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
                 when {
                     appBarState.searchBar != null -> {
@@ -109,8 +108,7 @@ fun App(isDarkTheme: Boolean = false, appColor: ColorScheme?) {
                     }
 
                     appBarState.title != null || appBarState.actions != null || appBarState.navigationIcon != null -> {
-                        TopAppBar(
-                            title = appBarState.title ?: {},
+                        TopAppBar(title = appBarState.title ?: {},
                             navigationIcon = appBarState.navigationIcon ?: {},
                             actions = appBarState.actions ?: {})
                     }
@@ -133,7 +131,7 @@ fun App(isDarkTheme: Boolean = false, appColor: ColorScheme?) {
                     if (showNavBar.value && screens.firstOrNull { navPoint -> navPoint.uiScreen.key == nav.lastItemOrNull?.key }?.disableNavBar != true) {
                         NavRailBar(navigationItems = screens, navigator = nav)
                     }
-                    CurrentScreen()
+                    SlideTransition(navigator = nav)
                 }
             }
         }

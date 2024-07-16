@@ -1,4 +1,4 @@
-package features.webview
+package features.actresses.actress_picture_search
 
 import cafe.adriel.voyager.core.model.screenModelScope
 import domain.interactors.videos.GetVideoDetailsUsecase
@@ -6,27 +6,27 @@ import kotlinx.coroutines.launch
 import presentation.model.ResourceUiState
 import presentation.mvi.BaseViewModel
 
-class WebviewViewModel(
+class ActressPictureSearchViewModel(
     private val videoDetailsUsecase: GetVideoDetailsUsecase
-) : BaseViewModel<WebviewContracts.Event, WebviewContracts.State, WebviewContracts.Effect>() {
+) : BaseViewModel<ActressPictureSearchContracts.Event, ActressPictureSearchContracts.State, ActressPictureSearchContracts.Effect>() {
 
-    override fun createInitialState(): WebviewContracts.State =
-        WebviewContracts.State(
+    override fun createInitialState(): ActressPictureSearchContracts.State =
+        ActressPictureSearchContracts.State(
             video = ResourceUiState.Idle,
             isFavorite = ResourceUiState.Idle,
         )
 
-    override fun handleEvent(event: WebviewContracts.Event) {
+    override fun handleEvent(event: ActressPictureSearchContracts.Event) {
         when (event) {
-            WebviewContracts.Event.OnBackPressed -> setEffect { WebviewContracts.Effect.BackNavigation }
-            is WebviewContracts.Event.OnNavigateToActressPressed -> setEffect {
-                WebviewContracts.Effect.NavigateToActressesRequested(
+            ActressPictureSearchContracts.Event.OnBackPressed -> setEffect { ActressPictureSearchContracts.Effect.BackNavigation }
+            is ActressPictureSearchContracts.Event.OnNavigateToActressPressed -> setEffect {
+                ActressPictureSearchContracts.Effect.NavigateToActressesRequested(
                     event.id
                 )
             }
 
-            is WebviewContracts.Event.OnPlayVideoPressed -> setEffect {
-                WebviewContracts.Effect.PlayVideoRequested(
+            is ActressPictureSearchContracts.Event.OnPlayVideoPressed -> setEffect {
+                ActressPictureSearchContracts.Effect.PlayVideoRequested(
                     event.url
                 )
             }
