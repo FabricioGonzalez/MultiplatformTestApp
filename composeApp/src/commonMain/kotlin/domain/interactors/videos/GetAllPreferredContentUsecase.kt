@@ -1,9 +1,9 @@
 package domain.interactors.videos
 
-import data.repositories.VideoRepository
 import domain.interactors.type.BaseUseCase
 import domain.model.PreferredContentEntity
 import domain.model.enums.ContentPreferrence
+import domain.repositories.VideoRepository
 import kotlinx.coroutines.CoroutineDispatcher
 
 class GetAllPreferredContentUsecase(

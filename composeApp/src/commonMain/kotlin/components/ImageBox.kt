@@ -27,14 +27,13 @@ fun ImageBox(modifier: Modifier = Modifier, photo: String) {
         ResourceUiState.Success(
             it[booleanPreferencesKey("can_show_images")] ?: false
         )
-    }
-        .collectAsState(ResourceUiState.Loading)
+    }.collectAsState(ResourceUiState.Loading)
 
     ManagementResourceUiState(
         resourceUiState = canShowImages,
         successView = { result ->
             Image(
-                modifier = modifier/*.alpha(0f).background(Color.Cyan)*/,
+                modifier = modifier,
                 painter = if (result) rememberImagePainter(photo) else rememberVectorPainter(
                     Icons.Rounded.Cancel
                 ),

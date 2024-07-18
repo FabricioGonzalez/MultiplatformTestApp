@@ -4,13 +4,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Login
 import androidx.compose.material.icons.rounded.Home
+import androidx.compose.material.icons.rounded.OpenInBrowser
 import androidx.compose.material.icons.rounded.PeopleAlt
 import androidx.compose.material.icons.rounded.Settings
-import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.ColorScheme
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.*
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
@@ -29,6 +26,8 @@ import features.home.HomeScreen
 import features.login.LoginScreen
 import features.settings.SettingsPage
 import features.videos.video_details.VideoDetailScreen
+import features.web_locals.details.WebLocalsDetailScreen
+import features.web_locals.list.WebLocalsListScreen
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import presentation.ui.common.AppBarState
 import presentation.ui.common.AppScreen
@@ -60,18 +59,36 @@ fun App(isDarkTheme: Boolean = false, appColor: ColorScheme?) {
                 uiScreen = HomeScreen(onCompose = setAppBarState),
                 title = "Home"
             ),
+
+            NavPoint(
+                isDefault = false,
+                icon = Icons.Rounded.PeopleAlt,
+                uiScreen = ActressesListScreen(onCompose = setAppBarState),
+                title = "Actress List"
+            ),
+
+            NavPoint(
+                icon = Icons.Rounded.OpenInBrowser,
+                isDefault = false,
+                isNavigatable = true,
+                disableNavBar = false,
+                uiScreen = WebLocalsListScreen(onCompose = setAppBarState),
+                title = "WebLocals"
+            ),
+            NavPoint(
+                icon = Icons.Rounded.Settings,
+                isDefault = false,
+                isNavigatable = true,
+                disableNavBar = false,
+                uiScreen = SettingsPage("", onCompose = setAppBarState),
+                title = "Settings"
+            ),
             NavPoint(
                 isDefault = false,
                 isNavigatable = false,
                 disableNavBar = true,
                 uiScreen = VideoDetailScreen("", onCompose = setAppBarState),
                 title = "Video Details"
-            ),
-            NavPoint(
-                isDefault = false,
-                icon = Icons.Rounded.PeopleAlt,
-                uiScreen = ActressesListScreen(onCompose = setAppBarState),
-                title = "Actress List"
             ),
             NavPoint(
                 isDefault = false,
@@ -88,12 +105,11 @@ fun App(isDarkTheme: Boolean = false, appColor: ColorScheme?) {
                 title = "Webview Screen"
             ),
             NavPoint(
-                icon = Icons.Rounded.Settings,
                 isDefault = false,
-                isNavigatable = true,
-                disableNavBar = false,
-                uiScreen = SettingsPage("", onCompose = setAppBarState),
-                title = "Settings"
+                isNavigatable = false,
+                disableNavBar = true,
+                uiScreen = WebLocalsDetailScreen("", onCompose = setAppBarState),
+                title = "WebLocalDetails"
             ),
         )
 

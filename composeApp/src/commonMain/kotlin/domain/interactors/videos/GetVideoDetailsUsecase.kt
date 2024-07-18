@@ -1,8 +1,8 @@
 package domain.interactors.videos
 
-import data.repositories.VideoRepository
 import domain.interactors.type.BaseUseCase
 import domain.model.VideoDetailsEntity
+import domain.repositories.VideoRepository
 import kotlinx.coroutines.CoroutineDispatcher
 
 class GetVideoDetailsUsecase(

@@ -17,6 +17,9 @@ query videos($cursorEnd:String,$cursorStart:String
                 id
                 title
                 photoLink
+                createdAt
+                updatedAt
+                originalCreationDate
             }
         }
     }

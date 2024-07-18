@@ -97,6 +97,7 @@ data class ActressDetailsScreen(
                                     null
                                 )
                             }
+                            
                             IconButton(onClick = {
                                 if (state.actress is ResourceUiState.Success)
                                     setEvent(

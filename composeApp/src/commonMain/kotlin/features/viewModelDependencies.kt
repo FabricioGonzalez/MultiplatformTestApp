@@ -7,6 +7,8 @@ import features.home.HomeViewModel
 import features.settings.app_settings.ui.AppSettingsViewModel
 import features.settings.history.ui.AppHistoryViewModel
 import features.videos.video_details.VideoDetailsViewModel
+import features.web_locals.details.WebLocalsDetailsViewModel
+import features.web_locals.list.WebLocalsListViewModel
 import org.koin.dsl.module
 
 val viewModelDependencies = module {
@@ -17,6 +19,9 @@ val viewModelDependencies = module {
     factory { ActressPictureSearchViewModel(get()) }
     factory { AppSettingsViewModel(get(), get(), get()) }
     factory { AppHistoryViewModel(get()) }
+    factory { AppHistoryViewModel(get()) }
+    factory { WebLocalsListViewModel(get(), get()) }
+    factory { WebLocalsDetailsViewModel(get(), get()) }
     factory { AppHistoryViewModel(get()) }
 
 }

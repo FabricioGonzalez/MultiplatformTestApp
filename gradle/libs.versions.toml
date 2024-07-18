@@ -1,5 +1,5 @@
 [versions]
-agp = "8.5.0"
+agp = "8.2.0"
 android-compileSdk = "34"
 android-minSdk = "24"
 android-targetSdk = "34"
@@ -31,7 +31,10 @@ kermit = "2.0.3"
 datastore = "1.1.1"
 kotlinx-datetime = "0.6.0"
 okio = "3.9.0"
-systemVersion = "1.0.2"
+room = "2.7.0-alpha05"
+ksp = "2.0.0-1.0.23"
+sqlite = "2.5.0-SNAPSHOT"
+systemVersion = "1.0.3"
 versionCode = "1"
 
 [libraries]
@@ -56,8 +59,16 @@ realm-sync = { module = "io.realm.kotlin:library-sync", version.ref = "realmVers
 
 kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutineVersion" }
 
+room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+room-runtime-android = { module = "androidx.room:room-runtime-android", version.ref = "room" }
+room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+room-paging = { group = "androidx.room", name = "room-paging", version.ref = "room" }
+
+sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
+
 paging-core = { module = "app.cash.paging:paging-common", version.ref = "pagingVersion" }
 paging-compose = { module = "app.cash.paging:paging-compose-common", version.ref = "pagingVersion" }
+
 
 koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koinVersion" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koinVersion" }
@@ -98,3 +109,5 @@ compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "
 realm = { id = "io.realm.kotlin", version.ref = "realmVersion" }
 apollo3 = { id = "com.apollographql.apollo3", version.ref = "apolloClientVersion" }
 conveyor = { id = "dev.hydraulic.conveyor", version = "1.10" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+room = { id = "androidx.room", version.ref = "room" }

@@ -60,7 +60,7 @@ class ActressPictureSearchViewModel(
             /*switchCharacterFavoriteUseCase(idCharacter)
                 .onSuccess {
                     setState { copy(isFavorite = ResourceUiState.Success(it)) }
-                    setEffect { VideoDetailsContracts.Effect.CharacterAdded }
+                    setEffect { WebLocalsListContracts.Effect.CharacterAdded }
                 }.onFailure { setState { copy(isFavorite = ResourceUiState.Error()) } }*/
         }
     }

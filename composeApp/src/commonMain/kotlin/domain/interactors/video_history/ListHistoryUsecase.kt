@@ -1,8 +1,8 @@
 package domain.interactors.video_history
 
-import data.repositories.VideoRepository
 import domain.interactors.type.BaseUseCase
 import domain.model.HistoryEntry
+import domain.repositories.VideoRepository
 import kotlinx.coroutines.CoroutineDispatcher
 
 class ListHistoryUsecase(

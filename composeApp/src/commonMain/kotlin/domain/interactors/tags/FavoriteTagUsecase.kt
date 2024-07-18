@@ -1,8 +1,8 @@
 package domain.interactors.tags
 
-import data.repositories.TagRepository
 import domain.interactors.type.BaseUseCase
 import domain.model.inputs.TagFavoriteInput
+import domain.repositories.TagRepository
 import kotlinx.coroutines.CoroutineDispatcher
 
 class FavoriteTagUsecase(

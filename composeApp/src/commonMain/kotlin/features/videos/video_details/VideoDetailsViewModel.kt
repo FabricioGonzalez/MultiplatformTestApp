@@ -2,8 +2,8 @@ package features.videos.video_details
 
 import cafe.adriel.voyager.core.model.screenModelScope
 import domain.interactors.tags.FavoriteTagUsecase
+import domain.interactors.video_history.WriteToVideoHistoryUsecase
 import domain.interactors.videos.GetVideoDetailsUsecase
-import domain.interactors.videos.WriteToVideoHistoryUsecase
 import domain.model.VideoDetailsEntity
 import domain.model.inputs.TagFavoriteInput
 import kotlinx.coroutines.launch
@@ -84,7 +84,7 @@ class VideoDetailsViewModel(
             /*switchCharacterFavoriteUseCase(idCharacter)
                 .onSuccess {
                     setState { copy(isFavorite = ResourceUiState.Success(it)) }
-                    setEffect { VideoDetailsContracts.Effect.CharacterAdded }
+                    setEffect { WebLocalsListContracts.Effect.CharacterAdded }
                 }.onFailure { setState { copy(isFavorite = ResourceUiState.Error()) } }*/
         }
     }

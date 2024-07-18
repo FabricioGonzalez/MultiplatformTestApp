@@ -1,11 +1,11 @@
 package domain.interactors.videos
 
 import androidx.paging.PagingData
-import data.repositories.VideoRepository
 import domain.interactors.type.BaseUseCase
 import domain.model.PreferredContentEntity
 import domain.model.VideoEntity
 import domain.model.enums.ContentPreferrence
+import domain.repositories.VideoRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 

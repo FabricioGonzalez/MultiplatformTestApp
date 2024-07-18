@@ -1,20 +1,9 @@
 package data.remote
 
 import androidx.paging.PagingSource
-import app.cash.paging.Pager
-import app.cash.paging.PagingConfig
-import app.cash.paging.PagingData
-import app.cash.paging.PagingSourceLoadParams
-import app.cash.paging.PagingSourceLoadParamsAppend
-import app.cash.paging.PagingSourceLoadParamsPrepend
-import app.cash.paging.PagingSourceLoadParamsRefresh
-import app.cash.paging.PagingSourceLoadResult
-import app.cash.paging.PagingSourceLoadResultError
-import app.cash.paging.PagingSourceLoadResultPage
-import app.cash.paging.PagingState
+import app.cash.paging.*
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.Optional
-import multiplatform.realmDb
 import data.entities.DbPreferredContent
 import data.entities.DbPreferredContentType
 import domain.model.ActressEntity
@@ -23,13 +12,14 @@ import graphql.ActressesQuery
 import graphql.SearchActressesByNameQuery
 import graphql.UpdateActressMutation
 import graphql.type.MutateActressInput
+import io.realm.kotlin.Realm
 import io.realm.kotlin.ext.query
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 
-class ActressRemoteApi(private val apolloClient: ApolloClient) {
+class ActressRemoteApi(private val apolloClient: ApolloClient, private val realmDb: Realm) {
 
     suspend fun loadDetails(id: String): Result<ActressEntity> {
         return withContext(Dispatchers.IO) {

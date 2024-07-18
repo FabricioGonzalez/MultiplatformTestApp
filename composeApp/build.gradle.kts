@@ -8,6 +8,8 @@ plugins {
     alias(libs.plugins.realm)
     alias(libs.plugins.apollo3)
     alias(libs.plugins.conveyor)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.room)
 }
 
 group = "com.dev.fabricio.gonzalez"
@@ -101,6 +103,11 @@ kotlin {
             implementation(libs.paging.core)
             implementation(libs.paging.compose)
             implementation(libs.materialKolor)
+
+            implementation(libs.room.runtime)
+            implementation(libs.room.paging)
+            implementation(libs.sqlite.bundled)
+
         }
 
         desktopMain.dependencies {
@@ -122,12 +129,22 @@ kotlin {
     }
 }
 
-dependencies {
+room {
+    schemaDirectory("$projectDir/schemas")
+}
 
+dependencies {
+    add("kspAndroid", libs.room.compiler)
+    afterEvaluate {
+        add("kspIosSimulatorArm64", libs.room.compiler)
+        add("kspIosX64", libs.room.compiler)
+        add("kspIosArm64", libs.room.compiler)
+    }
     linuxAmd64(compose.desktop.linux_x64)
     macAmd64(compose.desktop.macos_x64)
     macAarch64(compose.desktop.macos_arm64)
     windowsAmd64(compose.desktop.windows_x64)
+
 }
 android {
     namespace = "com.dev.fabricio.gonzalez.mediaapp"

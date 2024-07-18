@@ -7,13 +7,17 @@ import domain.interactors.actresses.SearchActressesListUsecase
 import domain.interactors.actresses.UpdateActressUsecase
 import domain.interactors.tags.FavoriteTagUsecase
 import domain.interactors.video_history.ListHistoryUsecase
+import domain.interactors.video_history.WriteToVideoHistoryUsecase
 import domain.interactors.videos.GetAllPreferredContentUsecase
 import domain.interactors.videos.GetAllRecentVideosUsecase
 import domain.interactors.videos.GetSearchVideosUsecase
 import domain.interactors.videos.GetVideoDetailsUsecase
 import domain.interactors.videos.GetVideosByActressUsecase
 import domain.interactors.videos.GetVideosByTagUsecase
-import domain.interactors.videos.WriteToVideoHistoryUsecase
+import domain.interactors.web_locals.DeleteWebLocalUsecase
+import domain.interactors.web_locals.GetWebLocalUsecase
+import domain.interactors.web_locals.GetWebLocalsListUsecase
+import domain.interactors.web_locals.ModifyWebLocalUsecase
 import org.koin.dsl.module
 
 val usecaseDependecies = module {
@@ -37,4 +41,8 @@ val usecaseDependecies = module {
     factory { FavoriteTagUsecase(get(), get()) }
     factory { WriteToVideoHistoryUsecase(get(), get()) }
     factory { ListHistoryUsecase(get(), get()) }
+    factory { GetWebLocalsListUsecase(get(), get()) }
+    factory { ModifyWebLocalUsecase(get(), get()) }
+    factory { GetWebLocalUsecase(get(), get()) }
+    factory { DeleteWebLocalUsecase(get(), get()) }
 }

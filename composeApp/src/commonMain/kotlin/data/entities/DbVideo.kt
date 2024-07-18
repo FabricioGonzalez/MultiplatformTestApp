@@ -12,7 +12,9 @@ class DbVideo : RealmObject {
     var videoId: String = ""
     var title: String = ""
     var photo: String? = null
-    var link: String = ""
+    var createdAt: String = ""
+    var updatedAt: String = ""
+    var originalCreationDate: String = ""
 
     var actresses: RealmList<DbActress> = realmListOf()
     var tags: RealmList<DbTag> = realmListOf()

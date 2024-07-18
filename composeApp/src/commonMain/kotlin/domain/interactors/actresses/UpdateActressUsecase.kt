@@ -1,8 +1,8 @@
 package domain.interactors.actresses
 
-import data.repositories.ActressRepository
 import domain.interactors.type.BaseUseCase
 import domain.model.ActressEntity
+import domain.repositories.ActressRepository
 import kotlinx.coroutines.CoroutineDispatcher
 
 class UpdateActressUsecase(

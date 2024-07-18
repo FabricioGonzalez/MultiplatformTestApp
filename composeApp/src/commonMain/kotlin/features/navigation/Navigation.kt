@@ -6,6 +6,8 @@ import features.actresses.actresses_list.ActressesListScreen
 import features.home.HomeScreen
 import features.settings.SettingsPage
 import features.videos.video_details.VideoDetailScreen
+import features.web_locals.details.WebLocalsDetailScreen
+import features.web_locals.list.WebLocalsListScreen
 import presentation.ui.common.AppBarState
 
 fun Navigator.navigateToHome(onCompose: (AppBarState) -> Unit) {
@@ -26,4 +28,12 @@ fun Navigator.navigateToActressesList(onCompose: (AppBarState) -> Unit) {
 
 fun Navigator.navigateToActressesDetails(actressId: String, onCompose: (AppBarState) -> Unit) {
     this.push(ActressDetailsScreen(actressId, onCompose = onCompose))
+}
+
+fun Navigator.navigateToWebLocalDetails(webLocalId: String, onCompose: (AppBarState) -> Unit) {
+    this.push(WebLocalsDetailScreen(webLocalId = webLocalId, onCompose = onCompose))
+}
+
+fun Navigator.navigateToWebLocalsList(onCompose: (AppBarState) -> Unit) {
+    this.push(WebLocalsListScreen(onCompose = onCompose))
 }

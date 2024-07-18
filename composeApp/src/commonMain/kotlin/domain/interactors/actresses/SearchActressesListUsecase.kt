@@ -1,9 +1,9 @@
 package domain.interactors.actresses
 
 import androidx.paging.PagingData
-import data.repositories.ActressRepository
 import domain.interactors.type.BaseUseCaseFlow
 import domain.model.ActressEntity
+import domain.repositories.ActressRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 

@@ -11,9 +11,9 @@ fun <T> ManagementResourceUiState(
     resourceUiState: ResourceUiState<T>,
     successView: @Composable (data: T) -> Unit,
     loadingView: @Composable () -> Unit = { Loading(modifier) },
-    onTryAgain: () -> Unit,
+    onTryAgain: () -> Unit = {},
     msgTryAgain: String = "No data to show",
-    onCheckAgain: () -> Unit,
+    onCheckAgain: () -> Unit = {},
     msgCheckAgain: String = "An error has occurred"
 ) {
     Box(
