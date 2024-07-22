@@ -1,9 +1,13 @@
 package data
 
 import com.apollographql.apollo3.ApolloClient
-import data.remote.ActressRemoteApi
-import data.remote.TagRemoteApi
-import data.remote.VideoRemoteApi
+import com.apollographql.apollo3.annotations.ApolloExperimental
+import com.apollographql.apollo3.cache.normalized.normalizedCache
+import com.apollographql.apollo3.cache.normalized.sql.SqlNormalizedCacheFactory
+import com.apollographql.apollo3.cache.normalized.storeExpirationDate
+import data.remote.actresses.ActressRemoteApi
+import data.remote.tags.TagRemoteApi
+import data.remote.videos.VideoRemoteApi
 import data.repositories.realm.RealmActressRepository
 import data.repositories.realm.RealmTagRepository
 import data.repositories.realm.RealmVideoRepository
@@ -31,13 +35,16 @@ val dataDependencies = module {
     single<WebLocalsRepository> { RoomWebLocalsRepository(get()) }*/
 }
 
+@OptIn(ApolloExperimental::class)
 val apolloDependencies = module {
     single {
         ApolloClient.Builder()
             /*.serverUrl("https://mediaapi.bsite.net/graphql")*/
             /*.serverUrl("https://testmediaapi.bsite.net/graphql/")*/
-            .serverUrl("https://mapappapi.bsite.net/graphql/")
             /*.serverUrl("http://localhost:3001/graphql/")*/
+            .serverUrl("https://mapappapi.bsite.net/graphql/")
+            .normalizedCache(get<SqlNormalizedCacheFactory>())
+            .storeExpirationDate(true)
             .build()
     }
 }

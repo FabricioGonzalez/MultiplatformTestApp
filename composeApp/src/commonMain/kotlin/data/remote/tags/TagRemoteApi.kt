@@ -1,4 +1,4 @@
-package data.remote
+package data.remote.tags
 
 import com.apollographql.apollo3.ApolloClient
 

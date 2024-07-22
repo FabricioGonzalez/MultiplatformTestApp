@@ -3,6 +3,7 @@ package di
 import android.content.Context
 import androidx.room.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import com.apollographql.apollo3.cache.normalized.sql.SqlNormalizedCacheFactory
 import com.dev.fabricio.gonzalez.mediaapp.createDataStore
 import data.entities.dbSet
 import data.room.DatabaseSpecs
@@ -22,6 +23,11 @@ actual val datastoreModule: Module = module {
         )
             .setDriver(BundledSQLiteDriver())
             .build()
+    }
+    single { param ->
+        val dbFile = param.get<Context>().getDatabasePath("media_app_cache.db").absolutePath
+
+        SqlNormalizedCacheFactory(dbFile)
     }
 
     single {

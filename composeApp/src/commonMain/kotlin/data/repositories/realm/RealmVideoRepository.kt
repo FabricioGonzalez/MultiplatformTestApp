@@ -8,7 +8,8 @@ import data.entities.DbVideoHistory
 import data.helpers.format
 import data.helpers.now
 import data.helpers.parse
-import data.remote.VideoRemoteApi
+import data.remote.videos.VideoRemoteApi
+import data.remote.videos.dtos.VideoAddedInfo
 import domain.model.HistoryEntry
 import domain.model.PreferredContentEntity
 import domain.model.VideoDetailsEntity
@@ -115,6 +116,10 @@ class RealmVideoRepository(
 
     override suspend fun getRecentVideos(): Flow<PagingData<VideoEntity>> {
         return api.loadAllRecentVideos()
+    }
+
+    override suspend fun onVideoAdded(): Flow<Result<VideoAddedInfo>> {
+        return api.onVideoAdded()
     }
 
     override suspend fun getSearchedVideos(searchText: String): Flow<PagingData<VideoEntity>> {

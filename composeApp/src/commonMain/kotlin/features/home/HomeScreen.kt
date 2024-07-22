@@ -2,6 +2,9 @@ package features.home
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Cancel
+import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.*
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
@@ -103,6 +106,8 @@ fun HomeLayout(
                 setEvent(HomeContract.Event.OnSearchTextChanged(it))
             },
             content = {},
+            leadingIcon = { Icon(Icons.Rounded.Search, null) },
+            trailingIcon = { if (state.searchText.isNotEmpty()) Icon(Icons.Rounded.Cancel, null) },
             active = false
         )
 

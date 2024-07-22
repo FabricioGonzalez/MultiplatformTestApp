@@ -29,5 +29,6 @@ interface HomeContract {
         data object CharacterRemoved : Effect
         data object BackNavigation : Effect
         data class NavigateToDetails(val id: String) : Effect
+        data class NewVideoAdded(val title: String) : Effect
     }
 }

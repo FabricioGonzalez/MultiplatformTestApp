@@ -78,6 +78,7 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
             implementation(compose.uiUtil)
+            api(libs.apollo.normalized.cache.sqlite)
             implementation(compose.uiTooling)
             implementation(libs.androidx.browser)
             implementation(libs.material3.windowsclasssize)
@@ -103,9 +104,8 @@ kotlin {
             implementation(libs.paging.core)
             implementation(libs.paging.compose)
             implementation(libs.materialKolor)
-
             implementation(libs.room.runtime)
-            implementation(libs.room.paging)
+            /*implementation(libs.room.paging)*/
             implementation(libs.sqlite.bundled)
 
         }
@@ -124,7 +124,6 @@ kotlin {
             implementation(libs.jewel)
             implementation(libs.jewel.decorated)
             implementation(libs.jna)
-
         }
     }
 }

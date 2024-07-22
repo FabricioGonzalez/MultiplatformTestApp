@@ -1,7 +1,7 @@
 package data.repositories.room
 
 import androidx.paging.PagingData
-import data.remote.ActressRemoteApi
+import data.remote.actresses.ActressRemoteApi
 import data.room.DatabaseSpecs
 import domain.model.ActressEntity
 import domain.model.inputs.TagFavoriteInput

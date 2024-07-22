@@ -3,8 +3,10 @@ package features.home
 import cafe.adriel.voyager.core.model.screenModelScope
 import domain.interactors.videos.GetAllPreferredContentUsecase
 import domain.interactors.videos.GetAllRecentVideosUsecase
+import domain.interactors.videos.GetNewlyAddedVideosUsecase
 import domain.interactors.videos.GetSearchVideosUsecase
 import features.home.data.VideoFeed
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import presentation.model.ResourceUiState
 import presentation.mvi.BaseViewModel
@@ -12,7 +14,8 @@ import presentation.mvi.BaseViewModel
 class HomeViewModel(
     private val loadRecentVideosUsecase: GetAllRecentVideosUsecase,
     private val loadSearchVideosUsecase: GetSearchVideosUsecase,
-    private val loadPreferredContentUsecase: GetAllPreferredContentUsecase
+    private val loadPreferredContentUsecase: GetAllPreferredContentUsecase,
+    private val addedVideoUsecase: GetNewlyAddedVideosUsecase,
 ) : BaseViewModel<HomeContract.Event, HomeContract.State, HomeContract.Effect>() {
 
     override fun createInitialState(): HomeContract.State = HomeContract.State(
@@ -32,6 +35,17 @@ class HomeViewModel(
             }
 
             HomeContract.Event.OnLoadDataRequested -> loadAllVideos()
+        }
+    }
+
+    private val task = screenModelScope.launch {
+        addedVideoUsecase(Unit).collectLatest { result ->
+            result.onSuccess { suc ->
+                suc?.let {
+                    setEffect { HomeContract.Effect.NewVideoAdded(it.title) }
+                }
+            }
+
         }
     }
 
@@ -78,5 +92,11 @@ class HomeViewModel(
                 ResourceUiState.Error(it.message ?: "Erro")
             }
         }
+    }
+
+
+    override fun onDispose() {
+        super.onDispose()
+        task.cancel()
     }
 }

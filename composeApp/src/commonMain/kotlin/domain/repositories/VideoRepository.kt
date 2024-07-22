@@ -1,6 +1,7 @@
 package domain.repositories
 
 import androidx.paging.PagingData
+import data.remote.videos.dtos.VideoAddedInfo
 import domain.model.HistoryEntry
 import domain.model.PreferredContentEntity
 import domain.model.VideoDetailsEntity
@@ -17,5 +18,6 @@ interface VideoRepository {
     suspend fun getVideosByTag(param: String): Flow<PagingData<VideoEntity>>
     suspend fun getVideoDetails(videoId: String): Result<VideoDetailsEntity>
     suspend fun getRecentVideos(): Flow<PagingData<VideoEntity>>
+    suspend fun onVideoAdded(): Flow<Result<VideoAddedInfo>>
     suspend fun getSearchedVideos(searchText: String): Flow<PagingData<VideoEntity>>
 }

@@ -8,7 +8,8 @@ import data.entities.DbVideoHistory
 import data.helpers.format
 import data.helpers.now
 import data.helpers.parse
-import data.remote.VideoRemoteApi
+import data.remote.videos.VideoRemoteApi
+import data.remote.videos.dtos.VideoAddedInfo
 import domain.model.HistoryEntry
 import domain.model.PreferredContentEntity
 import domain.model.VideoDetailsEntity
@@ -35,6 +36,10 @@ class RoomVideoRepository(
 
     override suspend fun getVideosByActress(param: String): Flow<PagingData<VideoEntity>> {
         return api.loadVideosByActress(param)
+    }
+
+    override suspend fun onVideoAdded(): Flow<Result<VideoAddedInfo>> {
+        return api.onVideoAdded()
     }
 
 

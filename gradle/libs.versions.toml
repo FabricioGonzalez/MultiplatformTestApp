@@ -23,6 +23,7 @@ apolloClientVersion = "4.0.0-beta.6"
 koinCompose = "1.1.2"
 composeImageLoader = "1.7.8"
 pagingVersion = "3.3.0-alpha02-0.5.1"
+androidPagingVersion = "3.3.0"
 materialKolor = "1.6.1"
 browser = "1.8.0"
 webview = "1.9.20"
@@ -62,13 +63,13 @@ kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core",
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 room-runtime-android = { module = "androidx.room:room-runtime-android", version.ref = "room" }
 room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
-room-paging = { group = "androidx.room", name = "room-paging", version.ref = "room" }
+room-paging = { module = "androidx.room:room-paging", version.ref = "room" }
 
 sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
 
+#paging-core = { module = "androidx.paging:paging-common", version.ref = "androidPagingVersion" }
 paging-core = { module = "app.cash.paging:paging-common", version.ref = "pagingVersion" }
 paging-compose = { module = "app.cash.paging:paging-compose-common", version.ref = "pagingVersion" }
-
 
 koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koinVersion" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koinVersion" }
@@ -98,6 +99,9 @@ materialKolor = { module = "com.materialkolor:material-kolor", version.ref = "ma
 #apollo client
 apollo-client-runtime = { group = "com.apollographql.apollo3", name = "apollo-runtime", version.ref = "apolloClientVersion" }
 apollo-client-adapters = { group = "com.apollographql.apollo3", name = "apollo-adapters", version.ref = "apolloClientVersion" }
+apollo-normalized-cache-sqlite = { group = "com.apollographql.apollo3", name = "apollo-normalized-cache-sqlite", version.ref = "apolloClientVersion" }
+
+
 androidx-browser = { group = "androidx.browser", name = "browser", version.ref = "browser" }
 
 [plugins]

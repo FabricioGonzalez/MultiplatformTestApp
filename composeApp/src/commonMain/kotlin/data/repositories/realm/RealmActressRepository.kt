@@ -3,7 +3,7 @@ package data.repositories.realm
 import androidx.paging.PagingData
 import data.entities.DbPreferredContent
 import data.entities.DbPreferredContentType
-import data.remote.ActressRemoteApi
+import data.remote.actresses.ActressRemoteApi
 import domain.model.ActressEntity
 import domain.model.inputs.TagFavoriteInput
 import domain.repositories.ActressRepository

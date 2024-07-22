@@ -1,19 +1,10 @@
 package domain
 
-import domain.interactors.actresses.FavoriteActressUsecase
-import domain.interactors.actresses.GetActressDetailsUsecase
-import domain.interactors.actresses.GetActressesListUsecase
-import domain.interactors.actresses.SearchActressesListUsecase
-import domain.interactors.actresses.UpdateActressUsecase
+import domain.interactors.actresses.*
 import domain.interactors.tags.FavoriteTagUsecase
 import domain.interactors.video_history.ListHistoryUsecase
 import domain.interactors.video_history.WriteToVideoHistoryUsecase
-import domain.interactors.videos.GetAllPreferredContentUsecase
-import domain.interactors.videos.GetAllRecentVideosUsecase
-import domain.interactors.videos.GetSearchVideosUsecase
-import domain.interactors.videos.GetVideoDetailsUsecase
-import domain.interactors.videos.GetVideosByActressUsecase
-import domain.interactors.videos.GetVideosByTagUsecase
+import domain.interactors.videos.*
 import domain.interactors.web_locals.DeleteWebLocalUsecase
 import domain.interactors.web_locals.GetWebLocalUsecase
 import domain.interactors.web_locals.GetWebLocalsListUsecase
@@ -28,6 +19,7 @@ val usecaseDependecies = module {
         GetVideosByTagUsecase(get(), get())
     }
     factory { GetVideoDetailsUsecase(get(), get()) }
+    factory { GetNewlyAddedVideosUsecase(get(), get()) }
     factory { GetAllPreferredContentUsecase(get(), get()) }
     factory { SearchActressesListUsecase(get(), get()) }
     factory { GetSearchVideosUsecase(get(), get()) }
