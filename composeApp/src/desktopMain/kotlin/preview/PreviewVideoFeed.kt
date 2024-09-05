@@ -2,8 +2,8 @@ package preview
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.material3.Surface
-import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
-import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+
 import androidx.compose.runtime.Composable
 import androidx.paging.PagingData
 import domain.model.VideoEntity
@@ -12,15 +12,14 @@ import features.home.data.VideoFeed
 import kotlinx.coroutines.flow.flowOf
 import presentation.model.ResourceUiState
 
-@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Preview()
 @Composable
 fun PreviewFeed() {
 
     Surface {
-        val size = calculateWindowSizeClass()
+        val size = currentWindowAdaptiveInfo()
 
-        VideosListFeed(windowSizeClass = size, videos = listOf(
+        VideosListFeed(windowSizeClass = size.windowSizeClass, videos = listOf(
             VideoFeed(
                 title = "Recent", videos = ResourceUiState.Success(
                     flowOf(

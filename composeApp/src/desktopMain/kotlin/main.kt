@@ -7,6 +7,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.window.application
+import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo3.cache.normalized.apolloStore
 import com.dev.fabricio.gonzalez.composeapp.generated.resources.Res
 import com.dev.fabricio.gonzalez.composeapp.generated.resources.ic_launcher_icon
 import com.materialkolor.rememberDynamicColorScheme
@@ -30,7 +32,7 @@ import java.io.File
 fun main() {
     val paletteGeneration = PaletteGeneration()
 
-    initKoin {
+    val koin = initKoin {
 
     }
 
@@ -74,7 +76,11 @@ fun main() {
             ),
         ) {
             DecoratedWindow(
-                onCloseRequest = ::exitApplication,
+                onCloseRequest = {
+                    koin.koin.get<ApolloClient>().apolloStore.clearAll()
+
+                    exitApplication()
+                },
                 title = "MediaApp",
                 icon = painterResource(Res.drawable.ic_launcher_icon),
                 style = DecoratedWindowStyle.dark()

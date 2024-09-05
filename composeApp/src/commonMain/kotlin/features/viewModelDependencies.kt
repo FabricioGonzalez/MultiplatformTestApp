@@ -12,7 +12,7 @@ import features.web_locals.list.WebLocalsListViewModel
 import org.koin.dsl.module
 
 val viewModelDependencies = module {
-    factory { HomeViewModel(get(), get(), get()) }
+    factory { HomeViewModel(get(), get(), get(), get()) }
     factory { VideoDetailsViewModel(get(), get(), get()) }
     factory { ActressesListViewModel(get(), get()) }
     factory { ActressDetailsViewModel(get(), get(), get(), get()) }

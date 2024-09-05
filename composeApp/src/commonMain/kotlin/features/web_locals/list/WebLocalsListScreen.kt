@@ -1,13 +1,25 @@
 package features.web_locals.list
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material3.*
-import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
-import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -37,13 +49,12 @@ data class WebLocalsListScreen(
 ) : AppScreen {
     override val key: ScreenKey = "WebLocalsList"
 
-    @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     @Composable
     override fun Content() {
         val snackbarHostState = remember { SnackbarHostState() }
         val (state, setEvent, effects) = use(getScreenModel<WebLocalsListViewModel>())
 
-        val sizes = calculateWindowSizeClass()
+        val sizes = currentWindowAdaptiveInfo()
 
         val navigator = LocalNavigator.currentOrThrow
 
@@ -53,7 +64,11 @@ data class WebLocalsListScreen(
                     title = null,
                     actions = {
                         IconButton(onClick = {
-                            setEvent(WebLocalsListContracts.Event.NavigateToWebLocalDetailsRequested(""))
+                            setEvent(
+                                WebLocalsListContracts.Event.NavigateToWebLocalDetailsRequested(
+                                    ""
+                                )
+                            )
                         }) {
                             Icon(Icons.Rounded.Add, null)
                         }
@@ -83,7 +98,10 @@ data class WebLocalsListScreen(
                     }
 
                     is WebLocalsListContracts.Effect.NavigateToWebLocalDetailsRequested -> {
-                        navigator.navigateToWebLocalDetails(webLocalId = effect.id, onCompose = onCompose)
+                        navigator.navigateToWebLocalDetails(
+                            webLocalId = effect.id,
+                            onCompose = onCompose
+                        )
                     }
                 }
             }
@@ -126,11 +144,13 @@ fun SiteCard(modifier: Modifier = Modifier, site: Site) {
     }
     if (showPage) BrowserPage(site.url, onBrowserClosed = { setShowPage(false) })
 
-    ElevatedCard(modifier = modifier.padding(8.dp).height(48.dp), elevation = CardDefaults.elevatedCardElevation(
-        defaultElevation = 24.dp, pressedElevation = 18.dp
-    ), onClick = {
-        setShowPage(true)
-    }) {
+    ElevatedCard(modifier = modifier.padding(8.dp).height(48.dp),
+        elevation = CardDefaults.elevatedCardElevation(
+            defaultElevation = 24.dp, pressedElevation = 18.dp
+        ),
+        onClick = {
+            setShowPage(true)
+        }) {
         Row(
             modifier = Modifier.fillMaxWidth().fillMaxHeight().padding(48.dp, 0.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -141,7 +161,8 @@ fun SiteCard(modifier: Modifier = Modifier, site: Site) {
                     .toString()*/
             )
             Text(
-                text = site.name, modifier = Modifier.fillMaxWidth().align(Alignment.CenterVertically)
+                text = site.name,
+                modifier = Modifier.fillMaxWidth().align(Alignment.CenterVertically)
             )
         }
     }

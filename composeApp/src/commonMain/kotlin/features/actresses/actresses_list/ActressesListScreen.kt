@@ -10,8 +10,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
-import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
-import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -40,10 +39,10 @@ data class ActressesListScreen(
 ) : AppScreen {
     override val key: ScreenKey = "ActressesList"
 
-    @OptIn(ExperimentalMaterial3WindowSizeClassApi::class, ExperimentalMaterial3Api::class)
+    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     override fun Content() {
-        val sizes = calculateWindowSizeClass()
+        val sizes = currentWindowAdaptiveInfo().windowSizeClass
 
         val snackbarHostState = remember { SnackbarHostState() }
         val (state, setEvent, effect) = use(getScreenModel<ActressesListViewModel>())
@@ -125,7 +124,6 @@ data class ActressesListScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Preview
 @Composable
 fun PreviewActressList() {
@@ -184,7 +182,7 @@ fun PreviewActressList() {
                     )
                 }.collectAsLazyPagingItems(),
                 setEvent = {},
-                calculateWindowSizeClass(),
+                currentWindowAdaptiveInfo().windowSizeClass,
 
                 )
         }

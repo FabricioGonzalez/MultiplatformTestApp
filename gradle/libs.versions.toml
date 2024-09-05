@@ -1,40 +1,39 @@
 [versions]
-agp = "8.2.0"
+agp = "8.2.2"
 android-compileSdk = "34"
 android-minSdk = "24"
 android-targetSdk = "34"
-androidx-activityCompose = "1.9.0"
+androidx-activityCompose = "1.9.2"
 androidx-appcompat = "1.7.0"
 androidx-core-ktx = "1.13.1"
 androidx-espresso-core = "3.6.1"
 androidx-material = "1.12.0"
 androidx-test-junit = "1.2.1"
-compose = "1.6.11"
-compose-plugin = "1.6.8"
+compose = "1.7.0-beta01"
+compose-plugin = "1.7.0"
 junit = "4.13.2"
 kotlin = "2.0.0"
 voyager = "1.0.0"
 koinVersion = "3.6.0-wasm-alpha2"
 realmVersion = "2.0.0"
-coroutineVersion = "1.8.1"
+coroutineVersion = "1.9.0-RC"
 jewel_version = "0.12.0"
 jnaVersion = "5.9.0"
 apolloClientVersion = "4.0.0-beta.6"
 koinCompose = "1.1.2"
 composeImageLoader = "1.7.8"
 pagingVersion = "3.3.0-alpha02-0.5.1"
-androidPagingVersion = "3.3.0"
 materialKolor = "1.6.1"
 browser = "1.8.0"
 webview = "1.9.20"
-windowsClassSize = "0.5.0"
 kermit = "2.0.3"
 datastore = "1.1.1"
 kotlinx-datetime = "0.6.0"
 okio = "3.9.0"
-room = "2.7.0-alpha05"
+room = "2.7.0-alpha07"
 ksp = "2.0.0-1.0.23"
 sqlite = "2.5.0-SNAPSHOT"
+adaptive = "1.0.0-alpha01"
 systemVersion = "1.0.3"
 versionCode = "1"
 
@@ -49,10 +48,8 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 androidx-material = { group = "com.google.android.material", name = "material", version.ref = "androidx-material" }
 
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "compose-plugin" }
 compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose-plugin" }
 webview = { module = "io.github.kevinnzou:compose-webview-multiplatform", version.ref = "webview" }
-material3-windowsclasssize = { module = "dev.chrisbanes.material3:material3-window-size-class-multiplatform", version.ref = "windowsClassSize" }
 composeImageLoader = { module = "io.github.qdsfdhvh:image-loader", version.ref = "composeImageLoader" }
 
 realm-base = { module = "io.realm.kotlin:library-base", version.ref = "realmVersion" }
@@ -66,6 +63,11 @@ room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 room-paging = { module = "androidx.room:room-paging", version.ref = "room" }
 
 sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
+
+material3-adaptive = { module = "org.jetbrains.compose.material3.adaptive:adaptive", version.ref = "adaptive" }
+material3-adaptive-layout = { module = "org.jetbrains.compose.material3.adaptive:adaptive-layout", version.ref = "adaptive" }
+material3-adaptive-navigation = { module = "org.jetbrains.compose.material3.adaptive:adaptive-navigation", version.ref = "adaptive" }
+material3-datatable = { module = "com.seanproctor:data-table-material3", version = "0.9.1" }
 
 #paging-core = { module = "androidx.paging:paging-common", version.ref = "androidPagingVersion" }
 paging-core = { module = "app.cash.paging:paging-common", version.ref = "pagingVersion" }
@@ -100,7 +102,6 @@ materialKolor = { module = "com.materialkolor:material-kolor", version.ref = "ma
 apollo-client-runtime = { group = "com.apollographql.apollo3", name = "apollo-runtime", version.ref = "apolloClientVersion" }
 apollo-client-adapters = { group = "com.apollographql.apollo3", name = "apollo-adapters", version.ref = "apolloClientVersion" }
 apollo-normalized-cache-sqlite = { group = "com.apollographql.apollo3", name = "apollo-normalized-cache-sqlite", version.ref = "apolloClientVersion" }
-
 
 androidx-browser = { group = "androidx.browser", name = "browser", version.ref = "browser" }
 

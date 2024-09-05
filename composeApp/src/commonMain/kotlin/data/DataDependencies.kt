@@ -41,8 +41,8 @@ val apolloDependencies = module {
         ApolloClient.Builder()
             /*.serverUrl("https://mediaapi.bsite.net/graphql")*/
             /*.serverUrl("https://testmediaapi.bsite.net/graphql/")*/
-            /*.serverUrl("http://localhost:3001/graphql/")*/
-            .serverUrl("https://mapappapi.bsite.net/graphql/")
+            .serverUrl("http://localhost:3001/graphql/")
+            /*.serverUrl("https://mapappapi.bsite.net/graphql/")*/
             .normalizedCache(get<SqlNormalizedCacheFactory>())
             .storeExpirationDate(true)
             .build()

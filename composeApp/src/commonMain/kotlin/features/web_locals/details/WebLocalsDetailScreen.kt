@@ -1,9 +1,12 @@
 package features.web_locals.details
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.*
-import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
-import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
+import androidx.compose.material3.Button
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -26,13 +29,12 @@ data class WebLocalsDetailScreen(
 ) : AppScreen {
     override val key: ScreenKey = "VideoDetails"
 
-    @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     @Composable
     override fun Content() {
         val snackbarHostState = remember { SnackbarHostState() }
         val (state, setEvent, effects) = use(getScreenModel<WebLocalsDetailsViewModel>())
 
-        val sizes = calculateWindowSizeClass()
+        val sizes = currentWindowAdaptiveInfo()
 
         val navigator = LocalNavigator.currentOrThrow
 

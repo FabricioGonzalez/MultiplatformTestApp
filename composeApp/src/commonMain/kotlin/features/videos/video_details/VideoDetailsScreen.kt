@@ -12,14 +12,13 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
-import androidx.compose.material3.windowsizeclass.WindowSizeClass
-import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.window.core.layout.WindowSizeClass
 import cafe.adriel.voyager.core.screen.ScreenKey
 import cafe.adriel.voyager.koin.getScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
@@ -49,13 +48,12 @@ data class VideoDetailScreen(
 ) : AppScreen {
     override val key: ScreenKey = "VideoDetails"
 
-    @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     @Composable
     override fun Content() {
         val snackbarHostState = remember { SnackbarHostState() }
         val (state, setEvent, effects) = use(getScreenModel<VideoDetailsViewModel>())
 
-        val sizes = calculateWindowSizeClass()
+        val sizes = currentWindowAdaptiveInfo().windowSizeClass
 
         val navigator = LocalNavigator.currentOrThrow
 
@@ -153,7 +151,6 @@ private fun VideoDetailsPage(
     )
 }
 
-@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Preview
 @Composable
 private fun VideoDetailsPagePreview() {
@@ -177,7 +174,7 @@ private fun VideoDetailsPagePreview() {
                     ),
                     ResourceUiState.Empty
                 ),
-                calculateWindowSizeClass(),
+                currentWindowAdaptiveInfo().windowSizeClass,
                 setEvent = {}
             )
         }

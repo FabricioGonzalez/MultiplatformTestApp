@@ -7,16 +7,19 @@ import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.OpenInBrowser
 import androidx.compose.material.icons.rounded.PeopleAlt
 import androidx.compose.material.icons.rounded.Settings
-import androidx.compose.material3.*
-import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
-import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.window.core.layout.WindowWidthSizeClass
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.transitions.SlideTransition
 import features.actresses.actress_details.ActressDetailsScreen
@@ -35,7 +38,7 @@ import presentation.ui.common.navigation.BottomNavBar
 import presentation.ui.common.navigation.NavRailBar
 import themes.MediaAppTheme
 
-@OptIn(ExperimentalMaterial3WindowSizeClassApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @Preview
 fun App(isDarkTheme: Boolean = false, appColor: ColorScheme?) {
@@ -115,8 +118,9 @@ fun App(isDarkTheme: Boolean = false, appColor: ColorScheme?) {
 
 
         Navigator(screens.first { it.isDefault }.uiScreen) { nav ->
-            val sizes = calculateWindowSizeClass()
-            val showNavBar = derivedStateOf { sizes.widthSizeClass != WindowWidthSizeClass.Compact }
+            val sizes = currentWindowAdaptiveInfo()
+            val showNavBar =
+                derivedStateOf { sizes.windowSizeClass.windowWidthSizeClass != WindowWidthSizeClass.COMPACT }
             Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
                 when {
                     appBarState.searchBar != null -> {

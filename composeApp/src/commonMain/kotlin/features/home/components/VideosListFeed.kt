@@ -18,7 +18,15 @@ package features.home.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
@@ -27,10 +35,12 @@ import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.KeyboardArrowUp
-import androidx.compose.material3.*
-import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
-import androidx.compose.material3.windowsizeclass.WindowSizeClass
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -45,6 +55,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.paging.LoadState
+import androidx.window.core.layout.WindowHeightSizeClass
+import androidx.window.core.layout.WindowSizeClass
+import androidx.window.core.layout.WindowWidthSizeClass
 import app.cash.paging.compose.collectAsLazyPagingItems
 import com.example.feedcompose.ui.components.feed.Feed
 import com.example.feedcompose.ui.components.feed.footer
@@ -58,7 +71,9 @@ import presentation.ui.common.state.ManagementResourceUiState
 
 @Composable
 internal fun VideosListFeed(
-    windowSizeClass: WindowSizeClass, videos: List<VideoFeed>, onSweetsSelected: (VideoEntity) -> Unit = {}
+    windowSizeClass: WindowSizeClass,
+    videos: List<VideoFeed>,
+    onSweetsSelected: (VideoEntity) -> Unit = {}
 ) {
     val state = rememberLazyGridState()
     val coroutineScope = rememberCoroutineScope()
@@ -81,11 +96,12 @@ internal fun VideosListFeed(
                     successView = { videos ->
                         val items = videos.collectAsLazyPagingItems()
                         LazyHorizontalGrid(
-                            rows = rememberRows(windowSizeClass), modifier = Modifier.fillMaxWidth().height(
-                                when (windowSizeClass.heightSizeClass) {
-                                    WindowHeightSizeClass.Compact -> 172.dp
-                                    WindowHeightSizeClass.Medium -> 392.dp
-                                    WindowHeightSizeClass.Expanded -> 744.dp
+                            rows = rememberRows(windowSizeClass),
+                            modifier = Modifier.fillMaxWidth().height(
+                                when (windowSizeClass.windowHeightSizeClass) {
+                                    WindowHeightSizeClass.COMPACT -> 172.dp
+                                    WindowHeightSizeClass.MEDIUM -> 392.dp
+                                    WindowHeightSizeClass.EXPANDED -> 744.dp
                                     else -> 744.dp
                                 }
                             )
@@ -96,20 +112,20 @@ internal fun VideosListFeed(
                                 SquareSweetsCard(
                                     sweets = items[it]!!,
                                     modifier = Modifier.width(
-                                        when (windowSizeClass.widthSizeClass) {
-                                            WindowWidthSizeClass.Compact -> 172.dp
-                                            WindowWidthSizeClass.Medium -> 200.dp
-                                            WindowWidthSizeClass.Expanded -> 248.dp
+                                        when (windowSizeClass.windowWidthSizeClass) {
+                                            WindowWidthSizeClass.COMPACT -> 172.dp
+                                            WindowWidthSizeClass.MEDIUM -> 200.dp
+                                            WindowWidthSizeClass.EXPANDED -> 248.dp
                                             else -> 248.dp
                                         }
                                     ).height(
-                                        when (windowSizeClass.heightSizeClass) {
-                                            WindowHeightSizeClass.Compact -> 172.dp
-                                            WindowHeightSizeClass.Medium -> 200.dp
-                                            WindowHeightSizeClass.Expanded -> 248.dp
+                                        when (windowSizeClass.windowHeightSizeClass) {
+                                            WindowHeightSizeClass.COMPACT -> 172.dp
+                                            WindowHeightSizeClass.MEDIUM -> 200.dp
+                                            WindowHeightSizeClass.EXPANDED -> 248.dp
                                             else -> 248.dp
                                         }
-                                    ),
+                                    ).clip(MaterialTheme.shapes.medium),
                                     isLoading = items.loadState.refresh is LoadState.Loading,
                                     onClick = onSweetsSelected
                                 )
@@ -133,24 +149,26 @@ internal fun VideosListFeed(
 }
 
 @Composable
-fun rememberColumns(windowSizeClass: WindowSizeClass, preferredSize: Int = 1) = remember(windowSizeClass) {
-    when (windowSizeClass.widthSizeClass) {
-        WindowWidthSizeClass.Compact -> GridCells.Fixed(preferredSize)
-        WindowWidthSizeClass.Medium -> GridCells.Fixed(preferredSize + 1)
-        WindowWidthSizeClass.Expanded -> GridCells.Fixed(preferredSize + 2)
-        else -> GridCells.Fixed(preferredSize + 3)
+fun rememberColumns(windowSizeClass: WindowSizeClass, preferredSize: Int = 1) =
+    remember(windowSizeClass) {
+        when (windowSizeClass.windowWidthSizeClass) {
+            WindowWidthSizeClass.COMPACT -> GridCells.Fixed(preferredSize)
+            WindowWidthSizeClass.MEDIUM -> GridCells.Fixed(preferredSize + 1)
+            WindowWidthSizeClass.EXPANDED -> GridCells.Fixed(preferredSize + 2)
+            else -> GridCells.Fixed(preferredSize + 3)
+        }
     }
-}
 
 @Composable
-fun rememberRows(windowSizeClass: WindowSizeClass, preferredSize: Int = 1) = remember(windowSizeClass) {
-    when (windowSizeClass.heightSizeClass) {
-        WindowHeightSizeClass.Compact -> GridCells.Fixed(preferredSize)
-        WindowHeightSizeClass.Medium -> GridCells.Fixed(preferredSize + 1)
-        WindowHeightSizeClass.Expanded -> GridCells.Fixed(preferredSize + 2)
-        else -> GridCells.Fixed(preferredSize + 3)
+fun rememberRows(windowSizeClass: WindowSizeClass, preferredSize: Int = 1) =
+    remember(windowSizeClass) {
+        when (windowSizeClass.windowHeightSizeClass) {
+            WindowHeightSizeClass.COMPACT -> GridCells.Fixed(preferredSize)
+            WindowHeightSizeClass.MEDIUM -> GridCells.Fixed(preferredSize + 1)
+            WindowHeightSizeClass.EXPANDED -> GridCells.Fixed(preferredSize + 2)
+            else -> GridCells.Fixed(preferredSize + 3)
+        }
     }
-}
 
 @Composable
 private fun FeedTitle(text: String) {
@@ -175,11 +193,15 @@ private fun HorizontalSweetsList(
     sweets: List<VideoEntity>, cardWidth: Dp, onSweetsSelected: (VideoEntity) -> Unit = {}
 ) {
     LazyRow(
-        modifier = Modifier.padding(PaddingValues(bottom = 16.dp)), horizontalArrangement = Arrangement.spacedBy(8.dp)
+        modifier = Modifier.padding(PaddingValues(bottom = 16.dp)),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(sweets.size, key = { sweets[it].id }, contentType = { "sweets" }) {
             PortraitSweetsCard(
-                sweets = sweets[it], onClick = onSweetsSelected, modifier = Modifier.width(cardWidth), isLoading = false
+                sweets = sweets[it],
+                onClick = onSweetsSelected,
+                modifier = Modifier.width(cardWidth),
+                isLoading = false
             )
         }
     }
@@ -217,25 +239,40 @@ private fun BackToTopButton(modifier: Modifier = Modifier, onClick: () -> Unit =
 
 @Composable
 fun SquareSweetsCard(
-    sweets: VideoEntity, modifier: Modifier = Modifier, onClick: (VideoEntity) -> Unit = {}, isLoading: Boolean
+    sweets: VideoEntity,
+    modifier: Modifier = Modifier,
+    onClick: (VideoEntity) -> Unit = {},
+    isLoading: Boolean
 ) {
     SweetsCard(
-        sweets = sweets, modifier = modifier/*.aspectRatio(1f)*/, isLoading = isLoading, onClick = onClick
+        sweets = sweets,
+        modifier = modifier.clip(MaterialTheme.shapes.medium)/*.aspectRatio(1f)*/,
+        isLoading = isLoading,
+        onClick = onClick
     )
 }
 
 @Composable
 fun PortraitSweetsCard(
-    sweets: VideoEntity, modifier: Modifier = Modifier, onClick: (VideoEntity) -> Unit = {}, isLoading: Boolean
+    sweets: VideoEntity,
+    modifier: Modifier = Modifier,
+    onClick: (VideoEntity) -> Unit = {},
+    isLoading: Boolean
 ) {
     SweetsCard(
-        sweets = sweets, modifier = modifier.aspectRatio(0.707f), onClick = onClick, isLoading = isLoading
+        sweets = sweets,
+        modifier = modifier.clip(MaterialTheme.shapes.medium).aspectRatio(0.707f),
+        onClick = onClick,
+        isLoading = isLoading
     )
 }
 
 @Composable
 fun SweetsCard(
-    sweets: VideoEntity, modifier: Modifier = Modifier, onClick: (VideoEntity) -> Unit = {}, isLoading: Boolean
+    sweets: VideoEntity,
+    modifier: Modifier = Modifier,
+    onClick: (VideoEntity) -> Unit = {},
+    isLoading: Boolean
 ) {
     var isFocused by remember {
         mutableStateOf(false)
@@ -246,24 +283,34 @@ fun SweetsCard(
         MaterialTheme.colorScheme.background
     }
 
-    Card(modifier = modifier.onFocusChanged {
-        isFocused = it.isFocused
-    }.border(width = 2.dp, color = outlineColor).clip(MaterialTheme.shapes.medium),
-        onClick = { onClick(sweets) }) {
-        Box(modifier = Modifier.fillMaxSize()) {
+    Card(
+        modifier = modifier
+            .clip(MaterialTheme.shapes.medium)
+            .onFocusChanged {
+                isFocused = it.isFocused
+            }
+            .border(width = 2.dp, color = outlineColor, shape = MaterialTheme.shapes.medium),
+        onClick = { onClick(sweets) }, shape = MaterialTheme.shapes.medium
+    ) {
+        Box(
+            modifier = Modifier.fillMaxSize()
+                .clip(MaterialTheme.shapes.medium)
+        ) {
             ImageBox(
-                modifier = Modifier.fillMaxSize().then(if (isLoading) Modifier.shimmerEffect() else Modifier),
+                modifier = Modifier.fillMaxSize()
+                    .clip(MaterialTheme.shapes.medium)
+                    .then(if (isLoading) Modifier.shimmerEffect() else Modifier),
                 photo = sweets.photo,
             )
             Text(
                 text = sweets.title,
                 modifier = Modifier.fillMaxWidth().zIndex(2f)
-                    .then(if (isLoading) Modifier.shimmerEffect() else Modifier).align(Alignment.BottomCenter)
+                    .then(if (isLoading) Modifier.shimmerEffect() else Modifier)
+                    .align(Alignment.BottomCenter)
                     .background(MaterialTheme.colorScheme.primary.copy(0.5f)).padding(8.dp, 4.dp),
                 style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onPrimary)
             )
         }
-
     }
 }
 

@@ -1,8 +1,10 @@
 package components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Cancel
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -21,7 +23,6 @@ import presentation.ui.common.state.ManagementResourceUiState
 
 @Composable
 fun ImageBox(modifier: Modifier = Modifier, photo: String) {
-
     val preferences = getKoin().get<DataStore<Preferences>>()
     val canShowImages by preferences.data.map {
         ResourceUiState.Success(
@@ -33,7 +34,10 @@ fun ImageBox(modifier: Modifier = Modifier, photo: String) {
         resourceUiState = canShowImages,
         successView = { result ->
             Image(
-                modifier = modifier,
+                modifier = modifier.then(
+                    if (!result) Modifier.background(MaterialTheme.colorScheme.surfaceVariant)
+                    else Modifier
+                ),
                 painter = if (result) rememberImagePainter(photo) else rememberVectorPainter(
                     Icons.Rounded.Cancel
                 ),

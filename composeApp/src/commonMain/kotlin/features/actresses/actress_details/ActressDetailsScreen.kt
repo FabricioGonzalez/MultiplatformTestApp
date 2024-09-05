@@ -12,8 +12,7 @@ import androidx.compose.material.icons.rounded.SaveAlt
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
-import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -41,10 +40,9 @@ data class ActressDetailsScreen(
 ) : AppScreen {
     override val key: ScreenKey = "ActressDetails"
 
-    @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     @Composable
     override fun Content() {
-        val sizes = calculateWindowSizeClass()
+        val sizes = currentWindowAdaptiveInfo().windowSizeClass
         val snackbarHostState = remember { SnackbarHostState() }
         val (state, setEvent, effect) = use(getScreenModel<ActressDetailsViewModel>())
 
@@ -97,7 +95,7 @@ data class ActressDetailsScreen(
                                     null
                                 )
                             }
-                            
+
                             IconButton(onClick = {
                                 if (state.actress is ResourceUiState.Success)
                                     setEvent(
