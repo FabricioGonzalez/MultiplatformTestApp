@@ -11,6 +11,7 @@ output/
 kcef-bundle/
 cache/
 .idea
+.fleet
 .DS_Store
 captures
 .externalNativeBuild
