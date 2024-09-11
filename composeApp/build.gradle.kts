@@ -50,7 +50,10 @@ kotlin {
         }
     }
 
-
+    composeCompiler {
+        stabilityConfigurationFile =
+            rootProject.layout.projectDirectory.file("stability_definitions.txt")
+    }
 
     sourceSets {
         val desktopMain by getting
@@ -87,13 +90,14 @@ kotlin {
             implementation(libs.voyager.tabNavigation)
             implementation(libs.composeImageLoader)
             implementation(libs.voyager.koin)
-            api(libs.material3.adaptive.navigation)
-            api(libs.material3.adaptive.layout)
-            api(libs.material3.adaptive)
-            api(libs.material3.datatable)
+            implementation(libs.material3.adaptive.navigation)
+            implementation(libs.material3.adaptive.layout)
+            implementation(libs.material3.adaptive)
+            implementation(libs.material3.datatable)
             api(libs.webview)
-            api(libs.datastore.preferences)
-            api(libs.datastore)
+            implementation(libs.flowmvi.compose)
+            implementation(libs.datastore.preferences)
+            implementation(libs.datastore)
             implementation(libs.okio)
             implementation(libs.koin.core)
             implementation(libs.kotlinx.datetime)

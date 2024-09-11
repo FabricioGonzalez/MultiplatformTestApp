@@ -22,14 +22,14 @@ import androidx.window.core.layout.WindowSizeClass
 import app.cash.paging.compose.LazyPagingItems
 import components.ImageBox
 import domain.model.ActressEntity
-import features.actresses.actresses_list.ActressesListContracts
+import features.actresses.actresses_list.ActressListContainer
 import features.home.components.rememberColumns
+import pro.respawn.flowmvi.api.IntentReceiver
 
 
 @Composable
-fun ActressesList(
+fun IntentReceiver<ActressListContainer.ActressListIntent>.ActressesList(
     actresses: LazyPagingItems<ActressEntity>,
-    setEvent: (ActressesListContracts.Event) -> Unit,
     windowSizeClass: WindowSizeClass,
 ) {
 
@@ -44,7 +44,11 @@ fun ActressesList(
                 ActressCard(modifier = Modifier.height(220.dp).width(120.dp),
                     actress = actress,
                     setEvent = { id ->
-                        setEvent(ActressesListContracts.Event.OnNavigateToActressDetailRequested(id))
+                        intent(
+                            ActressListContainer.ActressListIntent.OnNavigateToActressDetailRequested(
+                                id
+                            )
+                        )
                     })
             }
         }

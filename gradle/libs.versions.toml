@@ -9,7 +9,7 @@ androidx-core-ktx = "1.13.1"
 androidx-espresso-core = "3.6.1"
 androidx-material = "1.12.0"
 androidx-test-junit = "1.2.1"
-compose = "1.7.0-beta01"
+compose = "1.7.0-beta02"
 compose-plugin = "1.7.0"
 junit = "4.13.2"
 kotlin = "2.0.0"
@@ -33,8 +33,10 @@ okio = "3.9.0"
 room = "2.7.0-alpha07"
 ksp = "2.0.0-1.0.23"
 sqlite = "2.5.0-SNAPSHOT"
-adaptive = "1.0.0-alpha01"
-systemVersion = "1.0.3"
+adaptive = "1.0.0-alpha03"
+flowmvi = "3.0.1-beta02"
+
+systemVersion = "1.0.4"
 versionCode = "1"
 
 [libraries]
@@ -67,6 +69,7 @@ sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sql
 material3-adaptive = { module = "org.jetbrains.compose.material3.adaptive:adaptive", version.ref = "adaptive" }
 material3-adaptive-layout = { module = "org.jetbrains.compose.material3.adaptive:adaptive-layout", version.ref = "adaptive" }
 material3-adaptive-navigation = { module = "org.jetbrains.compose.material3.adaptive:adaptive-navigation", version.ref = "adaptive" }
+window-core = { module = "org.jetbrains.androidx.window:window-core", version = "1.3.0-alpha01" }
 material3-datatable = { module = "com.seanproctor:data-table-material3", version = "0.9.1" }
 
 #paging-core = { module = "androidx.paging:paging-common", version.ref = "androidPagingVersion" }
@@ -104,6 +107,8 @@ apollo-client-adapters = { group = "com.apollographql.apollo3", name = "apollo-a
 apollo-normalized-cache-sqlite = { group = "com.apollographql.apollo3", name = "apollo-normalized-cache-sqlite", version.ref = "apolloClientVersion" }
 
 androidx-browser = { group = "androidx.browser", name = "browser", version.ref = "browser" }
+
+flowmvi-compose = { module = "pro.respawn.flowmvi:compose", version.ref = "flowmvi" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

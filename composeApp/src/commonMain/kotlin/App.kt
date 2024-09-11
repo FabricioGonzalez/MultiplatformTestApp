@@ -20,8 +20,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.window.core.layout.WindowWidthSizeClass
+import cafe.adriel.voyager.navigator.CurrentScreen
 import cafe.adriel.voyager.navigator.Navigator
-import cafe.adriel.voyager.transitions.SlideTransition
 import features.actresses.actress_details.ActressDetailsScreen
 import features.actresses.actress_picture_search.ActressPictureSearchScreen
 import features.actresses.actresses_list.ActressesListScreen
@@ -116,7 +116,6 @@ fun App(isDarkTheme: Boolean = false, appColor: ColorScheme?) {
             ),
         )
 
-
         Navigator(screens.first { it.isDefault }.uiScreen) { nav ->
             val sizes = currentWindowAdaptiveInfo()
             val showNavBar =
@@ -146,12 +145,11 @@ fun App(isDarkTheme: Boolean = false, appColor: ColorScheme?) {
                     }
                 }
             }) { paddings ->
-
                 Row(modifier = Modifier.padding(paddings)) {
                     if (showNavBar.value && screens.firstOrNull { navPoint -> navPoint.uiScreen.key == nav.lastItemOrNull?.key }?.disableNavBar != true) {
                         NavRailBar(navigationItems = screens, navigator = nav)
                     }
-                    SlideTransition(navigator = nav)
+                    CurrentScreen()
                 }
             }
         }

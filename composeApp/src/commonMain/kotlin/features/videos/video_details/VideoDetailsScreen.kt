@@ -2,11 +2,15 @@ package features.videos.video_details
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.EditCalendar
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -87,8 +91,7 @@ data class VideoDetailScreen(
                     VideoDetailsContracts.Effect.BackNavigation -> navigator.pop()
                     is VideoDetailsContracts.Effect.NavigateToActressesRequested -> {
                         navigator.navigateToActressesDetails(
-                            actressId = effect.id,
-                            onCompose = onCompose
+                            actressId = effect.id, onCompose = onCompose
                         )
                     }
 
@@ -98,9 +101,7 @@ data class VideoDetailScreen(
         }
 
         VideoDetailsPage(
-            state = state,
-            windowClassSizes = sizes,
-            setEvent = setEvent
+            state = state, windowClassSizes = sizes, setEvent = setEvent
         )
     }
 }
@@ -116,24 +117,31 @@ private fun VideoDetailsPage(
         resourceUiState = state.video,
         successView = { video ->
             Column(
-                Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
+                Modifier.fillMaxSize().padding(8.dp).verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 VideoDetailsHeader(modifier = Modifier.fillMaxWidth(), video = video)
 
-                Column(Modifier.fillMaxWidth().padding(16.dp)) {
-                    Text(video.createdAt.format())
-                    Text(video.addedToAt?.format() ?: "Sem data")
+                Row(
+                    Modifier.fillMaxWidth().padding(16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Icon(Icons.Rounded.EditCalendar, null)
+                        Text(video.createdAt.format())
+                    }
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Icon(Icons.Rounded.EditCalendar, null)
+                        Text(video.addedToAt?.format() ?: "Sem data")
+                    }
                 }
-
-
-                Players(
-                    modifier = Modifier.fillMaxWidth(), players = video.players,
+                
+                Players(modifier = Modifier.fillMaxWidth(),
+                    players = video.players,
                     videoId = video.id,
                     setEvent = { id ->
                         setEvent(VideoDetailsContracts.Event.OnPlayVideoPressed(id))
-                    }
-                )
+                    })
 
                 VideoActresses(
                     modifier = Modifier.fillMaxWidth(),
@@ -156,27 +164,22 @@ private fun VideoDetailsPage(
 private fun VideoDetailsPagePreview() {
     MaterialTheme {
         Surface {
-            VideoDetailsPage(
-                VideoDetailsContracts.State(
-                    ResourceUiState.Success(
-                        VideoDetailsEntity(
-                            id = "",
-                            title = "",
-                            photo = "",
-                            createdAt = Clock.System.now()
-                                .toLocalDateTime(TimeZone.currentSystemDefault()),
-                            addedToAt = Clock.System.now()
-                                .toLocalDateTime(TimeZone.currentSystemDefault()),
-                            actresses = listOf(),
-                            tags = listOf(),
-                            players = listOf(),
-                        )
-                    ),
-                    ResourceUiState.Empty
-                ),
-                currentWindowAdaptiveInfo().windowSizeClass,
-                setEvent = {}
-            )
+            VideoDetailsPage(VideoDetailsContracts.State(
+                ResourceUiState.Success(
+                    VideoDetailsEntity(
+                        id = "",
+                        title = "",
+                        photo = "",
+                        createdAt = Clock.System.now()
+                            .toLocalDateTime(TimeZone.currentSystemDefault()),
+                        addedToAt = Clock.System.now()
+                            .toLocalDateTime(TimeZone.currentSystemDefault()),
+                        actresses = listOf(),
+                        tags = listOf(),
+                        players = listOf(),
+                    )
+                ), ResourceUiState.Empty
+            ), currentWindowAdaptiveInfo().windowSizeClass, setEvent = {})
         }
     }
 }

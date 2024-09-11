@@ -1,19 +1,24 @@
 package features.settings.history.ui
 
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.safeContentPadding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
@@ -24,7 +29,9 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.seanproctor.datatable.DataColumn
+import com.seanproctor.datatable.TableColumnWidth
 import com.seanproctor.datatable.material3.DataTable
+import com.seanproctor.datatable.rememberDataTableState
 import components.ImageBox
 import data.helpers.format
 import features.navigation.navigateToVideoDetails
@@ -56,8 +63,7 @@ class AppHistoryScreen(
 
     @Composable
     override fun Content() {
-        val (state, setEvent, effect) = use(getScreenModel<AppHistoryViewModel>())
-        val sizes = currentWindowAdaptiveInfo()
+        val (state, setEvent, effect) = use(getScreenModel<AppHistoryViewModel>())/*val sizes = currentWindowAdaptiveInfo()*/
 
         val snackbarHostState = remember { SnackbarHostState() }
 
@@ -89,37 +95,52 @@ class AppHistoryScreen(
 
                     is AppHistoryContract.Effect.NavigateToDetails -> {
                         navigator.parent?.navigateToVideoDetails(
-                            videoId = effect.id,
-                            onCompose = onCompose
+                            videoId = effect.id, onCompose = onCompose
                         )
                     }
 
                 }
             }
         }
-        Column(modifier = Modifier.fillMaxSize().safeContentPadding()) {
-            ManagementResourceUiState(
-                modifier = Modifier.fillMaxSize(),
+        Column(modifier = Modifier.fillMaxSize()) {
+            ManagementResourceUiState(modifier = Modifier.fillMaxSize(),
                 resourceUiState = state.historyEntries,
                 successView = { histories ->
 
                     DataTable(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier
+                            .padding(2.dp)
+                            .fillMaxHeight()
+                            .clip(MaterialTheme.shapes.medium)
+                            .horizontalScroll(rememberScrollState()),
+                        state = rememberDataTableState(),
+                        background = MaterialTheme.colorScheme.surfaceColorAtElevation(8.dp),
                         columns = listOf(
-                            DataColumn {
+                            DataColumn(
+                                width = TableColumnWidth.Fixed(126.dp),
+                                alignment = Alignment.Center
+                            ) {
                                 Text("Image")
                             },
-                            DataColumn {
-                                Text("Title")
+                            DataColumn(
+                                width = TableColumnWidth.MaxIntrinsic,
+                                alignment = Alignment.Center
+                            ) {
+                                Text("Title", minLines = 2)
                             },
-                            DataColumn {
+                            DataColumn(
+                                width = TableColumnWidth.Fixed(144.dp),
+                                alignment = Alignment.Center
+                            ) {
                                 Text("WatchedOn")
                             },
                         ),
+
                         rowHeight = 96.dp
                     ) {
                         histories.forEach {
                             row {
+
                                 onClick = {
                                     setEvent(
                                         AppHistoryContract.Event.OnGoToVideoDetailsRequested(
@@ -130,9 +151,8 @@ class AppHistoryScreen(
                                 cell {
                                     it.image?.let { image ->
                                         ImageBox(
-                                            modifier = Modifier.size(92.dp)
-                                                .clip(MaterialTheme.shapes.medium),
-                                            photo = image
+                                            modifier = Modifier.width(126.dp).height(92.dp)
+                                                .clip(MaterialTheme.shapes.medium), photo = image
                                         )
                                     }
                                 }

@@ -8,6 +8,7 @@ import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
@@ -22,14 +23,13 @@ import org.koin.core.logger.Level
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        enableEdgeToEdge()
         setContent {
 
             val dynamicColor = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
 
             App(
-                isDarkTheme = isSystemInDarkTheme(),
-                appColor = when {
+                isDarkTheme = isSystemInDarkTheme(), appColor = when {
                     (isSystemInDarkTheme() && dynamicColor) -> {
                         dynamicDarkColorScheme(LocalContext.current)
                     }
@@ -61,7 +61,6 @@ fun Context.isDebug() = 0 != applicationInfo.flags and ApplicationInfo.FLAG_DEBU
 @Composable
 fun AppAndroidPreview() {
     App(
-        isDarkTheme = isSystemInDarkTheme(),
-        appColor = null
+        isDarkTheme = isSystemInDarkTheme(), appColor = null
     )
 }

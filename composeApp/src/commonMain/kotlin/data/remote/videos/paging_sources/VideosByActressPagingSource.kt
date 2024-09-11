@@ -1,8 +1,16 @@
 package data.remote.videos.paging_sources
 
-import app.cash.paging.*
-import com.apollographql.apollo3.ApolloClient
+import app.cash.paging.PagingSource
+import app.cash.paging.PagingSourceLoadParams
+import app.cash.paging.PagingSourceLoadParamsAppend
+import app.cash.paging.PagingSourceLoadParamsPrepend
+import app.cash.paging.PagingSourceLoadParamsRefresh
+import app.cash.paging.PagingSourceLoadResult
+import app.cash.paging.PagingSourceLoadResultError
+import app.cash.paging.PagingSourceLoadResultPage
+import app.cash.paging.PagingState
 import com.apollographql.apollo3.api.Optional
+import data.ApolloConnector
 import domain.model.VideoEntity
 import graphql.VideosByActressNameQuery
 import kotlinx.coroutines.Dispatchers
@@ -10,7 +18,7 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
 
 internal class VideosByActressPagingSource(
-    private val apolloClient: ApolloClient, private val actressName: String
+    private val apolloClient: ApolloConnector, private val actressName: String
 ) : PagingSource<String, VideoEntity>() {
     override suspend fun load(params: PagingSourceLoadParams<String>): PagingSourceLoadResult<String, VideoEntity> {
         val page = params.key ?: FIRST_PAGE_INDEX
@@ -41,7 +49,7 @@ internal class VideosByActressPagingSource(
                     }
 
                 }
-            ).execute()
+            )
         }
         return when {
             !result.hasErrors() -> {

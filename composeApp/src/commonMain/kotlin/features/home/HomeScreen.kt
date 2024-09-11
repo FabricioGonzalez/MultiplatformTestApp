@@ -13,12 +13,14 @@ import androidx.compose.material3.DockedSearchBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -107,21 +109,33 @@ fun HomeLayout(
     windowSizeClass: WindowSizeClass
 ) {
     Column {
-        DockedSearchBar(
-            modifier = Modifier.fillMaxWidth().padding(8.dp, 4.dp),
-            query = state.searchText,
-            onQueryChange = {
-                setEvent(HomeContract.Event.OnSearchTextChanged(it))
-            },
-            onActiveChange = {},
-            onSearch = {
-                setEvent(HomeContract.Event.OnSearchTextChanged(it))
-            },
-            content = {},
-            leadingIcon = { Icon(Icons.Rounded.Search, null) },
-            trailingIcon = { if (state.searchText.isNotEmpty()) Icon(Icons.Rounded.Cancel, null) },
-            active = false
-        )
+        val (searchText, onSearchTextUpdate) = remember {
+            mutableStateOf("")
+        }
+
+
+        DockedSearchBar(expanded = false, onExpandedChange = {}, inputField = {
+            SearchBarDefaults.InputField(
+                modifier = Modifier.fillMaxWidth(),
+                expanded = false,
+                onExpandedChange = {},
+                query = searchText,
+                onQueryChange = {
+                    setEvent(HomeContract.Event.OnSearchTextChanged(it))
+                    onSearchTextUpdate(it)
+                },
+                onSearch = {
+                    setEvent(HomeContract.Event.OnSearchTextChanged(it))
+                    onSearchTextUpdate(it)
+                },
+                leadingIcon = { Icon(Icons.Rounded.Search, null) },
+                trailingIcon = {
+                    if (state.searchText.isNotEmpty()) Icon(
+                        Icons.Rounded.Cancel, null
+                    )
+                },
+            )
+        }, modifier = Modifier.fillMaxWidth().padding(8.dp, 4.dp), content = {})
 
         if (state.searchText.isNotEmpty()) {
             ManagementResourceUiState(

@@ -1,8 +1,14 @@
 package data.remote.videos
 
-import app.cash.paging.*
-import com.apollographql.apollo3.ApolloClient
+import app.cash.paging.Pager
+import app.cash.paging.PagingConfig
+import app.cash.paging.PagingData
+import app.cash.paging.PagingSourceLoadParams
+import app.cash.paging.PagingSourceLoadParamsAppend
+import app.cash.paging.PagingSourceLoadParamsPrepend
+import app.cash.paging.PagingSourceLoadParamsRefresh
 import com.apollographql.apollo3.api.Optional
+import data.ApolloConnector
 import data.entities.DbPreferredContent
 import data.entities.DbPreferredContentType
 import data.remote.videos.dtos.VideoAddedInfo
@@ -11,7 +17,11 @@ import data.remote.videos.paging_sources.RemoteRecentVideosPagingSource
 import data.remote.videos.paging_sources.RemoteSearchVideosPagingSource
 import data.remote.videos.paging_sources.VideosByActressPagingSource
 import data.remote.videos.paging_sources.VideosByTagPagingSource
-import domain.model.*
+import domain.model.ActressEntity
+import domain.model.PlayerEntity
+import domain.model.TagEntity
+import domain.model.VideoDetailsEntity
+import domain.model.VideoEntity
 import graphql.OnVideoAddedSubscription
 import graphql.VideoDetailsQuery
 import graphql.VideosQuery
@@ -27,14 +37,13 @@ import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
-class VideoRemoteApi(private val apolloClient: ApolloClient, private val realmDb: Realm) {
+class VideoRemoteApi(private val apolloClient: ApolloConnector, private val realmDb: Realm) {
 
     suspend fun onVideoAdded(): Flow<Result<VideoAddedInfo>> =
         withContext(Dispatchers.IO) {
-            apolloClient.subscription(
+            apolloClient.subscribe(
                 OnVideoAddedSubscription()
             )
-                .toFlow()
                 .catch {
                     println(it)
                 }
@@ -68,7 +77,7 @@ class VideoRemoteApi(private val apolloClient: ApolloClient, private val realmDb
     suspend fun loadDetails(id: String): Result<VideoDetailsEntity> {
         return withContext(Dispatchers.IO) {
 
-            val result = apolloClient.query(VideoDetailsQuery(id)).execute()
+            val result = apolloClient.query(VideoDetailsQuery(id))
 
             when {
                 !result.hasErrors() -> {
@@ -80,9 +89,10 @@ class VideoRemoteApi(private val apolloClient: ApolloClient, private val realmDb
                             createdAt = Instant.parse(video.createdAt.toString()).toLocalDateTime(
                                 TimeZone.currentSystemDefault()
                             ),
-                            addedToAt = Instant.parse(video.originalCreationDate.toString()).toLocalDateTime(
-                                TimeZone.currentSystemDefault()
-                            ),
+                            addedToAt = Instant.parse(video.originalCreationDate.toString())
+                                .toLocalDateTime(
+                                    TimeZone.currentSystemDefault()
+                                ),
                             actresses = video.actresses?.mapNotNull { actress ->
                                 actress?.let { act ->
                                     ActressEntity(
@@ -166,18 +176,20 @@ class VideoRemoteApi(private val apolloClient: ApolloClient, private val realmDb
 
                     is PagingSourceLoadParamsAppend<String> -> {
                         VideosQuery(
-                            afterSize = Optional.present(40), cursorEnd = Optional.present(loadKey.key)
+                            afterSize = Optional.present(40),
+                            cursorEnd = Optional.present(loadKey.key)
                         )
                     }
 
                     is PagingSourceLoadParamsPrepend<String> -> {
                         VideosQuery(
-                            beforeSize = Optional.present(40), cursorStart = Optional.present(loadKey.key)
+                            beforeSize = Optional.present(40),
+                            cursorStart = Optional.present(loadKey.key)
                         )
                     }
 
                 }
-            ).execute()
+            )
         }
         return when {
             !result.hasErrors() -> {

@@ -81,7 +81,7 @@ internal fun VideosListFeed(
     Feed(
         columns = rememberColumns(windowSizeClass = windowSizeClass),
         state = state,
-        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 16.dp),
+        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {

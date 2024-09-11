@@ -4,8 +4,8 @@ import androidx.paging.ExperimentalPagingApi
 import app.cash.paging.LoadType
 import app.cash.paging.PagingState
 import app.cash.paging.RemoteMediator
-import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.Optional
+import data.ApolloConnector
 import data.entities.DbVideo
 import domain.model.VideoEntity
 import graphql.VideosQuery
@@ -13,7 +13,10 @@ import io.realm.kotlin.Realm
 import okio.IOException
 
 @OptIn(ExperimentalPagingApi::class)
-internal class VideosRemoteMediator(private val apolloClient: ApolloClient, private val realmDb: Realm) :
+internal class VideosRemoteMediator(
+    private val apolloClient: ApolloConnector,
+    private val realmDb: Realm
+) :
     RemoteMediator<String, VideoEntity>() {
     override suspend fun initialize(): InitializeAction {/*val cacheTimeout = TimeUnit.MILLISECONDS.convert(1, TimeUnit.HOURS)*/
 
@@ -65,7 +68,7 @@ internal class VideosRemoteMediator(private val apolloClient: ApolloClient, priv
                 VideosQuery(
                     cursorStart = Optional.present(loadKey), afterSize = Optional.present(40)
                 )
-            ).execute().let {
+            ).let {
                 when {
                     !it.hasErrors() -> {
                         it.dataOrThrow().videos?.let { videos ->
@@ -83,7 +86,8 @@ internal class VideosRemoteMediator(private val apolloClient: ApolloClient, priv
                                             photo = node.photoLink
                                             createdAt = node.createdAt.toString()
                                             updatedAt = node.updatedAt.toString()
-                                            originalCreationDate = node.originalCreationDate.toString()
+                                            originalCreationDate =
+                                                node.originalCreationDate.toString()
                                         })
                                     }
                                 }

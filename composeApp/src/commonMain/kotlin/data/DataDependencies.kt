@@ -1,10 +1,10 @@
 package data
 
 import com.apollographql.apollo3.ApolloClient
-import com.apollographql.apollo3.annotations.ApolloExperimental
-import com.apollographql.apollo3.cache.normalized.normalizedCache
-import com.apollographql.apollo3.cache.normalized.sql.SqlNormalizedCacheFactory
-import com.apollographql.apollo3.cache.normalized.storeExpirationDate
+import com.apollographql.apollo3.api.ApolloResponse
+import com.apollographql.apollo3.api.Mutation
+import com.apollographql.apollo3.api.Query
+import com.apollographql.apollo3.api.Subscription
 import data.remote.actresses.ActressRemoteApi
 import data.remote.tags.TagRemoteApi
 import data.remote.videos.VideoRemoteApi
@@ -16,6 +16,10 @@ import domain.repositories.ActressRepository
 import domain.repositories.TagRepository
 import domain.repositories.VideoRepository
 import domain.repositories.WebLocalsRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.withContext
 import org.koin.dsl.module
 
 val dataDependencies = module {
@@ -35,17 +39,35 @@ val dataDependencies = module {
     single<WebLocalsRepository> { RoomWebLocalsRepository(get()) }*/
 }
 
-@OptIn(ApolloExperimental::class)
 val apolloDependencies = module {
     single {
-        ApolloClient.Builder()
-            /*.serverUrl("https://mediaapi.bsite.net/graphql")*/
-            /*.serverUrl("https://testmediaapi.bsite.net/graphql/")*/
-            .serverUrl("http://localhost:3001/graphql/")
-            /*.serverUrl("https://mapappapi.bsite.net/graphql/")*/
-            .normalizedCache(get<SqlNormalizedCacheFactory>())
-            .storeExpirationDate(true)
+        ApolloConnector()
+    }
+}
+
+class ApolloConnector {
+    private var client: ApolloClient = createClient("https://mapappapi.bsite.net/graphql/")
+
+    private fun createClient(url: String): ApolloClient {
+        return ApolloClient.Builder()
+            .serverUrl(url)
             .build()
+    }
+
+    fun changeClient(url: String) {
+        client = createClient(url)
+    }
+
+    suspend fun <T : Query.Data> query(query: Query<T>): ApolloResponse<T> {
+        return withContext(Dispatchers.IO) { client.query(query).execute() }
+    }
+
+    suspend fun <T : Mutation.Data> mutate(mutation: Mutation<T>): ApolloResponse<T> {
+        return withContext(Dispatchers.IO) { client.mutation(mutation).execute() }
+    }
+
+    fun <T : Subscription.Data> subscribe(subscription: Subscription<T>): Flow<ApolloResponse<T>> {
+        return client.subscription(subscription).toFlow()
     }
 }
 

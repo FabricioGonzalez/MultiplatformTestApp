@@ -1,8 +1,19 @@
 package data.remote.actresses
 
-import app.cash.paging.*
-import com.apollographql.apollo3.ApolloClient
+import app.cash.paging.Pager
+import app.cash.paging.PagingConfig
+import app.cash.paging.PagingData
+import app.cash.paging.PagingSource
+import app.cash.paging.PagingSourceLoadParams
+import app.cash.paging.PagingSourceLoadParamsAppend
+import app.cash.paging.PagingSourceLoadParamsPrepend
+import app.cash.paging.PagingSourceLoadParamsRefresh
+import app.cash.paging.PagingSourceLoadResult
+import app.cash.paging.PagingSourceLoadResultError
+import app.cash.paging.PagingSourceLoadResultPage
+import app.cash.paging.PagingState
 import com.apollographql.apollo3.api.Optional
+import data.ApolloConnector
 import data.entities.DbPreferredContent
 import data.entities.DbPreferredContentType
 import data.remote.actresses.paging_sources.SearchActressesPagingSource
@@ -19,12 +30,12 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 
 
-class ActressRemoteApi(private val apolloClient: ApolloClient, private val realmDb: Realm) {
+class ActressRemoteApi(private val apolloClient: ApolloConnector, private val realmDb: Realm) {
 
     suspend fun loadDetails(id: String): Result<ActressEntity> {
         return withContext(Dispatchers.IO) {
 
-            val result = apolloClient.query(ActressByIdQuery(id)).execute()
+            val result = apolloClient.query(ActressByIdQuery(id))
 
             when {
                 !result.hasErrors() -> {
@@ -69,7 +80,7 @@ class ActressRemoteApi(private val apolloClient: ApolloClient, private val realm
     suspend fun mutateActress(actress: ActressEntity): ActressEntity? {
         try {
             withContext(Dispatchers.IO) {
-                apolloClient.mutation(
+                apolloClient.mutate(
                     UpdateActressMutation(
                         MutateActressInput(
                             id = actress.id,
@@ -77,7 +88,7 @@ class ActressRemoteApi(private val apolloClient: ApolloClient, private val realm
                             photoLink = actress.photo
                         )
                     )
-                ).execute()
+                )
             }
             return actress
         } catch (e: Exception) {
@@ -97,7 +108,7 @@ class ActressRemoteApi(private val apolloClient: ApolloClient, private val realm
     }
 
     private class ActressesPagingSource(
-        private val apolloClient: ApolloClient,
+        private val apolloClient: ApolloConnector,
     ) : PagingSource<String, ActressEntity>() {
         override suspend fun load(params: PagingSourceLoadParams<String>): PagingSourceLoadResult<String, ActressEntity> {
             val page = params.key ?: FIRST_PAGE_INDEX
@@ -124,7 +135,7 @@ class ActressRemoteApi(private val apolloClient: ApolloClient, private val realm
                         }
 
                     }
-                ).execute()
+                )
             }
 
             return when {
