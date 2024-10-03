@@ -11,6 +11,7 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
 import cafe.adriel.voyager.core.screen.ScreenKey
 import cafe.adriel.voyager.navigator.tab.CurrentTab
 import cafe.adriel.voyager.navigator.tab.LocalTabNavigator
@@ -23,13 +24,15 @@ import presentation.ui.common.AppScreen
 import presentation.ui.common.AppTab
 
 class SettingsPage(
-    override val route: String = "settings", override val onCompose: (AppBarState) -> Unit
+    override val route: String = "settings",
+    private val navController: NavHostController,
+    override val onCompose: (AppBarState) -> Unit
 ) : AppScreen {
     override val key: ScreenKey = "Settings"
 
     private val screens: List<AppTab> = listOf(
         AppSettingsScreen(onCompose = onCompose),
-        AppHistoryScreen(onCompose = onCompose),
+        AppHistoryScreen(navController = navController, onCompose = onCompose),
     )
 
     @OptIn(ExperimentalMaterial3Api::class)

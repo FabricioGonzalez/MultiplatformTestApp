@@ -1,91 +1,141 @@
 package features.videos.video_details
 
-import cafe.adriel.voyager.core.model.screenModelScope
 import domain.interactors.tags.FavoriteTagUsecase
 import domain.interactors.video_history.WriteToVideoHistoryUsecase
 import domain.interactors.videos.GetVideoDetailsUsecase
 import domain.model.VideoDetailsEntity
 import domain.model.inputs.TagFavoriteInput
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import presentation.model.ResourceUiState
-import presentation.mvi.BaseViewModel
+import pro.respawn.flowmvi.api.Container
+import pro.respawn.flowmvi.api.MVIAction
+import pro.respawn.flowmvi.api.MVIIntent
+import pro.respawn.flowmvi.api.MVIState
+import pro.respawn.flowmvi.api.Store
+import pro.respawn.flowmvi.dsl.store
+import pro.respawn.flowmvi.dsl.updateState
+import pro.respawn.flowmvi.plugins.loggingPlugin
+import pro.respawn.flowmvi.plugins.reduce
+import pro.respawn.flowmvi.util.withType
 
-class VideoDetailsViewModel(
+class VideoDetailsStore(
     private val videoDetailsUsecase: GetVideoDetailsUsecase,
     private val favoriteTagUsecase: FavoriteTagUsecase,
     private val writeToVideoHistoryUsecase: WriteToVideoHistoryUsecase
+) : Container<VideoDetailsState, VideoDetailsIntents, VideoDetailsEffect> {
+    private val scope = CoroutineScope(Dispatchers.Default)
 
-) :
-    BaseViewModel<VideoDetailsContracts.Event, VideoDetailsContracts.State, VideoDetailsContracts.Effect>() {
+    override val store: Store<VideoDetailsState, VideoDetailsIntents, VideoDetailsEffect> = store(
+        VideoDetailsState.Empty
+    ) {
+        install(loggingPlugin())
 
-    override fun createInitialState(): VideoDetailsContracts.State = VideoDetailsContracts.State(
-        video = ResourceUiState.Idle,
-        isFavorite = ResourceUiState.Idle,
-    )
+        reduce { state ->
 
-    override fun handleEvent(event: VideoDetailsContracts.Event) {
-        when (event) {
-            is VideoDetailsContracts.Event.OnLoadDataRequested -> getDetails(event.videoId)
-            VideoDetailsContracts.Event.OnBackPressed -> setEffect { VideoDetailsContracts.Effect.BackNavigation }
-            is VideoDetailsContracts.Event.OnNavigateToActressPressed -> setEffect {
-                VideoDetailsContracts.Effect.NavigateToActressesRequested(
-                    event.id
+            when (state) {
+                is VideoDetailsIntents.OnLoadDataRequested -> {
+                    updateState { VideoDetailsState.Loading }
+                    scope.launch {
+                        videoDetailsUsecase(state.videoId)
+                            .onSuccess { succ ->
+                                succ?.let {
+                                    updateState {
+                                        VideoDetailsState.Success(
+                                            video = succ,
+                                            isFavorite = false
+                                        )
+                                    }
+                                }
+                                    ?: updateState { VideoDetailsState.Error(message = "Nada foi encontrado") }
+                            }.onFailure {
+                                updateState {
+                                    VideoDetailsState.Error(
+                                        message = it.message ?: "Erro indescritivel"
+                                    )
+                                }
+                            }
+                    }
+                }
+
+                VideoDetailsIntents.OnBackPressed -> action(VideoDetailsEffect.BackNavigation)
+                is VideoDetailsIntents.OnNavigateToActressPressed -> action(
+                    VideoDetailsEffect.NavigateToActressesRequested(
+                        state.id
+                    )
                 )
-            }
 
-            is VideoDetailsContracts.Event.OnPlayVideoPressed -> {
-                writeToHistory(event.videoId)
-            }
 
-            is VideoDetailsContracts.Event.OnTagFavoritedChanged -> {
-                if (uiState.value.video is ResourceUiState.Success<VideoDetailsEntity>) setState {
+                is VideoDetailsIntents.OnPlayVideoPressed -> {
+                    withState {
+                        withType<VideoDetailsState.Success, VideoDetailsState>
+                        {
+                            writeToHistory(state.videoId)
+                            this
+                        }
+                    }
+                }
+
+                is VideoDetailsIntents.OnTagFavoritedChanged -> updateState<VideoDetailsState.Success, _> {
                     copy(
-                        video = (uiState.value.video as ResourceUiState.Success<VideoDetailsEntity>).copy(
-                            data = (uiState.value.video as ResourceUiState.Success<VideoDetailsEntity>).data.copy(
-                                tags = (uiState.value.video as ResourceUiState.Success<VideoDetailsEntity>).data.tags.map {
-                                    if (it.name == event.tag) {
-                                        checkIfIsFavorite(it.name, !it.isFavorite)
-                                        it.copy(isFavorite = !it.isFavorite)
-                                    } else it
-                                })
-                        )
+                        video = video.copy(tags = video.tags.map {
+                            if (it.name == state.tag) {
+                                checkIfIsFavorite(it.name, !it.isFavorite)
+                                it.copy(isFavorite = !it.isFavorite)
+                            } else it
+                        })
                     )
                 }
+
             }
         }
+
     }
 
-    private fun writeToHistory(videoId: String) {
-        screenModelScope.launch {
-            if (uiState.value.video is ResourceUiState.Success)
-                writeToVideoHistoryUsecase((uiState.value.video as ResourceUiState.Success).data)
+    private fun VideoDetailsState.Success.writeToHistory(videoId: String) {
+        scope.launch {
+            writeToVideoHistoryUsecase(video)
         }
     }
 
-    private fun getDetails(id: String) {
-        setState { copy(video = ResourceUiState.Loading) }
-        screenModelScope.launch {
-            videoDetailsUsecase(id).onSuccess { succ ->
-                succ?.let { setState { copy(video = ResourceUiState.Success(succ)) } }
-                    ?: setState { copy(video = ResourceUiState.Error()) }
-            }.onFailure { setState { copy(video = ResourceUiState.Error()) } }
-        }
-    }
 
     private fun checkIfIsFavorite(tagName: String, isFavorite: Boolean) {
-        screenModelScope.launch {
+        scope.launch {
             favoriteTagUsecase(TagFavoriteInput(name = tagName, isFavorite = isFavorite))
         }
     }
+}
 
-    private fun switchCharacterFavorite(idCharacter: Int) {
-        setState { copy(isFavorite = ResourceUiState.Loading) }
-        screenModelScope.launch {
-            /*switchCharacterFavoriteUseCase(idCharacter)
-                .onSuccess {
-                    setState { copy(isFavorite = ResourceUiState.Success(it)) }
-                    setEffect { WebLocalsListContracts.Effect.CharacterAdded }
-                }.onFailure { setState { copy(isFavorite = ResourceUiState.Error()) } }*/
-        }
-    }
+
+sealed interface VideoDetailsIntents : MVIIntent {
+
+    data class OnLoadDataRequested(val videoId: String) : VideoDetailsIntents
+    data object OnBackPressed : VideoDetailsIntents
+    data class OnNavigateToActressPressed(val id: String) : VideoDetailsIntents
+    data class OnPlayVideoPressed(val videoId: String) : VideoDetailsIntents
+    data class OnTagFavoritedChanged(val tag: String) : VideoDetailsIntents
+}
+
+sealed interface VideoDetailsState : MVIState {
+
+    data class Success(
+        val video: VideoDetailsEntity,
+        val isFavorite: Boolean,
+    ) : VideoDetailsState
+
+    data class Error(
+        val message: String
+    ) : VideoDetailsState
+
+    data object Loading : VideoDetailsState
+    data object Empty : VideoDetailsState
+}
+
+
+sealed interface VideoDetailsEffect : MVIAction {
+    data object CharacterAdded : VideoDetailsEffect
+    data object CharacterRemoved : VideoDetailsEffect
+    data object BackNavigation : VideoDetailsEffect
+    data class PlayVideoRequested(val url: String) : VideoDetailsEffect
+    data class NavigateToActressesRequested(val id: String) : VideoDetailsEffect
 }

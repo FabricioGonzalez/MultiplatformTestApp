@@ -5,12 +5,12 @@ import domain.model.HistoryEntry
 import domain.model.VideoEntity
 import kotlinx.coroutines.flow.Flow
 import presentation.model.ResourceUiState
-import presentation.mvi.UiEffect
-import presentation.mvi.UiEvent
-import presentation.mvi.UiState
+import pro.respawn.flowmvi.api.MVIAction
+import pro.respawn.flowmvi.api.MVIIntent
+import pro.respawn.flowmvi.api.MVIState
 
 interface AppHistoryContract {
-    sealed interface Event : UiEvent {
+    sealed interface Event : MVIIntent {
         data object OnLoadDataRequested : Event
         data class OnGoToVideoDetailsRequested(val videoId: String) : Event
         data object OnBackPressed : Event
@@ -20,9 +20,9 @@ interface AppHistoryContract {
         val historyEntries: ResourceUiState<List<HistoryEntry>>,
         val searchFeed: ResourceUiState<Flow<PagingData<VideoEntity>>>,
         val searchText: String,
-    ) : UiState
+    ) : MVIState
 
-    sealed interface Effect : UiEffect {
+    sealed interface Effect : MVIAction {
         data object CharacterAdded : Effect
         data object CharacterRemoved : Effect
         data object BackNavigation : Effect

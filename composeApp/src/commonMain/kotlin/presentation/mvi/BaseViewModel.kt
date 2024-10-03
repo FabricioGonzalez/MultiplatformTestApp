@@ -10,8 +10,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import pro.respawn.flowmvi.api.MVIAction
+import pro.respawn.flowmvi.api.MVIIntent
+import pro.respawn.flowmvi.api.MVIState
 
-abstract class BaseViewModel<Event : UiEvent, State : UiState, Effect : UiEffect> : ScreenModel {
+abstract class BaseViewModel<Event : MVIIntent, State : MVIState, Effect : MVIAction> :
+    ScreenModel {
     private val initialState: State by lazy { createInitialState() }
     abstract fun createInitialState(): State
 

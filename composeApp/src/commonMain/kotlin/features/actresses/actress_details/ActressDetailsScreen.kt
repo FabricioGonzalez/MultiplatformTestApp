@@ -17,18 +17,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
 import app.cash.paging.compose.collectAsLazyPagingItems
 import cafe.adriel.voyager.core.screen.ScreenKey
 import cafe.adriel.voyager.koin.getScreenModel
-import cafe.adriel.voyager.navigator.LocalNavigator
-import cafe.adriel.voyager.navigator.currentOrThrow
 import features.actresses.actress_details.components.ActressDetailsHeader
-import features.actresses.actress_picture_search.ActressPictureSearchScreen
 import features.home.components.VideosList
-import features.navigation.navigateToVideoDetails
 import kotlinx.coroutines.flow.collectLatest
 import presentation.model.ResourceUiState
 import presentation.mvi.use
+import presentation.navigation.AppScreenDestinations
 import presentation.ui.common.AppBarState
 import presentation.ui.common.AppScreen
 import presentation.ui.common.ArrowBackIcon
@@ -36,6 +34,7 @@ import presentation.ui.common.state.ManagementResourceUiState
 
 data class ActressDetailsScreen(
     private val actressId: String, override val route: String = "ActressDetails",
+    private val navController: NavHostController,
     override val onCompose: (AppBarState) -> Unit,
 ) : AppScreen {
     override val key: ScreenKey = "ActressDetails"
@@ -46,7 +45,7 @@ data class ActressDetailsScreen(
         val snackbarHostState = remember { SnackbarHostState() }
         val (state, setEvent, effect) = use(getScreenModel<ActressDetailsViewModel>())
 
-        val navigator = LocalNavigator.currentOrThrow
+
 
         LaunchedEffect(key1 = Unit) {
             setEvent(ActressDetailsContracts.Event.OnLoadDataRequested(actressId))
@@ -57,8 +56,10 @@ data class ActressDetailsScreen(
                         "Character added to favorites"
                     )
 
-                    is ActressDetailsContracts.Effect.OnActressPhotoRequested -> navigator.push(
-                        ActressPictureSearchScreen(effect.actressName, onCompose = onCompose)
+                    is ActressDetailsContracts.Effect.OnActressPhotoRequested -> navController.navigate(
+                        AppScreenDestinations.ActressPictureSearch(
+                            effect.actressName,
+                        )
                     )
 
                     ActressDetailsContracts.Effect.CharacterRemoved -> snackbarHostState.showSnackbar(
@@ -66,13 +67,12 @@ data class ActressDetailsScreen(
                     )
 
                     is ActressDetailsContracts.Effect.OnVideoItemClicked -> {
-                        navigator.navigateToVideoDetails(
-                            videoId = effect.videoId,
-                            onCompose = onCompose
+                        navController.navigate(
+                            AppScreenDestinations.VideoDetails(videoId = effect.videoId)
                         )
                     }
 
-                    ActressDetailsContracts.Effect.BackNavigation -> navigator.pop()
+                    ActressDetailsContracts.Effect.BackNavigation -> navController.navigateUp()
                 }
             }
         }
@@ -121,7 +121,7 @@ data class ActressDetailsScreen(
                         },
                         navigationIcon = {
                             ArrowBackIcon {
-                                navigator.pop()
+                                navController.navigateUp()
                             }
                         },
                         searchBar = null,

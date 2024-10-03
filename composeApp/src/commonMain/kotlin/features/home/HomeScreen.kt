@@ -24,26 +24,27 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import androidx.paging.LoadState
 import androidx.window.core.layout.WindowSizeClass
 import app.cash.paging.compose.collectAsLazyPagingItems
 import cafe.adriel.voyager.core.screen.ScreenKey
 import cafe.adriel.voyager.koin.getScreenModel
-import cafe.adriel.voyager.navigator.LocalNavigator
-import cafe.adriel.voyager.navigator.currentOrThrow
 import features.home.components.PortraitSweetsCard
 import features.home.components.VideosListFeed
 import features.home.components.rememberColumns
-import features.navigation.navigateToVideoDetails
 import kotlinx.coroutines.flow.collectLatest
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import presentation.mvi.use
+import presentation.navigation.AppScreenDestinations
 import presentation.ui.common.AppBarState
 import presentation.ui.common.AppScreen
 import presentation.ui.common.state.ManagementResourceUiState
 
 class HomeScreen(
-    override val route: String = "home", override val onCompose: (AppBarState) -> Unit
+    override val route: String = "home",
+    private val navController: NavHostController,
+    override val onCompose: (AppBarState) -> Unit
 ) : AppScreen {
     override val key: ScreenKey = "Home"
 
@@ -54,7 +55,7 @@ class HomeScreen(
         val sizes = currentWindowAdaptiveInfo().windowSizeClass
         val snackbarHostState = remember { SnackbarHostState() }
 
-        val navigator = LocalNavigator.currentOrThrow
+
 
         LaunchedEffect(key1 = Unit) {
             onCompose(
@@ -77,11 +78,11 @@ class HomeScreen(
                     HomeContract.Effect.CharacterRemoved -> snackbarHostState.showSnackbar("Character removed from favorites")
 
                     HomeContract.Effect.BackNavigation -> {
-                        navigator.pop()
+                        navController.navigateUp()
                     }
 
                     is HomeContract.Effect.NavigateToDetails -> {
-                        navigator.navigateToVideoDetails(videoId = effect.id, onCompose = onCompose)
+                        navController.navigate(AppScreenDestinations.VideoDetails(videoId = effect.id))
                     }
 
                     is HomeContract.Effect.NewVideoAdded -> {

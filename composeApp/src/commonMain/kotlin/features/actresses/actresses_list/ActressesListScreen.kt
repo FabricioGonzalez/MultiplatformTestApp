@@ -21,14 +21,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
 import app.cash.paging.compose.collectAsLazyPagingItems
 import cafe.adriel.voyager.core.screen.ScreenKey
-import cafe.adriel.voyager.navigator.LocalNavigator
-import cafe.adriel.voyager.navigator.currentOrThrow
 import features.actresses.actresses_list.components.ActressesList
-import features.navigation.navigateToActressesDetails
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
+import presentation.navigation.AppScreenDestinations
 import presentation.ui.common.AppBarState
 import presentation.ui.common.AppScreen
 import presentation.ui.common.state.Loading
@@ -38,6 +37,7 @@ import pro.respawn.flowmvi.compose.dsl.subscribe
 
 data class ActressesListScreen(
     override val route: String = "ActressesList",
+    private val navController: NavHostController,
     override val onCompose: (AppBarState) -> Unit,
 ) : AppScreen, KoinComponent {
     override val key: ScreenKey = "ActressesList"
@@ -49,7 +49,6 @@ data class ActressesListScreen(
         val snackbarHostState =
             remember { SnackbarHostState() }/* val (state, setEvent, effect) = use(getScreenModel<ActressesListViewModel>())*/
 
-        val navigator = LocalNavigator.currentOrThrow
 
         val storeScope = rememberCoroutineScope()
 
@@ -78,12 +77,12 @@ data class ActressesListScreen(
             when (action) {
                 is ActressListContainer.ActressListAction.ShowMessage -> {}
                 is ActressListContainer.ActressListAction.NavigateToDetails -> {
-                    navigator.navigateToActressesDetails(
-                        actressId = action.actressId, onCompose = onCompose
+                    navController.navigate(
+                        AppScreenDestinations.ActressDetails(actressId = action.actressId)
                     )
                 }
 
-                ActressListContainer.ActressListAction.NavigateBack -> navigator.pop()
+                ActressListContainer.ActressListAction.NavigateBack -> navController.navigateUp()
             }
         }
 
@@ -98,7 +97,7 @@ data class ActressesListScreen(
                     "Character removed from favorites"
                 )
 
-                ActressesListContracts.Effect.BackNavigation -> navigator.pop()
+                ActressesListContracts.Effect.BackNavigation -> navController.navigateUp()
                 is ActressesListContracts.Effect.ActressDetailNavigation -> navigator.navigateToActressesDetails(
                     actressId = effect.actressId, onCompose = onCompose
                 )

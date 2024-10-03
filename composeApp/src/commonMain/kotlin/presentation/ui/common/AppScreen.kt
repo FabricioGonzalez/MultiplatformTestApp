@@ -4,9 +4,6 @@ import NavPoint
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.runtime.Composable
 import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.navigator.LocalNavigator
-import cafe.adriel.voyager.navigator.currentOrThrow
-import presentation.ui.common.navigation.BottomNavBar
 
 interface AppScreen : Screen {
     val route: String
@@ -18,7 +15,7 @@ interface AppScreen : Screen {
 
     @Composable
     fun BottomBarContent(navigationItems: List<NavPoint>) {
-        BottomNavBar(navigator = LocalNavigator.currentOrThrow, navigationItems = navigationItems)
+       
     }
 }
 

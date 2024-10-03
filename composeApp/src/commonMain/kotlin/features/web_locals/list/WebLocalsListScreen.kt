@@ -27,17 +27,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import cafe.adriel.voyager.core.screen.ScreenKey
 import cafe.adriel.voyager.koin.getScreenModel
-import cafe.adriel.voyager.navigator.LocalNavigator
-import cafe.adriel.voyager.navigator.currentOrThrow
 import components.ImageBox
 import components.SwipeToDeleteContainer
-import features.navigation.navigateToWebLocalDetails
 import features.web_locals.list.components.Site
 import kotlinx.coroutines.flow.collectLatest
 import multiplatform.BrowserPage
 import presentation.mvi.use
+import presentation.navigation.AppScreenDestinations
 import presentation.ui.common.AppBarState
 import presentation.ui.common.AppScreen
 import presentation.ui.common.ArrowBackIcon
@@ -45,6 +44,7 @@ import presentation.ui.common.state.ManagementResourceUiState
 
 data class WebLocalsListScreen(
     override val route: String = "WebLocalsList",
+    private val navController: NavHostController,
     override val onCompose: (AppBarState) -> Unit,
 ) : AppScreen {
     override val key: ScreenKey = "WebLocalsList"
@@ -56,7 +56,7 @@ data class WebLocalsListScreen(
 
         val sizes = currentWindowAdaptiveInfo()
 
-        val navigator = LocalNavigator.currentOrThrow
+
 
         LaunchedEffect(key1 = Unit) {
             onCompose(
@@ -75,7 +75,7 @@ data class WebLocalsListScreen(
                     },
                     navigationIcon = {
                         ArrowBackIcon {
-                            navigator.pop()
+                            navController.navigateUp()
                         }
                     },
                     searchBar = null,
@@ -90,7 +90,7 @@ data class WebLocalsListScreen(
             effects.collectLatest { effect ->
                 when (effect) {
 
-                    WebLocalsListContracts.Effect.BackNavigation -> navigator.pop()
+                    WebLocalsListContracts.Effect.BackNavigation -> navController.navigateUp()
                     is WebLocalsListContracts.Effect.NavigateToWebLocalRequested -> {/*navigator.navigateToActressesDetails(
                             actressId = effect.id,
                             onCompose = onCompose
@@ -98,9 +98,10 @@ data class WebLocalsListScreen(
                     }
 
                     is WebLocalsListContracts.Effect.NavigateToWebLocalDetailsRequested -> {
-                        navigator.navigateToWebLocalDetails(
-                            webLocalId = effect.id,
-                            onCompose = onCompose
+                        navController.navigate(
+                            AppScreenDestinations.WeblocalDetails(
+                                webLocalId = effect.id
+                            )
                         )
                     }
                 }

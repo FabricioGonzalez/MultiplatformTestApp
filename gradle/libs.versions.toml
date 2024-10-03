@@ -29,14 +29,17 @@ kermit = "2.0.4"
 datastore = "1.1.1"
 kotlinx-datetime = "0.6.1"
 okio = "3.9.0"
-room = "2.7.0-alpha08"
+room = "2.7.0-alpha09"
 ksp = "2.0.20-1.0.25"
 sqlite = "2.5.0-SNAPSHOT"
 adaptive = "1.0.0-rc01"
 flowmvi = "3.0.1-beta02"
 
-systemVersion = "1.0.2"
-versionCode = "3"
+lifecycle = "2.8.2"
+navigation = "2.8.0-alpha10"
+
+systemVersion = "1.0.0"
+versionCode = "1"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -84,6 +87,9 @@ voyager-tabNavigation = { module = "cafe.adriel.voyager:voyager-tab-navigator", 
 voyager-transitions = { module = "cafe.adriel.voyager:voyager-transitions", version.ref = "voyager" }
 voyager-koin = { module = "cafe.adriel.voyager:voyager-koin", version.ref = "voyager" }
 
+compose-lifecycle-viewmodels = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
+compose-navigation = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigation" }
+
 datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }
 datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 
@@ -105,6 +111,8 @@ apollo-normalized-cache-sqlite = { group = "com.apollographql.apollo3", name = "
 
 androidx-browser = { group = "androidx.browser", name = "browser", version.ref = "browser" }
 
+kotlin-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version = "1.7.2" }
+
 flowmvi-compose = { module = "pro.respawn.flowmvi:compose", version.ref = "flowmvi" }
 
 [plugins]
@@ -118,3 +126,4 @@ apollo3 = { id = "com.apollographql.apollo3", version.ref = "apolloClientVersion
 conveyor = { id = "dev.hydraulic.conveyor", version = "1.10" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 room = { id = "androidx.room", version.ref = "room" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

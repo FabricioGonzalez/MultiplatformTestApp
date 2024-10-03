@@ -25,19 +25,20 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import cafe.adriel.voyager.navigator.LocalNavigator
-import cafe.adriel.voyager.navigator.currentOrThrow
-import features.navigation.navigateToHome
+import androidx.navigation.NavHostController
+import androidx.navigation.NavOptions
+import presentation.navigation.AppScreenDestinations
 import presentation.ui.common.AppBarState
 import presentation.ui.common.AppScreen
 
 class LoginScreen(
     override val route: String = "Login",
     override val onCompose: (AppBarState) -> Unit,
+    private val navController: NavHostController,
 ) : AppScreen {
     @Composable
     override fun Content() {
-        val navigator = LocalNavigator.currentOrThrow
+
 
         val focusManager = LocalFocusManager.current
         val (user, setUser) = remember { mutableStateOf("") }
@@ -45,7 +46,12 @@ class LoginScreen(
         val (passwordVisibility, setpasswordVisibility) = remember { mutableStateOf(false) }
 
         val loginFunction = {
-            if (user == "admin" && password == "library2022") navigator.navigateToHome(onCompose = onCompose)
+            if (user == "admin" && password == "library2022") navController.navigate(
+                AppScreenDestinations.Home,
+                navOptions = NavOptions.Builder()
+                    .setPopUpTo<AppScreenDestinations.Home>(true)
+                    .build()
+            )
         }
 
         Column(

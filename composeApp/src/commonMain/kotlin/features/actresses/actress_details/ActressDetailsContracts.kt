@@ -5,12 +5,12 @@ import domain.model.ActressEntity
 import domain.model.VideoEntity
 import kotlinx.coroutines.flow.Flow
 import presentation.model.ResourceUiState
-import presentation.mvi.UiEffect
-import presentation.mvi.UiEvent
-import presentation.mvi.UiState
+import pro.respawn.flowmvi.api.MVIAction
+import pro.respawn.flowmvi.api.MVIIntent
+import pro.respawn.flowmvi.api.MVIState
 
 interface ActressDetailsContracts {
-    sealed interface Event : UiEvent {
+    sealed interface Event : MVIIntent {
 
         data class OnActressPhotoRequested(val actressName: String) : Event
         data class OnLoadDataRequested(val id: String) : Event
@@ -27,10 +27,10 @@ interface ActressDetailsContracts {
         val videos: ResourceUiState<Flow<PagingData<VideoEntity>>>,
         val isFavorite: Boolean = false,
         val isEditing: Boolean = false,
-    ) : UiState
+    ) : MVIState
 
 
-    sealed interface Effect : UiEffect {
+    sealed interface Effect : MVIAction {
         data object CharacterAdded : Effect
         data object CharacterRemoved : Effect
         data class OnVideoItemClicked(val videoId: String) : Effect

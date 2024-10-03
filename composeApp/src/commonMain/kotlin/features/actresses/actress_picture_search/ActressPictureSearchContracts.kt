@@ -2,12 +2,12 @@ package features.actresses.actress_picture_search
 
 import domain.model.VideoDetailsEntity
 import presentation.model.ResourceUiState
-import presentation.mvi.UiEffect
-import presentation.mvi.UiEvent
-import presentation.mvi.UiState
+import pro.respawn.flowmvi.api.MVIAction
+import pro.respawn.flowmvi.api.MVIIntent
+import pro.respawn.flowmvi.api.MVIState
 
 interface ActressPictureSearchContracts {
-    sealed interface Event : UiEvent {
+    sealed interface Event : MVIIntent {
 
         data object OnBackPressed : Event
         data class OnNavigateToActressPressed(val id: String) : Event
@@ -17,9 +17,9 @@ interface ActressPictureSearchContracts {
     data class State(
         val video: ResourceUiState<VideoDetailsEntity>,
         val isFavorite: ResourceUiState<Boolean>,
-    ) : UiState
+    ) : MVIState
 
-    sealed interface Effect : UiEffect {
+    sealed interface Effect : MVIAction {
         data object CharacterAdded : Effect
         data object CharacterRemoved : Effect
         data object BackNavigation : Effect

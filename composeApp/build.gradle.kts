@@ -10,6 +10,7 @@ plugins {
     alias(libs.plugins.conveyor)
     alias(libs.plugins.ksp)
     alias(libs.plugins.room)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 group = "com.dev.fabricio.gonzalez"
@@ -110,6 +111,8 @@ kotlin {
             implementation(libs.materialKolor)
             implementation(libs.room.runtime)
             implementation(libs.sqlite.bundled)
+            implementation(libs.compose.navigation)
+            implementation(libs.kotlin.serialization)
 
         }
 

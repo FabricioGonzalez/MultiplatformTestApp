@@ -23,15 +23,15 @@ import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
 import domain.model.ActressEntity
 import features.actresses.actresses_list.components.ActressCard
-import features.videos.video_details.VideoDetailsContracts
+import features.videos.video_details.VideoDetailsIntents
+import pro.respawn.flowmvi.api.IntentReceiver
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun VideoActresses(
+fun IntentReceiver<VideoDetailsIntents>.VideoActresses(
     modifier: Modifier,
     actresses: List<ActressEntity>,
     windowSizeClass: WindowSizeClass,
-    handleEvents: (VideoDetailsContracts.Event) -> Unit
 ) {
     FlowRow(
         modifier = modifier,
@@ -40,8 +40,8 @@ fun VideoActresses(
     ) {
         actresses.forEach { actress ->
             ActressCard(modifier = Modifier.size(160.dp), actress = actress, setEvent = {
-                handleEvents(
-                    VideoDetailsContracts.Event.OnNavigateToActressPressed(
+                intent(
+                    VideoDetailsIntents.OnNavigateToActressPressed(
                         it
                     )
                 )

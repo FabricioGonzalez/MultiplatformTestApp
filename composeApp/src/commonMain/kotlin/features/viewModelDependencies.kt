@@ -7,15 +7,16 @@ import features.actresses.actresses_list.ActressesListViewModel
 import features.home.HomeViewModel
 import features.settings.app_settings.ui.AppSettingsViewModel
 import features.settings.history.ui.AppHistoryViewModel
-import features.videos.video_details.VideoDetailsViewModel
+import features.videos.video_details.VideoDetailsStore
 import features.web_locals.details.WebLocalsDetailsViewModel
 import features.web_locals.list.WebLocalsListViewModel
 import org.koin.dsl.module
 
 val viewModelDependencies = module {
     single { ActressListContainer(get(), get()) }
+    single { VideoDetailsStore(get(), get(), get()) }
     factory { HomeViewModel(get(), get(), get(), get()) }
-    factory { VideoDetailsViewModel(get(), get(), get()) }
+    /*factory { VideoDetailsViewModel(get(), get(), get()) }*/
     factory { ActressesListViewModel(get(), get()) }
     factory { ActressDetailsViewModel(get(), get(), get(), get()) }
     factory { ActressPictureSearchViewModel(get()) }

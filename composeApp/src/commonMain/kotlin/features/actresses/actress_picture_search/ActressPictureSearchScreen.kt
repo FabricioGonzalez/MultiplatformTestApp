@@ -11,23 +11,23 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import cafe.adriel.voyager.core.screen.ScreenKey
 import cafe.adriel.voyager.koin.getScreenModel
-import cafe.adriel.voyager.navigator.LocalNavigator
-import cafe.adriel.voyager.navigator.currentOrThrow
 import com.multiplatform.webview.setting.PlatformWebSettings
 import com.multiplatform.webview.web.WebView
 import com.multiplatform.webview.web.rememberWebViewNavigator
 import com.multiplatform.webview.web.rememberWebViewState
-import features.navigation.navigateToActressesDetails
 import kotlinx.coroutines.flow.collectLatest
 import presentation.mvi.use
+import presentation.navigation.AppScreenDestinations
 import presentation.ui.common.AppBarState
 import presentation.ui.common.AppScreen
 import presentation.ui.common.ArrowBackIcon
 
 data class ActressPictureSearchScreen(
     private val actressName: String, override val route: String = "Picture Search",
+    private val navController: NavHostController,
     override val onCompose: (AppBarState) -> Unit,
 ) : AppScreen {
 
@@ -54,7 +54,7 @@ data class ActressPictureSearchScreen(
             }
         val webViewNavigator = rememberWebViewNavigator()
 
-        val navigator = LocalNavigator.currentOrThrow
+
 
         LaunchedEffect(key1 = Unit) {
             onCompose(
@@ -64,7 +64,7 @@ data class ActressPictureSearchScreen(
                     navigationIcon = {
                         ArrowBackIcon {
                             if (!webViewNavigator.canGoBack) {
-                                navigator.pop()
+                                navController.navigateUp()
                             } else webViewNavigator.navigateBack()
                         }
                     },
@@ -83,11 +83,10 @@ data class ActressPictureSearchScreen(
                         "Character removed from favorites"
                     )
 
-                    ActressPictureSearchContracts.Effect.BackNavigation -> navigator.pop()
+                    ActressPictureSearchContracts.Effect.BackNavigation -> navController.navigateUp()
                     is ActressPictureSearchContracts.Effect.NavigateToActressesRequested -> {
-                        navigator.navigateToActressesDetails(
-                            actressId = effect.id,
-                            onCompose = onCompose
+                        navController.navigate(
+                            AppScreenDestinations.ActressDetails(actressId = effect.id)
                         )
                     }
 

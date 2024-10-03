@@ -11,116 +11,123 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.EditCalendar
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import androidx.window.core.layout.WindowSizeClass
-import cafe.adriel.voyager.core.screen.ScreenKey
-import cafe.adriel.voyager.koin.getScreenModel
-import cafe.adriel.voyager.navigator.LocalNavigator
-import cafe.adriel.voyager.navigator.currentOrThrow
 import data.helpers.format
-import domain.model.VideoDetailsEntity
-import features.navigation.navigateToActressesDetails
 import features.videos.video_details.components.Players
 import features.videos.video_details.components.Tags
 import features.videos.video_details.components.VideoActresses
 import features.videos.video_details.components.VideoDetailsHeader
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.datetime.Clock
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
-import org.jetbrains.compose.ui.tooling.preview.Preview
-import presentation.model.ResourceUiState
-import presentation.mvi.use
+import org.koin.compose.koinInject
+import presentation.navigation.AppScreenDestinations
 import presentation.ui.common.AppBarState
-import presentation.ui.common.AppScreen
 import presentation.ui.common.ArrowBackIcon
-import presentation.ui.common.state.ManagementResourceUiState
+import presentation.ui.common.state.Loading
+import pro.respawn.flowmvi.api.IntentReceiver
+import pro.respawn.flowmvi.compose.dsl.subscribe
 
-data class VideoDetailScreen(
-    private val videoId: String, override val route: String = "VideoDetails",
-    override val onCompose: (AppBarState) -> Unit,
-) : AppScreen {
-    override val key: ScreenKey = "VideoDetails"
+@Composable
+fun VideoDetailScreen(
+    videoId: String,
+    navController: NavHostController,
+    onCompose: (AppBarState) -> Unit,
+) = with(koinInject<VideoDetailsStore>().store) {
+    val snackbarHostState = remember { SnackbarHostState() }
 
-    @Composable
-    override fun Content() {
-        val snackbarHostState = remember { SnackbarHostState() }
-        val (state, setEvent, effects) = use(getScreenModel<VideoDetailsViewModel>())
+    val sizes = currentWindowAdaptiveInfo().windowSizeClass
 
-        val sizes = currentWindowAdaptiveInfo().windowSizeClass
+    val storeScope = rememberCoroutineScope()
 
-        val navigator = LocalNavigator.currentOrThrow
+    DisposableEffect(Unit) {
+        start(storeScope)
+        onDispose {
+            close()
+        }
+    }
 
-        LaunchedEffect(key1 = Unit) {
-            onCompose(
-                AppBarState(
-                    title = null,
-                    actions = null,
-                    navigationIcon = {
-                        ArrowBackIcon {
-                            navigator.pop()
-                        }
-                    },
-                    searchBar = null,
-                    snackbarHost = {
-                        SnackbarHost(snackbarHostState)
-                    },
-                )
+    LaunchedEffect(key1 = Unit) {
+        onCompose(
+            AppBarState(
+                title = null,
+                actions = null,
+                navigationIcon = {
+                    ArrowBackIcon {
+                        navController.navigateUp()
+                    }
+                },
+                searchBar = null,
+                snackbarHost = {
+                    SnackbarHost(snackbarHostState)
+                },
+            )
+        )
+
+        intent(VideoDetailsIntents.OnLoadDataRequested(videoId = videoId))
+
+    }
+
+    val state by subscribe { action ->
+        when (action) {
+            VideoDetailsEffect.CharacterAdded -> snackbarHostState.showSnackbar("Character added to favorites")
+
+            VideoDetailsEffect.CharacterRemoved -> snackbarHostState.showSnackbar(
+                "Character removed from favorites"
             )
 
-            setEvent(VideoDetailsContracts.Event.OnLoadDataRequested(videoId = videoId))
-
-            effects.collectLatest { effect ->
-                when (effect) {
-                    VideoDetailsContracts.Effect.CharacterAdded -> snackbarHostState.showSnackbar("Character added to favorites")
-
-                    VideoDetailsContracts.Effect.CharacterRemoved -> snackbarHostState.showSnackbar(
-                        "Character removed from favorites"
+            VideoDetailsEffect.BackNavigation -> navController.navigateUp()
+            is VideoDetailsEffect.NavigateToActressesRequested -> {
+                navController.navigate(
+                    AppScreenDestinations.ActressDetails(
+                        actressId = action.id
                     )
-
-                    VideoDetailsContracts.Effect.BackNavigation -> navigator.pop()
-                    is VideoDetailsContracts.Effect.NavigateToActressesRequested -> {
-                        navigator.navigateToActressesDetails(
-                            actressId = effect.id, onCompose = onCompose
-                        )
-                    }
-
-                    is VideoDetailsContracts.Effect.PlayVideoRequested -> {}
-                }
+                )
             }
-        }
 
-        VideoDetailsPage(
-            state = state, windowClassSizes = sizes, setEvent = setEvent
-        )
+            is VideoDetailsEffect.PlayVideoRequested -> {}
+        }
     }
+
+    VideoDetailsPage(
+        state = state, windowClassSizes = sizes
+    )
+
+
 }
 
 @Composable
-private fun VideoDetailsPage(
-    state: VideoDetailsContracts.State,
+internal fun IntentReceiver<VideoDetailsIntents>.VideoDetailsPage(
+    state: VideoDetailsState,
     windowClassSizes: WindowSizeClass,
-    setEvent: (VideoDetailsContracts.Event) -> Unit
 ) {
-    ManagementResourceUiState(
-        modifier = Modifier.fillMaxSize(),
-        resourceUiState = state.video,
-        successView = { video ->
+    when (state) {
+        VideoDetailsState.Empty -> {
+            Text("Vish, está vázio?")
+        }
+
+        is VideoDetailsState.Error -> presentation.ui.common.state.Error(
+            onTryAgain = {},
+            msg = state.message
+        )
+
+        VideoDetailsState.Loading -> Loading()
+        is VideoDetailsState.Success -> {
             Column(
                 Modifier.fillMaxSize().padding(8.dp).verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                VideoDetailsHeader(modifier = Modifier.fillMaxWidth(), video = video)
+                VideoDetailsHeader(modifier = Modifier.fillMaxWidth(), video = state.video)
 
                 Row(
                     Modifier.fillMaxWidth().padding(16.dp),
@@ -128,38 +135,36 @@ private fun VideoDetailsPage(
                 ) {
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         Icon(Icons.Rounded.EditCalendar, null)
-                        Text(video.createdAt.format())
+                        Text(state.video.createdAt.format())
                     }
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         Icon(Icons.Rounded.EditCalendar, null)
-                        Text(video.addedToAt?.format() ?: "Sem data")
+                        Text(state.video.addedToAt?.format() ?: "Sem data")
                     }
                 }
-                
+
                 Players(modifier = Modifier.fillMaxWidth(),
-                    players = video.players,
-                    videoId = video.id,
+                    players = state.video.players,
+                    videoId = state.video.id,
                     setEvent = { id ->
-                        setEvent(VideoDetailsContracts.Event.OnPlayVideoPressed(id))
+                        intent(VideoDetailsIntents.OnPlayVideoPressed(id))
                     })
 
                 VideoActresses(
                     modifier = Modifier.fillMaxWidth(),
-                    actresses = video.actresses,
-                    windowClassSizes,
-                    setEvent,
+                    actresses = state.video.actresses,
+                    windowClassSizes
                 )
                 Tags(
-                    modifier = Modifier.fillMaxWidth(), tags = video.tags, setEvent = setEvent
+                    modifier = Modifier.fillMaxWidth(), tags = state.video.tags
                 )
             }
-        },
-        onTryAgain = { },
-        onCheckAgain = { },
-    )
+        }
+    }
+
 }
 
-@Preview
+/*@Preview
 @Composable
 private fun VideoDetailsPagePreview() {
     MaterialTheme {
@@ -182,4 +187,4 @@ private fun VideoDetailsPagePreview() {
             ), currentWindowAdaptiveInfo().windowSizeClass, setEvent = {})
         }
     }
-}
+}*/

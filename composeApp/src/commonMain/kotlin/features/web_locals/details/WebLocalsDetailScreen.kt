@@ -10,13 +10,12 @@ import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.navigation.NavHostController
 import cafe.adriel.voyager.core.screen.ScreenKey
 import cafe.adriel.voyager.koin.getScreenModel
-import cafe.adriel.voyager.navigator.LocalNavigator
-import cafe.adriel.voyager.navigator.currentOrThrow
-import features.navigation.navigateToActressesDetails
 import kotlinx.coroutines.flow.collectLatest
 import presentation.mvi.use
+import presentation.navigation.AppScreenDestinations
 import presentation.ui.common.AppBarState
 import presentation.ui.common.AppScreen
 import presentation.ui.common.ArrowBackIcon
@@ -25,6 +24,7 @@ import presentation.ui.common.state.ManagementResourceUiState
 data class WebLocalsDetailScreen(
     private val webLocalId: String,
     override val route: String = "VideoDetails",
+    private val navController: NavHostController,
     override val onCompose: (AppBarState) -> Unit,
 ) : AppScreen {
     override val key: ScreenKey = "VideoDetails"
@@ -36,7 +36,7 @@ data class WebLocalsDetailScreen(
 
         val sizes = currentWindowAdaptiveInfo()
 
-        val navigator = LocalNavigator.currentOrThrow
+
 
         LaunchedEffect(key1 = Unit) {
             onCompose(
@@ -45,7 +45,7 @@ data class WebLocalsDetailScreen(
                     actions = null,
                     navigationIcon = {
                         ArrowBackIcon {
-                            navigator.pop()
+                            navController.navigateUp()
                         }
                     },
                     searchBar = null,
@@ -59,11 +59,12 @@ data class WebLocalsDetailScreen(
 
             effects.collectLatest { effect ->
                 when (effect) {
-                    WebLocalsDetailsContracts.Effect.BackNavigation -> navigator.pop()
+                    WebLocalsDetailsContracts.Effect.BackNavigation -> navController.navigateUp()
                     is WebLocalsDetailsContracts.Effect.NavigateToActressesRequested -> {
-                        navigator.navigateToActressesDetails(
-                            actressId = effect.webLocalId,
-                            onCompose = onCompose
+                        navController.navigate(
+                            AppScreenDestinations.ActressDetails(
+                                actressId = effect.webLocalId,
+                            )
                         )
                     }
                 }

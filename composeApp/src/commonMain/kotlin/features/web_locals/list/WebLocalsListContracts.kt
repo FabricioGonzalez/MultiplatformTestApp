@@ -2,12 +2,12 @@ package features.web_locals.list
 
 import features.web_locals.list.components.Site
 import presentation.model.ResourceUiState
-import presentation.mvi.UiEffect
-import presentation.mvi.UiEvent
-import presentation.mvi.UiState
+import pro.respawn.flowmvi.api.MVIAction
+import pro.respawn.flowmvi.api.MVIIntent
+import pro.respawn.flowmvi.api.MVIState
 
 interface WebLocalsListContracts {
-    sealed interface Event : UiEvent {
+    sealed interface Event : MVIIntent {
 
         data object OnLoadDataRequested : Event
         data object OnBackPressed : Event
@@ -19,9 +19,9 @@ interface WebLocalsListContracts {
     data class State(
         val sites: ResourceUiState<List<Site>>,
         val isFavorite: ResourceUiState<Boolean>,
-    ) : UiState
+    ) : MVIState
 
-    sealed interface Effect : UiEffect {
+    sealed interface Effect : MVIAction {
         data object BackNavigation : Effect
         data class NavigateToWebLocalRequested(val id: String) : Effect
         data class NavigateToWebLocalDetailsRequested(val id: String) : Effect

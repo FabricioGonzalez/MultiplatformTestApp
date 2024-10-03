@@ -8,9 +8,12 @@ import cafe.adriel.voyager.core.model.screenModelScope
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.shareIn
+import pro.respawn.flowmvi.api.MVIAction
+import pro.respawn.flowmvi.api.MVIIntent
+import pro.respawn.flowmvi.api.MVIState
 
 @Composable
-inline fun <reified STATE : UiState, EVENT : UiEvent, EFFECT : UiEffect> use(
+inline fun <reified STATE : MVIState, EVENT : MVIIntent, EFFECT : MVIAction> use(
     viewModel: BaseViewModel<EVENT, STATE, EFFECT>,
 ): StateDispatchEffect<STATE, EVENT, EFFECT> {
     val state by viewModel.uiState.collectAsState()

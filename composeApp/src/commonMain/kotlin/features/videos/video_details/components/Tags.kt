@@ -21,14 +21,14 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import domain.model.TagEntity
-import features.videos.video_details.VideoDetailsContracts
+import features.videos.video_details.VideoDetailsIntents
+import pro.respawn.flowmvi.api.IntentReceiver
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun Tags(
+fun IntentReceiver<VideoDetailsIntents>.Tags(
     modifier: Modifier = Modifier,
-    tags: List<TagEntity>,
-    setEvent: (VideoDetailsContracts.Event) -> Unit
+    tags: List<TagEntity>
 ) {
     FlowRow(
         modifier = modifier,
@@ -40,7 +40,7 @@ fun Tags(
             val (preferred, setPreferred) = mutableStateOf(tag.isFavorite)
 
             AssistChip(modifier = Modifier.height(24.dp), onClick = {
-                setEvent(VideoDetailsContracts.Event.OnTagFavoritedChanged(tag.name))
+                intent(VideoDetailsIntents.OnTagFavoritedChanged(tag.name))
                 setPreferred(!preferred)
             }, colors = AssistChipDefaults.assistChipColors(
                 containerColor = if (preferred) MaterialTheme.colorScheme.primaryContainer

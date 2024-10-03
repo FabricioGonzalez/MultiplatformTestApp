@@ -23,10 +23,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import cafe.adriel.voyager.core.screen.ScreenKey
 import cafe.adriel.voyager.koin.getScreenModel
-import cafe.adriel.voyager.navigator.LocalNavigator
-import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.seanproctor.datatable.DataColumn
 import com.seanproctor.datatable.TableColumnWidth
@@ -34,15 +33,16 @@ import com.seanproctor.datatable.material3.DataTable
 import com.seanproctor.datatable.rememberDataTableState
 import components.ImageBox
 import data.helpers.format
-import features.navigation.navigateToVideoDetails
 import kotlinx.coroutines.flow.collectLatest
 import presentation.mvi.use
+import presentation.navigation.AppScreenDestinations
 import presentation.ui.common.AppBarState
 import presentation.ui.common.AppTab
 import presentation.ui.common.state.ManagementResourceUiState
 
 class AppHistoryScreen(
     override val route: String = "history",
+    private val navController: NavHostController,
     override val onCompose: (AppBarState) -> Unit,
 ) : AppTab {
 
@@ -67,7 +67,7 @@ class AppHistoryScreen(
 
         val snackbarHostState = remember { SnackbarHostState() }
 
-        val navigator = LocalNavigator.currentOrThrow
+
 
         LaunchedEffect(key1 = Unit) {
             onCompose(
@@ -90,12 +90,14 @@ class AppHistoryScreen(
                     AppHistoryContract.Effect.CharacterRemoved -> snackbarHostState.showSnackbar("Character removed from favorites")
 
                     AppHistoryContract.Effect.BackNavigation -> {
-                        navigator.parent?.pop()
+                        navController.navigateUp()
                     }
 
                     is AppHistoryContract.Effect.NavigateToDetails -> {
-                        navigator.parent?.navigateToVideoDetails(
-                            videoId = effect.id, onCompose = onCompose
+                        navController.navigate(
+                            AppScreenDestinations.VideoDetails(
+                                videoId = effect.id
+                            )
                         )
                     }
 
