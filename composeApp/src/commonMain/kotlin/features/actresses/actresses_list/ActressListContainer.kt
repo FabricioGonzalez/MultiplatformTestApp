@@ -1,12 +1,14 @@
 package features.actresses.actresses_list
 
 import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import domain.interactors.actresses.GetActressesListUsecase
 import domain.interactors.actresses.SearchActressesListUsecase
 import domain.model.ActressEntity
 import features.actresses.actresses_list.ActressListContainer.ActressListAction
 import features.actresses.actresses_list.ActressListContainer.ActressListIntent
 import features.actresses.actresses_list.ActressListContainer.ActressListState
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
@@ -33,6 +35,8 @@ class ActressListContainer(
     private val actressesListUsecase: GetActressesListUsecase,
     private val actressSearchUsecase: SearchActressesListUsecase,
 ) : Container<ActressListState, ActressListIntent, ActressListAction> {
+    private val scope = CoroutineScope(Dispatchers.IO)
+
     override val store =
         store(
             ActressListState.Loading
@@ -49,7 +53,7 @@ class ActressListContainer(
 
             enableLogging()
             install(loggingPlugin("ActressList"))
-            
+
             // performs long-running tasks on startup
             init {
                 intent(ActressListIntent.LoadData)
@@ -61,27 +65,33 @@ class ActressListContainer(
                 null
             }
 
+            /*val pagingData by cache {
+                repo.getPagedDataSuspending()
+            }*/
+
+
             reduce { intent ->
                 when (intent) {
                     ActressListIntent.LoadData -> {
-                        withContext(Dispatchers.IO) { actressesListUsecase(Unit) }.collect { result ->
-                            result.onSuccess { succ ->
-                                updateState {
-                                    ActressListState.DisplayList(
-                                        ResourceUiState.Success(
-                                            flow { emit(succ) }
-                                        )
-                                    )
-                                }
-                            }
-                                .onFailure {
+                        withContext(Dispatchers.IO) { actressesListUsecase(Unit) }
+                            .collect { result ->
+                                result.onSuccess { succ ->
                                     updateState {
-                                        ActressListState.Error(
-                                            it.message ?: ""
+                                        ActressListState.DisplayList(
+                                            ResourceUiState.Success(
+                                                flow { emit(succ) }.cachedIn(scope)
+                                            )
                                         )
                                     }
                                 }
-                        }
+                                    .onFailure {
+                                        updateState {
+                                            ActressListState.Error(
+                                                it.message ?: ""
+                                            )
+                                        }
+                                    }
+                            }
                     }
 
                     ActressListIntent.OnBackPressed -> action(ActressListAction.NavigateBack)

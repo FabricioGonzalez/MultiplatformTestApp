@@ -21,14 +21,12 @@ kotlin {
     androidTarget {
         compilations.all {
             kotlinOptions {
-                jvmTarget = "17"
-
-
+                jvmTarget = "21"
             }
         }
     }
     jvmToolchain {
-        languageVersion.set(JavaLanguageVersion.of("17"))
+        languageVersion.set(JavaLanguageVersion.of("21"))
         vendor.set(JvmVendorSpec.JETBRAINS)
     }
     apollo {
@@ -59,7 +57,6 @@ kotlin {
         val desktopMain by getting
 
         androidMain.dependencies {
-            implementation(libs.compose.ui.tooling.preview)
             implementation(libs.androidx.activity.compose)
             implementation(libs.voyager.navigator)
             implementation(libs.voyager.screenModel)
@@ -81,8 +78,9 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
             implementation(compose.uiUtil)
-            api(libs.apollo.normalized.cache.sqlite)
             implementation(compose.uiTooling)
+            implementation(compose.material3AdaptiveNavigationSuite)
+            api(libs.apollo.normalized.cache.sqlite)
             implementation(libs.androidx.browser)
             implementation(libs.voyager.navigator)
             implementation(libs.voyager.screenModel)
@@ -90,7 +88,6 @@ kotlin {
             implementation(libs.voyager.tabNavigation)
             implementation(libs.composeImageLoader)
             implementation(libs.voyager.koin)
-            implementation(libs.material3.adaptive.navigation)
             implementation(libs.material3.adaptive.layout)
             implementation(libs.material3.adaptive)
             implementation(libs.material3.datatable)
@@ -112,7 +109,6 @@ kotlin {
             implementation(libs.paging.compose)
             implementation(libs.materialKolor)
             implementation(libs.room.runtime)
-            /*implementation(libs.room.paging)*/
             implementation(libs.sqlite.bundled)
 
         }
@@ -178,12 +174,12 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
 
     kotlin {
-        jvmToolchain(17)
+        jvmToolchain(21)
     }
     buildToolsVersion = "34.0.0"
 }
@@ -203,7 +199,7 @@ compose.desktop {
         mainClass = "MainKt"
         version = libs.versions.systemVersion.get()
         nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+            targetFormats(TargetFormat.Msi, TargetFormat.Deb)
             packageName = "com-dev-fabricio-gonzalez-mediaapp"
             packageVersion = libs.versions.systemVersion.get()
         }
